@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <title>UCE Estadistica G4</title> <!-- 🔶 AÑADIR TÍTULO -->
+        <link rel="stylesheet" href="style.css" />
+    </head>
+
+    <body>
+        <!-- HEADER -->
+        <header class="site-header">
+            <div class="logo-texto">
+                <img src="img/logo-universidad.png" alt="Logo Universidad" class="logo">
+                <span class="nombre-sitio">Universidad Central del Ecuador</span>
+            </div>
+            <nav class="menu-navegacion">
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="Descriptiva.html">Descriptiva</a></li>
+                    <li><a href="Inferencial.html">Inferencial</a></li>
+                    <li><a href="Regresiones.html">Regresiones</a></li>
+                    <li><a href="Machine Learning.html">Machine Learning</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main class="main-container">
+         <!------------------------------------------- Sección 1 ------------------------------------------------------>
+            <!-- Portada Estadística -->
+            <section class="seccion-1" id="portada-estadistica">
+                    <video class="fondo-seccion-1" autoplay muted loop playsinline>
+                    <source src="img/Video_Portada_Principal_6.mp4" type="video/mp4">
+                    </video>
+
+                <div class="contenido-seccion-izq">
+                    <h1>Estimaciones<br> 
+                        de datos a partir <br>
+                        de Patrones.</h1>
+                </div>
+            </section>
+
+            <!-- MAIN -->
+            
+
+            <!-- MENÚ DE NAVEGACIÓN ENTRE SECCIONES -->
+            <nav class="menu-interno">
+                <div class="menu-contenido">
+                    <ul class="menu-izquierda">
+                        <li><a href="#seccion1">Sección 1</a></li>
+                        <li><a href="#seccion2">Sección 2</a></li>
+                    </ul>
+
+                    <img src="img/logo-facultad_Negro.png" alt="Logo del menú" class="logo-menu">
+                    <ul class="menu-derecha">
+                        <li><a href="#seccion3">Sección 3</a></li>
+                        <li><a href="#seccion4">Sección 4</a></li>
+                    </ul>
+                </div>
+            </nav>
+
+             <!-- Sección 2 -->
+            <section class="seccion-2">
+                <div class="contenedor-col">
+                    <div class="columna-1">
+                        <h2>Objetivo General.</h2>
+                        <p>Analizar los datos sobre la descarbonización del transporte de carga para vehículos eléctricos en EE. UU. y Canadá mediante herramientas estadísticas y de machine learning, con el fin de determinar su sostenibilidad y equidad hacia 2035.
+ 
+                        </p>
+                        <!-- BOTÓN VER MÁS SECCIÓN 2 -->
+                        <div class="contenedor-boton">
+                            <a href="#modalCountry" class="boton-tooltip vermas-seccion2">Ver más</a>
+                        </div>
+                        <!-- MODAL SECCIÓN 2 -->
+                        <div id="modalCountry" class="modal">
+                            <div class="modal-contenido">
+                            <a href="#!" class="cerrar">&times;</a> <!-- IMPORTANTE PARA CERRAR VENTANA EMERGENTE -->
+                            <h3>Código R utilizado</h3>
+                            <iframe src="resultados_documentos/resultados_documentos/CV_Nuestro Equipo.pdf" class="iframe-modal-codigo"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="columna-2">
+                        <h2>Planteamiento del Problema.</h2>
+                        <h2>Redes neuronales modelos que aprenden para predecir</h2>
+                        <p>El análisis de la descarbonización del transporte es esencial para evaluar la eficiencia operativa y la sostenibilidad. A través del análisis estadístico, se examinan los datos recopilados hasta el año 2022, transformando esta información en insumos relevantes para el estudio de la descarbonización.
+
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+<!-- Sección ML -->
+<section class="seccion-ml">
+    <div class="contenedor-ml">
+        <div class="columna-1p">
+            <img src="img/machine learning_2.png" alt="Descripción de la imagen" >
+        </div>
+
+
+        <div class="columna-2p">
+            <h2>Metodología de Análisis</h2>
+            <p>
+                La metodología aplicada abarca una secuencia estructurada de pasos, desde la recopilación de datos hasta la predicción final, empleando técnicas estadísticas y de machine learning que permiten evaluar la descarbonización del transporte de manera precisa y reproducible.
+            </p>
+
+        </div>
+        <div class="fila-metodo fila-superior">
+                <div class="box-metodo">Librerías</div>
+                <div class="arrow-metodo">→</div>
+                <div class="box-metodo">Dataset</div>
+                <div class="arrow-metodo">→</div>
+                <div class="box-metodo">Preprocesamiento</div>
+                <div class="arrow-metodo">→</div>
+                <div class="box-metodo">División de Datos</div>
+                <div class="arrow-metodo">→</div>
+                <div class="box-metodo">Modelo</div>
+            </div>
+
+            <div class="fila-metodo fila-inferior">
+                <div class="box-metodo">Entrenamiento</div>
+                <div class="arrow-metodo">→</div>
+                <div class="box-metodo">Evaluación</div>
+                <div class="arrow-metodo">→</div>
+                <div class="box-metodo">Resultados Gráficos</div>
+                <div class="arrow-metodo">→</div>
+                <div class="box-metodo">Predicción</div>
+            </div>
+    </div>
+</section>
+
+ <section class="seccion-botones-colab">
+    <h2>Explora en Google Colab</h2>
+    <p>Haz clic en los siguientes botones para acceder a los cuadernos interactivos.</p>
+
+    <div class="contenedor-botones">
+      <a href="https://colab.research.google.com/drive/1zkzUzMGoAsca3h7pNJn0K5wbkudSoGXU?usp=sharing " target="_blank" class="boton-colab azul">
+        Notebook Regresión
+      </a>
+
+      <a href="https://colab.research.google.com/drive/1dz7bEsmgPdpmjGsmdpwGlduVD-uORDFC?usp=sharing " target="_blank" class="boton-colab verde">
+        Notebook Clasificación
+      </a>
+    </div>
+  </section>
+
+<!-- Sección 4 -->
+<section class="seccion-4h">
+  <div class="contenedor-colh">
+
+    <!-- Columna izquierda: Título + texto -->
+    <div class="columna-1h">
+      <h2>Herramientas</h2>
+      <p>
+        En nuestro trabajo, nos apoyamos en herramientas potentes para el análisis y visualización estadística. Utilizamos Posit Cloud y RStudio para procesamiento avanzado de datos, complementados con Google Colab para modelos de machine learning.
+      </p>
+      <p>
+        Accedemos a datos mediante Kaggle y gestionamos el trabajo colaborativo con Microsoft 365 y Teams. Además, desarrollamos nuestro sitio web en Visual Studio Cloud, con diseño responsivo y funcionalidad moderna.
+      </p>
+    </div>
+
+    <!-- Columna derecha: Logos + texto -->
+    <div class="columna-2h">
+      <div class="fila-logos">
+        <img src="img/posit.png" alt="Posit Cloud" class="logo-herramienta">
+        <img src="img/Rstudio.png" alt="RStudio" class="logo-herramienta">
+        <img src="img/Google_Colaboratory.png" alt="Google Colab" class="logo-herramienta">
+      </div>
+      <div class="fila-logos">
+        <img src="img/Kaggle.png" alt="Kaggle" class="logo-herramienta">
+        <img src="img/GitHub.png" alt="Microsoft 365" class="logo-herramienta">
+        <img src="img/Visual studio code.png" alt="Visual Studio Code" class="logo-herramienta">
+      </div>
+      <div class="fila-logos">
+        <img src="img/Qgis.png" alt="Kaggle" class="logo-herramienta">
+
+      </div>
+      <p>
+        Estas herramientas fortalecen nuestros estudios, aportando rigor estadístico y soporte a decisiones basadas en datos.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+
+        </main>
+
+        <footer>
+            <div class="footer-content">
+                <img src="img/logo-facultad_Negro.png" alt="Logo UCE" class="footer-logo">
+                <div class="footer-copy">
+                    &copy; 2025 Universidad Central del Ecuador. Todos los derechos reservados.<br>
+                    Proyecto académico G4 Estadística.
+                </div>
+            </div>
+        </footer>
+    </body>
+</html>

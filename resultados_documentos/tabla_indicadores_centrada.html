@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Tabla de Indicadores</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 2rem;
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+        }
+        .table-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: auto;
+            background-color: white;
+            padding: 1rem;
+        }
+        table {
+            border-collapse: collapse;
+            width: auto;
+            max-width: 100%;
+            margin: auto;
+        }
+        th, td {
+            border: 1px solid #333;
+            padding: 8px;
+            text-align: center;
+            white-space: nowrap;
+        }
+        h1 {
+            text-align: center;
+            color: #111;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tabla de Indicadores</h1>
+    <div class="table-container">
+        <table>
+            <tr><th>Unnamed: 0</th><th>Rango</th><th>X</th><th>Me</th><th>Mo</th><th>sd</th><th>Cv</th><th>As</th><th>K</th><th>Outliers</th></tr>
+            <tr><td>Pais "Country"</td><td>P={"EEE.UU", "Canada"}</td><td>-</td><td>-</td><td>"EEUU"</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+            <tr><td>Estado "State"</td><td>E={x/x ∈ Estado ^ País(x) = "EE.UU ∨ Canada" ^ x ∈ dataset}</td><td>-</td><td>-</td><td>"Otros y CA"</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+            <tr><td>Ciudad "City"</td><td>C={x/x ∈ Ciudad ^ Estado(x) = "EE.UU ∨ Canada" ^ x ∈ dataset}</td><td>-</td><td>-</td><td>"Otros y LA"</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+            <tr><td>Tipo de Estación de servicio "Facility Type"</td><td>Tip_Inst={x/x ∈ tipo de instalacion ^ Ciudad(x)= "EE.UU ∨ Canada" ^ x ∈ dataset}</td><td>-</td><td>"NA"</td><td>"NA"</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+            <tr><td>Clase de vehiculos atendidos "NG Vehicle Class"</td><td>Veh={"HD", "LD", "MD"}</td><td>-</td><td>"Na"</td><td>"NA"</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+            <tr><td>Latitud "Latitude"</td><td>Lat={x/x ∈ R ^ -90 ≤ x ≤ 90 ^ País(x) = "EE.UU ∨ Canada" ^ x ∈ dataset}</td><td>38.929</td><td>39.106</td><td>46.348</td><td>5.628</td><td>0.3168</td><td>0.12</td><td>0.1445</td><td>8.59</td></tr>
+            <tr><td>Disponibilidad de servicio Horario "Access Days Time"</td><td>Hor_Ate= [Lunes ; Domingo] U [0:00 ; 23:59]</td><td>"15.47"</td><td>"14.5"</td><td>"24 horas"</td><td>6.28</td><td>0.3938</td><td>0.138</td><td>0.406</td><td>NaN</td></tr>
+        </table>
+    </div>
+</body>
+</html>

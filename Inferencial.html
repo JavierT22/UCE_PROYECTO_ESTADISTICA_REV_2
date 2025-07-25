@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <title>UCE Estadistica G4</title> <!-- 🔶 AÑADIR TÍTULO -->
+        <link rel="stylesheet" href="style.css" />
+    </head>
+
+    <body>
+        <!-- HEADER -->
+        <header class="site-header">
+            <div class="logo-texto">
+                <img src="img/logo-universidad.png" alt="Logo Universidad" class="logo">
+                <span class="nombre-sitio">Universidad Central del Ecuador</span>
+            </div>
+            <nav class="menu-navegacion">
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="Descriptiva.html">Descriptiva</a></li>
+                    <li><a href="Inferencial.html">Inferencial</a></li>
+                    <li><a href="Regresiones.html">Regresiones</a></li>
+                    <li><a href="Machine Learning.html">Machine Learning</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main class="main-container">
+         <!------------------------------------------- Sección 1 ------------------------------------------------------>
+            <!-- Portada Estadística -->
+            <section class="seccion-1" id="portada-estadistica">
+                    <video class="fondo-seccion-1" autoplay muted loop playsinline>
+                    <source src="img/Video_Portada_Principal_4.mp4" type="video/mp4">
+                    </video>
+
+                <div class="contenido-seccion-izq">
+                    <h1>Análisis de una<br> 
+                        población a partir<br> 
+                        de una muestra.</h1>
+                </div>
+            </section>
+
+            <!-- MAIN -->
+            
+
+            <!-- MENÚ DE NAVEGACIÓN ENTRE SECCIONES -->
+            <nav class="menu-interno">
+                <div class="menu-contenido">
+                    <ul class="menu-izquierda">
+                        <li><a href="#seccion1">Sección 1</a></li>
+                        <li><a href="#seccion2">Sección 2</a></li>
+                    </ul>
+
+                    <img src="img/logo-facultad_Negro.png" alt="Logo del menú" class="logo-menu">
+                    <ul class="menu-derecha">
+                        <li><a href="#seccion3">Sección 3</a></li>
+                        <li><a href="#seccion4">Sección 4</a></li>
+                    </ul>
+                </div>
+            </nav>
+            
+            <!---------------------------------------------- Seccion V-1 ---------------------------------------------------------->
+            <!-- SECCIÓN VARIABLE NOMINAL State -->
+            <section class="seccion-variable-discreta">
+                <h2>Variable NOMINAL: STATE</h2>
+
+                <div class="contenedor-dos-columnas-variable">
+
+                    <!-- Columna Izquierda: tabla + botón -->
+                    <div class="columna-izquierda-variable">
+                        <div class="columna-tabla-variable">
+                            <iframe src="TDF y GDF/INFEREN_Graficas y tablas Nominal/Tabla 1.2 Nominal Sate.html"class="iframe-tabla-variable"></iframe>
+                        </div>
+
+                        <!-- BOTÓN VER MÁS SECCIÓN 2 -->
+                        <div class="contenedor-boton">
+                            <a href="#modalCountry" class="boton-tooltip vermas-seccion2">Ver más</a>
+                        </div>
+
+                        <!-- MODAL SECCIÓN 2 -->
+                        <div id="modalCountry" class="modal">
+                            <div class="modal-contenido">
+                                <a href="#!" class="cerrar">&times;</a>
+                                <h3>Código R utilizado</h3>
+                                <iframe src="resultados_documentos/1_S_Variable-Nominal-Pais.html"
+                                        class="iframe-modal-codigo"></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Imágenes -->
+                    <div class="columna-derecha-variable">
+                        <div class="columna-imagen-variable">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas Nominal/Gráfica 1.1 State.png" alt="Ejemplo 1">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas Nominal/Gráfica 1.2 F.R State.png" alt="Ejemplo 2">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas Nominal/Gráfica 1.4 Comparación Fo vs E.png" alt="Ejemplo 3">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas Nominal/Gráfica 1.5 Correlación.png" alt="Ejemplo 4">
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- COMENTATIO INFERIOR VARIABLE PAIS-->
+             <section class="comentario-variable">
+                    <!-- Columna izquierda con el h2 -->
+                    <div class="columna-variable-h2">
+                        <h2>Conclusión Variable <em>State</em></h2>
+                    </div>
+
+                    <!-- Columna derecha con el texto -->
+                    <div class="columna-variable-texto">
+                        <p>Más del 60% de las estaciones se <strong>concentran</strong> en los 10 estados líderes, encabezados por <strong>California</strong> (22.9%), seguida de Quebec, Nueva York y Texas. El test de Chi-cuadrado confirma que la distribución es altamente desigual respecto a la probabilidad esperada (1.5% por estado), con diferencias significativas como el caso de California, que supera ampliamente lo esperado. Esto evidencia una fuerte concentración regional de la infraestructura, lo que puede impactar en la equidad de acceso.</p>
+
+                    </div>
+             </section>
+
+            <!---------------------------------------------- Seccion V-2 ---------------------------------------------------------->
+            <!-- SECCIÓN VARIABLE NOMINAL Access Code -->
+            <section class="seccion-variable-discreta">
+                <h2>Variable NOMINAL: Access Code</h2>
+
+                <div class="contenedor-dos-columnas-variable">
+
+                    <!-- Columna Izquierda: tabla + botón -->
+                    <div class="columna-izquierda-variable">
+                        <div class="columna-tabla-variable">
+                            <iframe src="TDF y GDF/INFEREN_Graficas y tablas Nominal/Tabla 2.2 Access Code.html"class="iframe-tabla-variable"></iframe>
+                        </div>
+
+                        <!-- BOTÓN VER MÁS SECCIÓN 2 -->
+                        <div class="contenedor-boton">
+                            <a href="#modalCountry" class="boton-tooltip vermas-seccion2">Ver más</a>
+                        </div>
+
+                        <!-- MODAL SECCIÓN 2 -->
+                        <div id="modalCountry" class="modal">
+                            <div class="modal-contenido">
+                                <a href="#!" class="cerrar">&times;</a>
+                                <h3>Código R utilizado</h3>
+                                <iframe src="resultados_documentos/1_S_Variable-Nominal-Pais.html"
+                                        class="iframe-modal-codigo"></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Imágenes -->
+                    <div class="columna-derecha-variable">
+                        <div class="columna-imagen-variable">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas Nominal/Gráfica 2.1 Access Code.png" alt="Ejemplo 1">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas Nominal/Gráfica 2.2 F.R Access Code.png" alt="Ejemplo 2">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas Nominal/Gráfica 2.3 P. Esperada.png" alt="Ejemplo 3">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas Nominal/Gráfica 2.4  Comparación.png" alt="Ejemplo 4">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas Nominal/Gráfica 2.5 Correlación.png" alt="Ejemplo 5">
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- COMENTATIO INFERIOR VARIABLE PAIS-->
+             <section class="comentario-variable">
+                    <!-- Columna izquierda con el h2 -->
+                    <div class="columna-variable-h2">
+                        <h2>Conclusión Variable <em>Access Code</em></h2>
+                    </div>
+
+                    <!-- Columna derecha con el texto -->
+                    <div class="columna-variable-texto">
+                        <p>Indica el tipo de acceso <strong>público o privado</strong>, muestra una distribución claramente desigual entre ambas categorías. La prueba Chi-cuadrado resultó altamente significativa, indicando que la distribución observada difiere considerablemente de la esperada bajo una distribución uniforme. Aunque se esperaba una probabilidad del 50% para cada tipo, en la práctica el acceso público concentra el 92.8% de las estaciones, mientras que el acceso privado representa solo el 7.2%. Esta disparidad refleja una marcada predominancia del acceso público, con importantes implicaciones para la planificación y gestión de la infraestructura de carga.</p>
+
+                    </div>
+             </section>
+
+
+          <!---------------------------------------------- Seccion V-3 ---------------------------------------------------------->
+            <!-- SECCIÓN VARIABLE NOMINAL Fuel Type Code -->
+            <section class="seccion-variable-discreta">
+                <h2>Variable NOMINAL: Fuel Type Code</h2>
+
+                <div class="contenedor-dos-columnas-variable">
+
+                    <!-- Columna Izquierda: tabla + botón -->
+                    <div class="columna-izquierda-variable">
+                        <div class="columna-tabla-variable">
+                            <iframe src="TDF y GDF/INFEREN_Graficas y tablas Nominal/Tabla 3.6 Chi2 Fuel Type Code.html"class="iframe-tabla-variable"></iframe>
+                        </div>
+
+                        <!-- BOTÓN VER MÁS SECCIÓN 2 -->
+                        <div class="contenedor-boton">
+                            <a href="#modalCountry" class="boton-tooltip vermas-seccion2">Ver más</a>
+                        </div>
+
+                        <!-- MODAL SECCIÓN 2 -->
+                        <div id="modalCountry" class="modal">
+                            <div class="modal-contenido">
+                                <a href="#!" class="cerrar">&times;</a>
+                                <h3>Código R utilizado</h3>
+                                <iframe src="resultados_documentos/1_S_Variable-Nominal-Pais.html"
+                                        class="iframe-modal-codigo"></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Imágenes -->
+                    <div class="columna-derecha-variable">
+                        <div class="columna-imagen-variable">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas Nominal/Gráfica 3.1 Fuel Type Code.png" alt="Ejemplo 1">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas Nominal/Gráfica 3.2 Fuel Type Code.png" alt="Ejemplo 2">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas Nominal/Gráfica 3.3 P. Esperada Chi2.png" alt="Ejemplo 3">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas Nominal/Gráfica 3.5 Correlación Chi2.png" alt="Ejemplo 4">
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- COMENTATIO INFERIOR VARIABLE PAIS-->
+             <section class="comentario-variable">
+                    <!-- Columna izquierda con el h2 -->
+                    <div class="columna-variable-h2">
+                        <h2>Conclusión Variable <em>Fuel Type Code</em></h2>
+                    </div>
+
+                    <!-- Columna derecha con el texto -->
+                    <div class="columna-variable-texto">
+                        <p>El análisis de Fuel Type Code muestra una distribución muy desigual, con predominancia clara del combustible eléctrico (ELEC) que concentra el 86.5% de las estaciones. La prueba Chi-cuadrado es altamente significativa , rechazando la hipótesis de una distribución uniforme. Aunque las probabilidades esperadas asignan una frecuencia igual (14.3%) a cada tipo, la realidad muestra grandes diferencias, reflejando una fuerte concentración en ciertos combustibles. Esto indica un marcado sesgo estructural en la infraestructura de carga, con posibles implicaciones para políticas de diversificación energética y desarrollo sostenible.</p>
+
+                    </div>
+             </section>
+
+            <!------------------------------------------- SECCION 4 --------------------------------------------------------->
+             <!--SECCION IMAGEN TRANSICION-->
+            <section class="seccion-foto">
+                <div class="contenedor-foto-texto">
+                    <img src="img/fondo_secundario_inferencial.jpg" alt="Descripción de la imagen" class="imagen-foto">
+                    <div class="texto-foto">
+                    <h2>Inferencia de Variables</h2>
+                    <p>Representación gráfica de Datos</p>
+                    </div>
+                </div>
+            </section>
+
+            <!---------------------------------------------- Seccion V - 5 ---------------------------------------------------------->
+            <!-- SECCIÓN VARIABLE ORDINAL Facility Type -->
+            <section class="seccion-variable-discreta">
+                <h2>Variable ORDINAL: Facility Type</h2>
+
+                <div class="contenedor-dos-columnas-variable">
+
+                    <!-- Columna Izquierda: tabla + botón -->
+                    <div class="columna-izquierda-variable">
+                        <div class="columna-tabla-variable">
+                            <iframe src="TDF y GDF/INFEREN_Graficas y tablas Ordinal/Tabla 6_Chi-Cuadrado_Facility_Type.html"class="iframe-tabla-variable"></iframe>
+                        </div>
+
+                        <!-- BOTÓN VER MÁS SECCIÓN 2 -->
+                        <div class="contenedor-boton">
+                            <a href="#modalCountry" class="boton-tooltip vermas-seccion2">Ver más</a>
+                        </div>
+
+                        <!-- MODAL SECCIÓN 2 -->
+                        <div id="modalCountry" class="modal">
+                            <div class="modal-contenido">
+                                <a href="#!" class="cerrar">&times;</a>
+                                <h3>Código R utilizado</h3>
+                                <iframe src="resultados_documentos/1_S_Variable-Nominal-Pais.html"
+                                        class="iframe-modal-codigo"></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Imágenes -->
+                    <div class="columna-derecha-variable">
+                        <div class="columna-imagen-variable">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas Ordinal/Gráfica 6.1 Facility Type.png" alt="Ejemplo 1">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas Ordinal/Gráfica 6.2 F.R Facility Type.png" alt="Ejemplo 2">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas Ordinal/Gráfica 6.3 Observada vs Teórica.png" alt="Ejemplo 3">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas Ordinal/Gráfica 6.4 Correlación Ob vs teo.png" alt="Ejemplo 4">
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- COMENTATIO INFERIOR VARIABLE PAIS-->
+             <section class="comentario-variable">
+                    <!-- Columna izquierda con el h2 -->
+                    <div class="columna-variable-h2">
+                        <h2>Conclusión Variable <em>Facility Type</em></h2>
+                    </div>
+
+                    <!-- Columna derecha con el texto -->
+                    <div class="columna-variable-texto">
+                        <p>La variable Facility.Type presenta una distribución notablemente desigual, evidenciando que los tipos de instalaciones no están uniformemente distribuidos. Un tipo principal concentra la mayor parte de las estaciones, con un 71.7% del total. Otros tipos importantes incluyen CONVENIENCE_STORE con un 8.3%, HOTEL con un 5.3% y CAR_DEALER con un 4.8%, mientras que las demás categorías representan porcentajes inferiores al 2%.
+
+Las diferencias significativas entre las frecuencias observadas y las esperadas indican que la distribución está fuertemente concentrada en pocos tipos de instalaciones, lo que es fundamental para la planificación y gestión eficiente de la infraestructura de carga.</p>
+                    </div>
+             </section>
+
+            <!---------------------------------------------- Seccion V - 6 ---------------------------------------------------------->
+            <!-- SECCIÓN VARIABLE ORDINAL NG Vehicle Class -->
+            <section class="seccion-variable-discreta">
+                <h2>Variable ORDINAL: NG Vehicle Class</h2>
+
+                <div class="contenedor-dos-columnas-variable">
+
+                    <!-- Columna Izquierda: tabla + botón -->
+                    <div class="columna-izquierda-variable">
+                        <div class="columna-tabla-variable">
+                            <iframe src="TDF y GDF/INFEREN_Graficas y tablas Ordinal/Tabla 9 Chi-Cuadrado_NG_Vehicle_Class.html"class="iframe-tabla-variable"></iframe>
+                        </div>
+
+                        <!-- BOTÓN VER MÁS SECCIÓN 2 -->
+                        <div class="contenedor-boton">
+                            <a href="#modalCountry" class="boton-tooltip vermas-seccion2">Ver más</a>
+                        </div>
+
+                        <!-- MODAL SECCIÓN 2 -->
+                        <div id="modalCountry" class="modal">
+                            <div class="modal-contenido">
+                                <a href="#!" class="cerrar">&times;</a>
+                                <h3>Código R utilizado</h3>
+                                <iframe src="resultados_documentos/1_S_Variable-Nominal-Pais.html"
+                                        class="iframe-modal-codigo"></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Imágenes -->
+                    <div class="columna-derecha-variable">
+                        <div class="columna-imagen-variable">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas Ordinal/Gráfica 9.1 NG Vehicle Class.png" alt="Ejemplo 1">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas Ordinal/Gráfica 9.2 NG Vehicle Class.png" alt="Ejemplo 2">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas Ordinal/Gráfica 9.3 Observada vs Teórica.png" alt="Ejemplo 3">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas Ordinal/Gráfica 9.4 Correlación NG Vehicle Class.png" alt="Ejemplo 4">
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- COMENTATIO INFERIOR VARIABLE PAIS-->
+             <section class="comentario-variable">
+                    <!-- Columna izquierda con el h2 -->
+                    <div class="columna-variable-h2">
+                        <h2>Conclusión Variable <em>NG Vehicle Class</em></h2>
+                    </div>
+
+                    <!-- Columna derecha con el texto -->
+                    <div class="columna-variable-texto">
+                        <p>El análisis muestra una distribución altamente concentrada, donde la clase mayoritaria representa el 97.5% del total, mientras que las otras clases, como HD (2.1%), MD (0.4%) y LD (0.1%), tienen participaciones mucho menores. El test global de Chi-cuadrado es altamente significativo, lo que confirma que la distribución no es uniforme y que existe una marcada desigualdad en la representación de las clases de vehículos NG. Esto refleja una fuerte predominancia de una sola clase, lo cual es relevante para el análisis y planificación relacionada con la infraestructura y el mercado de vehículos de gas natural.</p>
+                    </div>
+             </section>
+
+            <!---------------------------------------------- Seccion V - 7 ---------------------------------------------------------->
+            <!-- SECCIÓN VARIABLE DISCRETA: Access Days Time -->
+            <section class="seccion-variable-discreta">
+                <h2>Variable DISCRETA: Access Days Time</h2>
+
+                <div class="contenedor-dos-columnas-variable">
+
+                    <!-- Columna Izquierda: tabla + botón -->
+                    <div class="columna-izquierda-variable">
+                        <div class="columna-tabla-variable">
+                            <iframe src="TDF y GDF/INFEREN_Graficas y tablas Discreta/Tabla 8 Access_Days_Time.html"class="iframe-tabla-variable"></iframe>
+                        </div>
+
+                        <!-- BOTÓN VER MÁS SECCIÓN 2 -->
+                        <div class="contenedor-boton">
+                            <a href="#modalCountry" class="boton-tooltip vermas-seccion2">Ver más</a>
+                        </div>
+
+                        <!-- MODAL SECCIÓN 2 -->
+                        <div id="modalCountry" class="modal">
+                            <div class="modal-contenido">
+                                <a href="#!" class="cerrar">&times;</a>
+                                <h3>Código R utilizado</h3>
+                                <iframe src="resultados_documentos/1_S_Variable-Nominal-Pais.html"
+                                        class="iframe-modal-codigo"></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Imágenes -->
+                    <div class="columna-derecha-variable">
+                        <div class="columna-imagen-variable">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas Discreta/Gráfica 8.1.png" alt="Ejemplo 1">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas Discreta/Gráfica 8.2.png" alt="Ejemplo 2">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas Discreta/Gráfica 8.3.png" alt="Ejemplo 3">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas Discreta/Gráfica 8.4.png" alt="Ejemplo 4">
+
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+
+
+            <!-- COMENTATIO INFERIOR VARIABLE PAIS-->
+             <section class="comentario-variable">
+                    <!-- Columna izquierda con el h2 -->
+                    <div class="columna-variable-h2">
+                        <h2>Conclusión Variable <em>Access Days Time</em></h2>
+                    </div>
+
+                    <!-- Columna derecha con el texto -->
+                    <div class="columna-variable-texto">
+                        <p>La variable Access Days Time muestra un <strong>promedio</strong> de atención de 15.83 horas diarias, con una <strong>mediana</strong> de 15 horas y una <strong>moda</strong> de “24 horas”. La desviación estándar es de 6.41 horas, con un coeficiente de variación de 40.5%, lo que indica una variabilidad moderada en los horarios. La asimetría positiva (0.6) sugiere que la mayoría de estaciones presentan horarios cercanos a 15 horas, aunque algunas ofrecen atención continua las 24 horas.</p>
+             </section>
+
+        <!---------------------------------------------- Seccion 13 ---------------------------------------------------------->
+            <!-- SECCIÓN VARIABLE CONTINUA Latitude -->
+            <section class="seccion-variable-discreta">
+                <h2>Variable CONTINUA: Latitude</h2>
+
+                <div class="contenedor-dos-columnas-variable">
+
+                    <!-- Columna Izquierda: tabla + botón -->
+                    <div class="columna-izquierda-variable">
+                        <div class="columna-tabla-variable">
+                            <iframe src="TDF y GDF/INFEREN_Graficas y tablas continuas/Latitud/Inferencial_Tabla_Modelo_Continua_Latitud_REV_1.html" class="iframe-tabla-variable"></iframe>
+                        </div>
+
+                        <!-- BOTÓN VER MÁS SECCIÓN 2 -->
+                        <div class="contenedor-boton">
+                            <a href="#modalCountry" class="boton-tooltip vermas-seccion2">Ver más</a>
+                        </div>
+
+                        <!-- MODAL SECCIÓN 2 -->
+                        <div id="modalCountry" class="modal">
+                            <div class="modal-contenido">
+                                <a href="#!" class="cerrar">&times;</a>
+                                <h3>Código R utilizado</h3>
+                                <iframe src="resultados_documentos/1_S_Variable-Nominal-Pais.html"
+                                        class="iframe-modal-codigo"></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Imágenes -->
+                    <div class="columna-derecha-variable">
+                        <div class="columna-imagen-variable">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas continuas/Latitud/Inferencial_Gráfica _Densidad_Continua_Latitud_REV_1.png" alt="Ejemplo 1">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas continuas/Latitud/Inferencial_Gráfica _Normal_Continua_Latitud_REV_1.png" alt="Ejemplo 2">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas continuas/Latitud/Inferencial_Gráfica _Relación _N_Continua_Latitud_REV_1.png" alt="Ejemplo 3">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas continuas/Latitud/Inferencial_Gráfica _Som_N_Continua_Latitud_REV_1.png" alt="Ejemplo 3">
+
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+
+
+            <!-- COMENTATIO INFERIOR VARIABLE PAIS-->
+             <section class="comentario-variable">
+                    <!-- Columna izquierda con el h2 -->
+                    <div class="columna-variable-h2">
+                        <h2>Conclusión Variable <em>Latitude</em></h2>
+                    </div>
+
+                    <!-- Columna derecha con el texto -->
+                    <div class="columna-variable-texto">
+                        <p>Se ajusta a una distribución normal, con una media de 38.93 y una desviación estándar de 5.63 en la escala original. El intervalo de confianza del 95% para la media se encuentra entre 9.81 y 9.81.
+                            El modelo fue parcialmente aceptado con un 95% de confianza, ya que el estadístico Chi-cuadrado de 19329.11 fue superior al valor crítico de 18.307, lo cual indica un ajuste inadecuado según esta prueba. Sin embargo, la alta correlación del 98.74% entre las frecuencias observadas y teóricas respalda la validez del modelo normal según el coeficiente de Pearson.Esto sugiere que, a pesar del rechazo por parte del test Chi-cuadrado, el modelo normal ofrece una representación válida y útil del comportamiento de la Latitud</p>
+             </section>
+
+
+        <!---------------------------------------------- Seccion 13 ---------------------------------------------------------->
+            <!-- SECCIÓN VARIABLE CONTINUA Longitude -->
+            <section class="seccion-variable-discreta">
+                <h2>Variable CONTINUA: Longitude</h2>
+
+                <div class="contenedor-dos-columnas-variable">
+
+                    <!-- Columna Izquierda: tabla + botón -->
+                    <div class="columna-izquierda-variable">
+                        <div class="columna-tabla-variable">
+                            <iframe src="TDF y GDF/INFEREN_Graficas y tablas continuas/Longitud/Inferencial_Tabla1__Continua_Longitud_REV_1.html" class="iframe-tabla-variable"></iframe>
+                        </div>
+
+                        <!-- BOTÓN VER MÁS SECCIÓN 2 -->
+                        <div class="contenedor-boton">
+                            <a href="#modalCountry" class="boton-tooltip vermas-seccion2">Ver más</a>
+                        </div>
+
+                        <!-- MODAL SECCIÓN 2 -->
+                        <div id="modalCountry" class="modal">
+                            <div class="modal-contenido">
+                                <a href="#!" class="cerrar">&times;</a>
+                                <h3>Código R utilizado</h3>
+                                <iframe src="resultados_documentos/1_S_Variable-Nominal-Pais.html"
+                                        class="iframe-modal-codigo"></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Imágenes -->
+                    <div class="columna-derecha-variable">
+                        <div class="columna-imagen-variable">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas continuas/Longitud/Inferencial_Gráfica __Continua_Longitud_REV_1.png" alt="Ejemplo 1">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas continuas/Longitud/Inferencial_Gráfica _ajuGamma_Continua_Longitud_REV_1.png" alt="Ejemplo 2">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas continuas/Longitud/Inferencial_Gráfica _Fre_Gamma_Continua_Longitud_REV_1.png" alt="Ejemplo 3">
+
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+
+
+            <!-- COMENTATIO INFERIOR VARIABLE PAIS-->
+             <section class="comentario-variable">
+                    <!-- Columna izquierda con el h2 -->
+                    <div class="columna-variable-h2">
+                        <h2>Conclusión Variable <em>Longitude</em></h2>
+                    </div>
+
+                    <!-- Columna derecha con el texto -->
+                    <div class="columna-variable-texto">
+                        <p>se ajusta a una distribución Gamma, con una media de 63.73 y una desviación estándar de 19.55 en la escala original. El intervalo de confianza del 95% para la media se encuentra entre 63.58 y 63.87. El modelo fue parcialmente aceptado con un 95% de confianza, ya que el estadístico Chi-cuadrado de 102,317.72 superó el valor crítico de 28.8693, lo que indica que el modelo Gamma no cumple con los criterios de esta prueba. No obstante, el coeficiente de correlación de Pearson fue de 72.37%, superando el umbral de 0.74%, lo que respalda la validez del modelo del modelo Gamma según el coeficiente de Pearson. Lo que indica que el modelo Gamma refleja adecuadamente la naturaleza asimétrica de los datos, siendo útil para describir la concentración de estaciones en longitudes medias, con algunos valores extendiéndose hacia longitudes mayores.</p>
+             </section>
+
+        <!---------------------------------------------- Seccion 13 ---------------------------------------------------------->
+            <!-- SECCIÓN VARIABLE CONTINUA Open Date -->
+            <section class="seccion-variable-discreta">
+                <h2>Variable CONTINUA: Open Date</h2>
+
+                <div class="contenedor-dos-columnas-variable">
+
+                    <!-- Columna Izquierda: tabla + botón -->
+                    <div class="columna-izquierda-variable">
+                        <div class="columna-tabla-variable">
+                            <iframe src="TDF y GDF/INFEREN_Graficas y tablas continuas/Open date/Inferencial_Tabla_1_Continua_Open Date_REV_1.html" class="iframe-tabla-variable"></iframe>
+                        </div>
+
+                        <!-- BOTÓN VER MÁS SECCIÓN 2 -->
+                        <div class="contenedor-boton">
+                            <a href="#modalCountry" class="boton-tooltip vermas-seccion2">Ver más</a>
+                        </div>
+
+                        <!-- MODAL SECCIÓN 2 -->
+                        <div id="modalCountry" class="modal">
+                            <div class="modal-contenido">
+                                <a href="#!" class="cerrar">&times;</a>
+                                <h3>Código R utilizado</h3>
+                                <iframe src="resultados_documentos/1_S_Variable-Nominal-Pais.html"
+                                        class="iframe-modal-codigo"></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Imágenes -->
+                    <div class="columna-derecha-variable">
+                        <div class="columna-imagen-variable">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas continuas/Open date/Inferencial_Gráfica_H_Densidad_Continua_Open Date_REV_1.png" alt="Ejemplo 1">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas continuas/Open date/Inferencial_Gráfica_H_Log_Continua_Open Date_REV_1.png" alt="Ejemplo 2">
+                            <img src="TDF y GDF/INFEREN_Graficas y tablas continuas/Open date/Inferencial_Gráfica_Dis_Log_Continua_Open Date_REV_1.png" alt="Ejemplo 3">
+
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+
+
+            <!-- COMENTATIO INFERIOR VARIABLE PAIS-->
+             <section class="comentario-variable">
+                    <!-- Columna izquierda con el h2 -->
+                    <div class="columna-variable-h2">
+                        <h2>Conclusión Variable <em>Open Date</em></h2>
+                    </div>
+
+                    <!-- Columna derecha con el texto -->
+                    <div class="columna-variable-texto">
+                        <p>se ajusta a una distribución Log-Normal, con una media de 38.93 y una desviación estándar de 5.63 . El intervalo de confianza del 95% para la media se encuentra entre 9.81 y 9.81. 
+                            El modelo fue parcialmente aceptado con un 95% de confianza, ya que el estadístico Chi-cuadrado de 18,670.11 fue superior al valor crítico de 11.0705, lo cual indica un ajuste inadecuado según esta prueba. Sin embargo, la alta correlación del 80.6% entre las frecuencias observadas y teóricas respalda la validez del modelo Log-Normal según el coeficiente de Pearson.Esto sugiere que la distribución Log-Normal captura adecuadamente la asimetría de los datos, siendo útil para modelar fechas de apertura que se concentran en periodos recientes, pero con cierta dispersión hacia fechas más alejadas</p>
+             </section>
+
+
+
+
+        </main>
+
+        <footer>
+            <div class="footer-content">
+                <img src="img/logo-facultad_Negro.png" alt="Logo UCE" class="footer-logo">
+                <div class="footer-copy">
+                    &copy; 2025 Universidad Central del Ecuador. Todos los derechos reservados.<br>
+                    Proyecto académico G4 Estadística.
+                </div>
+            </div>
+        </footer>
+    </body>
+</html>

@@ -1,0 +1,395 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla de Variables Convertida</title>
+<style>
+    body {
+        font-family: 'Segoe UI';
+        margin: 20px;
+    }
+
+    h2 {
+        text-align: center;
+        color: darkblue;
+    }
+
+    .styled-table {
+        border-collapse: collapse;
+        width: 100%;
+        font-family: 'Segoe UI';
+        font-size: 14px;
+        table-layout: fixed;          /* 🔹 Fuerza que se ajuste a ancho disponible */
+        word-wrap: break-word;        /* 🔹 Permite cortes si es necesario */
+    }
+
+    .styled-table thead {
+        background-color: darkblue;
+        color: white;
+        font-weight: bold;
+    }
+
+    .styled-table th, .styled-table td {
+        border: 1px solid #ddd;
+        text-align: left;
+        padding: 8px;
+        overflow-wrap: anywhere;     /* 🔹 Rompe texto largo si es necesario */
+    }
+
+    .styled-table tbody tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    .styled-table tbody tr:nth-child(odd) {
+        background-color: #ffffff;
+    }
+</style>
+ 
+
+
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+</head>
+<body>
+   
+    <table class="dataframe styled-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>NOMBRE DE LA VARIABLE</th>
+      <th>DESCRIPCIÓN</th>
+      <th>TIPO</th>
+      <th>SUPTIPO 1</th>
+      <th>SUPTIPO 2</th>
+      <th>DOMINIO</th>
+      <th>RANGO</th>
+      <th>INSTRUMENTO DE MEDIDA</th>
+      <th>ESCALA DE MEDIDA</th>
+      <th>UNIDAD DE MEDIDA</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Country</td>
+      <td>Dónde se ubica la estación de carga en Estados Unidos o Canadá</td>
+      <td>Cualitativa</td>
+      <td>Nominal</td>
+      <td>-</td>
+      <td>P={x/x  ∈  País ^ Lugar(x)="Mundo"}</td>
+      <td>P={"EEE.UU", "Canada"}</td>
+      <td>Registro administrativo</td>
+      <td>Nominal</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>State</td>
+      <td>Estado o provincia donde se ubica la estación de carga</td>
+      <td>Cualitativa</td>
+      <td>Nominal</td>
+      <td>-</td>
+      <td>E={x/x  ∈  Estado ^ Lugar(x)="País"}</td>
+      <td>E={x/x ∈ Estado ^ País(x) = "EE.UU v Canada" ^ x ∈ dataset}</td>
+      <td>Registro administrativo</td>
+      <td>Nominal</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>City</td>
+      <td>Ciudad en donde esta ubica la estación de carga</td>
+      <td>Cualitativa</td>
+      <td>Nominal</td>
+      <td>-</td>
+      <td>C={x/x ∈ Ciudad ^ Lugar(x)="Pais"}</td>
+      <td>C={x/x ∈ Ciudad ^ Estado(x) = "EE.UU v Canada" ^ x ∈ dataset}</td>
+      <td>Registro administrativo</td>
+      <td>Nominal</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Access Code</td>
+      <td>Indica si el acceso es: Publico o Privado</td>
+      <td>Cualitativa</td>
+      <td>Nominal</td>
+      <td>-</td>
+      <td>Cod_Acc={x/x ∈ Codigo de acceso ^ lugar(x)= "codigo de acceso registrado EE.UU v  Canada"}</td>
+      <td>Cod_Acc={"Publico" ,  "Privada"}</td>
+      <td>Registro administrativo</td>
+      <td>Nominal</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Latitude</td>
+      <td>Coordena geografica para ubicacion precisa de las estaciones de carga</td>
+      <td>Cuantitativa</td>
+      <td>-</td>
+      <td>Continua</td>
+      <td>Lat={x  / x ∈  R ^ -90 ≤ x ≤ 90 }</td>
+      <td>Lat={x  / x ∈  R ^ -90 ≤ x ≤ 90 ^ Pais(x) = "EE.UU v Canada ^ x ∈ dataset}</td>
+      <td>GPS</td>
+      <td>Intervalo</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Longitude</td>
+      <td>Coordena geografica para ubicacion precisa de las estaciones de carga</td>
+      <td>Cuantitativa</td>
+      <td>-</td>
+      <td>Continua</td>
+      <td>Lon={x  / x ∈  R ^ -180 ≤ x ≤ 180}</td>
+      <td>Lon={x  / x ∈  R ^ -180 ≤ x ≤ 180 ^ Pais(x) = "EE.UU v Canada ^ x ∈ dataset}</td>
+      <td>GPS</td>
+      <td>Intervalo</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Fuel Type Code</td>
+      <td>Tipos de combustibles</td>
+      <td>Cualitativa</td>
+      <td>Nominal</td>
+      <td>-</td>
+      <td>T_Com={x/x ∈ Tipo de combustible ^ lugar(x)="Estaciones de carga valido de EE.UU v Canada"}</td>
+      <td>T_Com={"BD", "CNG", "E85", "ELEC", "HY", "LNG", "LPG"}</td>
+      <td>Registro administrativo</td>
+      <td>Nominal</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Facility Type</td>
+      <td>Tipo de Estación de servicio</td>
+      <td>Cualitativa</td>
+      <td>Ordinal</td>
+      <td>-</td>
+      <td>Tip_Inst={x/x  ∈ tipo  de instalacion ^Publico v Privada (x)="Ubicacion de instalacion valido de EE.UU v  Canada"}</td>
+      <td>Tip_Inst={x/x ∈ tipo de instalacion ^ Ciudad(x)= "EE.UU v Canada ^ x ∈ dataset}</td>
+      <td>Registro administrativo</td>
+      <td>Nominal</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Status Code</td>
+      <td>Estado en operación construcción o inactivas</td>
+      <td>Cualitativa</td>
+      <td>Nominal</td>
+      <td>-</td>
+      <td>Cod_est={x/x ∈ estado de operación^lugar(x)= "estado desarrollo o inactivas en EE.UU v Cánada"}</td>
+      <td>Cod_est={"E=Operativo", "P=Construcción", "T=Temporalmente fuera servicio"}</td>
+      <td>Registro administrativo</td>
+      <td>Nominal</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Open Date</td>
+      <td>Fecha de apertura estación</td>
+      <td>Cuantitativa</td>
+      <td>-</td>
+      <td>Continua</td>
+      <td>F_Aper={x/x ∈ Fecha ^ formato (x) = "AAAA-MM-DD"}</td>
+      <td>F_Aper= [Lunes ; Domingo] U [0:00 ; 23:59]</td>
+      <td>Registro administrativo</td>
+      <td>Ordinal</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Access Days Time</td>
+      <td>Disponibilidad del servicio Horarios</td>
+      <td>Cuantitativa</td>
+      <td>-</td>
+      <td>Discreta</td>
+      <td>Hor_Ate={x/x  ∈ Horas de atencion ^ Días de atención(x)= "Lunes a Domingo" ^ Horas de atención(x)= "00:00 a 23:59"}</td>
+      <td>Hor_Ate= [Lunes ; Domingo] U [0:00 ; 23:59]</td>
+      <td>Registro administrativo</td>
+      <td>Ordinal</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>NG Vehicle Class</td>
+      <td>Clase de vehículos atendidos.</td>
+      <td>Cualitativa</td>
+      <td>Ordinal</td>
+      <td>-</td>
+      <td>Veh={x/x ∈ Clase de vehiculos ^   clase(x)= "HD v LD v  MD"}</td>
+      <td>Veh={"HD", "LD", "MD"}</td>
+      <td>Registro administrativo</td>
+      <td>Ordinal</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>ID</td>
+      <td>Identificador único</td>
+      <td>Cuantitativa</td>
+      <td>-</td>
+      <td>Discreta</td>
+      <td>ID={x/x  ∈ Z ^ Estacion de carga(x)= "identificador unico EE.UU v  Canada"}</td>
+      <td>ID={x/x  ∈ Z ^ Estacion de carga(x) =  "EE.UU v Canada ^ x ∈ dataset}</td>
+      <td>Registro administrativo</td>
+      <td>Nominal</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>ZIP</td>
+      <td>Código postal</td>
+      <td>Cuantitativa</td>
+      <td>-</td>
+      <td>Discreta</td>
+      <td>Cod={x/x ∈ código postal^ lugar(x)= "código postal valido de EE.UU v Canada"}</td>
+      <td>Cod={x/x ∈ código postal^ dirección(x)= "EE.UU v Canada ^ x ∈ dataset}</td>
+      <td>Registro postal</td>
+      <td>Nominal</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Station Name</td>
+      <td>Nombres de las estaciones en Estados Unidos o Canadá</td>
+      <td>Cualitativa</td>
+      <td>Nominal</td>
+      <td>-</td>
+      <td>N_Est={x /x ∈ Estacion de carga ^ lugar(x)="Ciudad de EE.UU v Canada"}</td>
+      <td>N_Est={x /x ∈ Estacion de carga ^ nombre estación(x)= "EE.UU v Canada" x  ∈ dataset}</td>
+      <td>Registro de instalaciones</td>
+      <td>Nominal</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Station Phone</td>
+      <td>Contacto de la estacion de carga</td>
+      <td>Cualitativa</td>
+      <td>Nominal</td>
+      <td>-</td>
+      <td>Tef={x/x  ∈ Numero de telefono ^ Formato(x)= "numero telefonico valido de EE.UU v  Canada"}</td>
+      <td>Tef={x/x  ∈ Numero de telefono ^ estacion de carga(x)="EE.UU v Canada ^ x ∈ dataset}</td>
+      <td>Registro administrativo</td>
+      <td>Nominal</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Access Detail Code</td>
+      <td>Detalles de acceso</td>
+      <td>cualitativa</td>
+      <td>Nominal</td>
+      <td>-</td>
+      <td>Cod_Det_Acc={x/x ∈ codigo de  detalle de acceso ^ acceso(x)= "condiciones de acceso valido de EE.UU v  Canada" }</td>
+      <td>Cod_Det_Acc={x/x ∈  estacion de carga ^codigo de  detalle de acceso (x) = "EE.UU v Canada ^ x ∈ dataset}</td>
+      <td>Registro administrativo</td>
+      <td>Nominal</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>NG Fill Type Code</td>
+      <td>Tipo de llenado CNG</td>
+      <td>Cualitativa</td>
+      <td>Nominal</td>
+      <td>-</td>
+      <td>Cod_LL={ x/x  ∈ Codigo de tipo de llenado  ^ abastecimiento(x)= "codigo de  llenado registrado valido de EE.UU v  Canada"}</td>
+      <td>Cod_LL={"B= Boquilla vehiculos ligeros", "Q= Boquilla vehiculos pesados", "T = Boquilla vehiculos extra pesados"}</td>
+      <td>Registro administrativo</td>
+      <td>Nominal</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Cards Accepted</td>
+      <td>Métodos de pagos aceptados</td>
+      <td>Cualitativa</td>
+      <td>Nominal</td>
+      <td>-</td>
+      <td>Met_Pag={x/x ∈ Tarjetas aceptadas^ psgo(x)= "tarjetas v metodos de acceso aceptados por la estacion de carga valido de EE.UU v  Canada" }</td>
+      <td>Met_Pag={x/x ∈ estacion de carga ^ metodo de pago(x)="EE.UU v Canada ^ x ∈ dataset}</td>
+      <td>Base de datos</td>
+      <td>Nominal</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Geocode Status</td>
+      <td>Calidad del gecodificado</td>
+      <td>Cuantitativa</td>
+      <td>-</td>
+      <td>Discreta</td>
+      <td>Est_Geo={x/x  ∈ Estado de geodificacion ^ codigo(x)=  "estado de geodificacion  registrado valido de EE.UU v  Canada"}</td>
+      <td>EG= {x/x  ∈ Estado de geodificacion ^ codigo(x)="EE.UU v Canada ^ x ∈ dataset}</td>
+      <td>Registro administrativo</td>
+      <td>Nominal</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Date Last Confirmed</td>
+      <td>Fecha esperada de apertura</td>
+      <td>Cuantitativa</td>
+      <td>-</td>
+      <td>Continua</td>
+      <td>F_Esp={x/x ∈ Fecha ^ formato (x) = "AAAA-MM-DD" ^ "HH:MM"}</td>
+      <td>F_Esp=[Lunes ; Domingo] U [0:00 ; 23:59]</td>
+      <td>Registro administrativo</td>
+      <td>Ordinal</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Updated At</td>
+      <td>Fecha actualización sistema</td>
+      <td>Cuantitativa</td>
+      <td>-</td>
+      <td>Continua</td>
+      <td>F_Act={x/x ∈ Fecha ^ formato (x) = "AAAA-MM-DD" ^ "HH:MM"}</td>
+      <td>F_Act=[Lunes ; Domingo] U [0:00 ; 23:59]</td>
+      <td>Registro administrativo</td>
+      <td>Ordinal</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>NG PSI</td>
+      <td>Presión de gas rendimiento de carga.</td>
+      <td>Cuantitativa</td>
+      <td>-</td>
+      <td>Continua</td>
+      <td>Ng={x/x ∈ Presion de gas ^ presion (x) = "ℝ⁺"}</td>
+      <td>Ng= [3000 ; 3600]</td>
+      <td>Instrumentos de presión</td>
+      <td>Razón</td>
+      <td>libras por pulgada cuadrada {psi}</td>
+    </tr>
+    <tr>
+      <td>Street Address</td>
+      <td>Ubicación física de la estación de carga</td>
+      <td>Cualitativa</td>
+      <td>Nominal</td>
+      <td>-</td>
+      <td>Dirr={x/x ∈ ubicación física ^  lugar(x)="Estaciones de carga valido de EE.UU v Canada"}</td>
+      <td>Dirr={x/x ∈ ubicación física ^  dirección(x)="EE.UU v Canada ^ x ∈ dataset}</td>
+      <td>Registro administrativo</td>
+      <td>Nominal</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Intersection Directions</td>
+      <td>Intersección cercana a la ubicación</td>
+      <td>Cualitativa</td>
+      <td>Nominal</td>
+      <td>-</td>
+      <td>Int= {x/x ∈ ubicación cercana ^  lugar(x)="Estaciones de carga valido de EE.UU v Canada"}</td>
+      <td>Dirr={x/x ∈ ubicación cercana ^  dirección(x)="EE.UU v Canada ^ x ∈ dataset}</td>
+      <td>Registro administrativo</td>
+      <td>Nominal</td>
+      <td>-</td>
+    </tr>
+  </tbody>
+</table>
+
+<script>
+  $(document).ready(function () {
+    $('.styled-table').DataTable({
+      language: {
+        url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json"
+      },
+      pageLength: 10,
+      lengthMenu: [5, 10, 20, 50, 100],
+      scrollX: true
+    });
+  });
+</script>
+
+</body>
+</html>

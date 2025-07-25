@@ -1,0 +1,42 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Tabla de Indicadores desde Excel</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: darkblue;
+        }
+        .styled-table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 14px;
+        }
+        .styled-table thead {
+            background-color: darkblue;
+            color: white;
+            font-weight: bold;
+        }
+        .styled-table th, .styled-table td {
+            border: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+        }
+        .styled-table tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .styled-table tbody tr:nth-child(odd) {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <h2>Tabla de Indicadores desde Excel</h2>
+    <table class="styled-table">
+        <thead><tr><th>nan</th><th>Rango</th><th>X</th><th>Me</th><th>Mo</th><th>sd</th><th>Cv</th><th>As</th><th>K</th><th>Outliers</th></tr></thead><tbody><tr><td> Pais "Country"</td><td>P={"EEE.UU", "Canada"}</td><td>-</td><td>-</td><td>EEUU</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr><tr><td>Estado "State"</td><td>E={x/x ∈ Estado ^ País(x) = "EE.UU v Canada" ^ x ∈ dataset}</td><td>-</td><td>-</td><td>Otros y CA</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr><tr><td> Ciudad "City"</td><td>C={x/x ∈ Ciudad ^ Estado(x) = "EE.UU v Canada" ^ x ∈ dataset}</td><td>-</td><td>-</td><td>Otros y LA</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr><tr><td>Access Code</td><td>Cod_Acc={"Público" ,  "Privada"} </td><td> -</td><td> -</td><td>Público</td><td> -</td><td> -</td><td> -</td><td> -</td><td>  -</td></tr><tr><td>Latitude</td><td>Lat={x  / x ∈  R ^ -90 ≤ x ≤ 90 ^ Pais(x) = "EE.UU v Canada ^ x ∈ dataset}</td><td>38.929</td><td>39.106</td><td>46.3476</td><td>39.10</td><td>100.45%</td><td>-0.1338</td><td>3.23</td><td>469</td></tr><tr><td>Longitude</td><td>Lon={x  / x ∈  R ^ -180 ≤ x ≤ 180 ^ Pais(x) = "EE.UU v Canada ^ x ∈ dataset}</td><td>-99873</td><td>-99.05</td><td>5</td><td>1.546</td><td>15.48</td><td>-0.558</td><td>2092</td><td>5</td></tr><tr><td>Fuel Type Code</td><td>T_Com={"BD", "CNG", "E85", "ELEC", "HY", "LNG", "LPG"}</td><td>-</td><td>-</td><td>ELEC</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr><tr><td>Facility Type</td><td>Tip_Inst={x/x ∈ tipo de instalacion ^ Ciudad(x)= "EE.UU v Canada ^ x ∈ dataset}</td><td>-</td><td>Office Building (Edificio de Oficinas)</td><td>Convenience Store ( Tienda de conveniencia)</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr><tr><td>Status Code</td><td>Cod_est={"E=Operativo", "P=Construcción", "T=Temporalmente fuera servicio"}</td><td>  -</td><td> - </td><td>E (Operativo)</td><td> -</td><td>      - </td><td>    -</td><td>    -</td><td>   -</td></tr><tr><td>Open Date</td><td>F_Aper= [Lunes ; Domingo] U [0:00 ; 23:59]</td><td>2019-01-15 00:00:00</td><td>2020-07-10 00:00:00</td><td>2021-01-27 00:00:00</td><td>1462.75</td><td>8.15%</td><td>-2.56</td><td>12.2</td><td>5728</td></tr><tr><td>Access Days Time</td><td>Hor_Ate= [Lunes ; Domingo] U [0:00 ; 23:59]</td><td>15.83</td><td>15</td><td>24 horas</td><td>6.41</td><td>0.405</td><td>0.6</td><td>-1.29</td><td>   -</td></tr><tr><td>NG Vehicle Class</td><td>Veh={"HD", "LD", "MD"}</td><td> -</td><td>HD</td><td>HD</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr><tr><td>ID</td><td>ID={x/x  ∈ Z ^ Estacion de carga(x) =  "EE.UU v Canada ^ x ∈ dataset}</td><td>148730.33</td><td>165247.5</td><td>17</td><td>54261.67</td><td>0.3648</td><td>-0.71</td><td>2.43</td><td> -</td></tr><tr><td>ZIP</td><td>Cod={x/x ∈ código postal^ dirección(x)= "EE.UU v Canada ^ x ∈ dataset}</td><td>58542.24</td><td>63104.5</td><td>94025</td><td>32614.92</td><td>0.5571</td><td>-0.3</td><td>1.59</td><td> -</td></tr><tr><td>Station Name</td><td>N_Est={x /x ∈ Estacion de carga ^ nombre estación(x)= "EE.UU v Canada" x  ∈ dataset}</td><td>-</td><td>-</td><td>Casey's General Store</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr><tr><td>Station Phone</td><td>Tef={x/x  ∈ Numero de telefono ^ estacion de carga(x)="EE.UU v Canada ^ x ∈ dataset}</td><td>-</td><td>-</td><td>--</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr><tr><td>Access Detail Code</td><td>Cod_Det_Acc={x/x ∈  estacion de carga ^codigo de  detalle de acceso (x) = "EE.UU</td><td>-</td><td>-</td><td>  Credit Card Always (Tarjeta de Crédito)</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr><tr><td>NG Fill Type Code</td><td>Cod_LL={"B= Boquilla vehiculos ligeros", "Q= Boquilla vehiculos pesados", "T = Boquilla vehiculos extra pesados"}</td><td>-</td><td>-</td><td>Q</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr><tr><td>Cards Accepted</td><td>Met_Pag={x/x ∈ estacion de carga ^ metodo de pago(x)="EE.UU v Canada ^ x ∈ dataset}</td><td>-</td><td>-</td><td> AD Debit MV ( Débito Automático )</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr><tr><td>Geocode Status</td><td>EG= {x/x  ∈ Estado de geodificacion ^ codigo(x)="EE.UU v Canada ^ x ∈ dataset}</td><td>15197.89</td><td>20010</td><td>20010</td><td>7966.71</td><td>0.5242</td><td>-1.05</td><td>2.11</td><td>   -</td></tr><tr><td>Date Last Confirmed</td><td>F_Esp=[Lunes ; Domingo] U [0:00 ; 23:59]</td><td>2022-02-14 00:00:00</td><td>2022-06-15 00:00:00</td><td>1</td><td>237.3</td><td> 1.25%</td><td>-1.49</td><td>4.51</td><td>7387</td></tr><tr><td>Updated At</td><td>F_Act=[Lunes ; Domingo] U [0:00 ; 23:59]</td><td>2022-04-26T15:36:31Z</td><td>2022-07-02T13:07:56Z</td><td>2</td><td>12991150.56</td><td>0.789%</td><td>-1.95</td><td>5.63</td><td>5347</td></tr><tr><td>NG PSI</td><td>NG= [3000 ; 3600]</td><td>50.15</td><td>49.41</td><td>4</td><td>8.98</td><td>17.9%</td><td>0.15</td><td>2.97</td><td>2</td></tr><tr><td>Street Address</td><td>Dirr={x/x ∈ ubicación física ^  dirección(x)="EE.UU v Canada ^ x ∈ dataset}</td><td>-</td><td>-</td><td>Main St</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr><tr><td>Intersection Directions</td><td>Dirr={x/x ∈ ubicación cercana ^  dirección(x)="EE.UU v Canada ^ x ∈ dataset}</td><td>-</td><td>-</td><td>I- Exit</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr></tbody></table></body></html>

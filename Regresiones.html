@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <title>UCE Estadistica G4</title> <!-- 🔶 AÑADIR TÍTULO -->
+        <link rel="stylesheet" href="style.css" />
+    </head>
+
+    <body>
+        <!-- HEADER -->
+        <header class="site-header">
+            <div class="logo-texto">
+                <img src="img/logo-universidad.png" alt="Logo Universidad" class="logo">
+                <span class="nombre-sitio">Universidad Central del Ecuador</span>
+            </div>
+            <nav class="menu-navegacion">
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="Descriptiva.html">Descriptiva</a></li>
+                    <li><a href="Inferencial.html">Inferencial</a></li>
+                    <li><a href="Regresiones.html">Regresiones</a></li>
+                    <li><a href="Machine Learning.html">Machine Learning</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main class="main-container">
+         <!------------------------------------------- Sección 1 ------------------------------------------------------>
+            <!-- Portada Estadística -->
+            <section class="seccion-1" id="portada-estadistica">
+                    <video class="fondo-seccion-1" autoplay muted loop playsinline>
+                    <source src="img/Video_Portada_Principal_5.mp4" type="video/mp4">
+                    </video>
+
+                <div class="contenido-seccion-izq">
+                    <h1>Modelos de<br> 
+                        Regresión<br> 
+                        entre Variables</h1>
+                </div>
+            </section>
+
+            <!-- MAIN -->
+            
+
+            <!-- MENÚ DE NAVEGACIÓN ENTRE SECCIONES -->
+            <nav class="menu-interno">
+                <div class="menu-contenido">
+                    <ul class="menu-izquierda">
+                        <li><a href="#seccion1">Sección 1</a></li>
+                        <li><a href="#seccion2">Sección 2</a></li>
+                    </ul>
+
+                    <img src="img/logo-facultad_Negro.png" alt="Logo del menú" class="logo-menu">
+                    <ul class="menu-derecha">
+                        <li><a href="#seccion3">Sección 3</a></li>
+                        <li><a href="#seccion4">Sección 4</a></li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!---------------------------------------------- Seccion R-1 ---------------------------------------------------------->
+            <!-- SECCIÓN REGRESION LINEAL -->
+            <section class="seccion-variable-discreta">
+                <h2>Regresión Lineal</h2>
+
+                <div class="contenedor-dos-columnas-variable">
+
+                    <!-- Columna Izquierda: tabla + botón -->
+                    <div class="columna-izquierda-variable">
+                        <div class="columna-tabla-variable">
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/Tabla_1_Resumen Depuracion_Access Day Time vs Latitude.html"class="iframe-tabla-variable"></iframe>
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/Tabla_2_Regresion Lineal y Corresalacion Pearson.html"class="iframe-tabla-variable"></iframe>
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/RD_Tabla_Access Days Time vs longitude.html"class="iframe-tabla-variable"></iframe>
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/RL_Tabla_Access Days Time vs longitude.html"class="iframe-tabla-variable"></iframe>
+
+
+
+
+                        </div>
+
+                        <!-- BOTÓN VER MÁS SECCIÓN 2 -->
+                        <div class="contenedor-boton">
+                            <a href="#modalCountry" class="boton-tooltip vermas-seccion2">Ver más</a>
+                        </div>
+
+                        <!-- MODAL SECCIÓN 2 -->
+                        <div id="modalCountry" class="modal">
+                            <div class="modal-contenido">
+                                <a href="#!" class="cerrar">&times;</a>
+                                <h3>Código R utilizado</h3>
+                                <iframe src="resultados_documentos/1_S_Variable-Nominal-Pais.html"
+                                        class="iframe-modal-codigo"></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Imágenes -->
+                    <div class="columna-derecha-variable">
+                        <div class="columna-imagen-variable">
+                            <img src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion Lineal_Access Day Time vs Latitude.png" alt="Ejemplo 1">
+                            <img src="TDF y GDF/REGRES_Graficas y tablas Variables/Access Days Time en funcion de longitude.png" alt="Ejemplo 2">
+                            <img src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion Lineal NG PSI vs Latitude.png" alt="Ejemplo 3">
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- COMENTATIO INFERIOR VARIABLE PAIS-->
+             <section class="comentario-variable">
+                    <!-- Columna izquierda con el h2 -->
+                    <div class="columna-variable-h2">
+                        <h2>Conclusión Regresión <em>Lineal</em></h2>
+                    </div>
+
+                    <!-- Columna derecha con el texto -->
+                    <div class="columna-variable-texto">
+                        <p>Existe una relación lineal positiva muy débil entre la Latitud (°) y la Duración del Acceso (horas), lo que indica que, en promedio, la ubicación geográfica presenta escasa influencia sobre el tiempo de acceso diario registrado. El modelo lineal arroja un coeficiente de correlación de Pearson de 0.0345, lo cual implica una correlación prácticamente nula entre ambas variables. Los datos analizados corresponden a valores de latitud entre 18.38° y 64.85°, y duraciones entre 0 y 24 horas. La relación identificada sugiere que, aunque existe una ligera tendencia ascendente, la Latitud no es un predictor significativo de la Duración.</p>
+
+                    </div>
+             </section>
+
+
+
+            <!---------------------------------------------- Seccion R-2 ---------------------------------------------------------->
+            <!-- SECCIÓN REGRESION POTENCIAL -->
+            <section class="seccion-variable-discreta">
+                <h2>Regresión Potencial</h2>
+
+                <div class="contenedor-dos-columnas-variable">
+
+                    <!-- Columna Izquierda: tabla + botón -->
+                    <div class="columna-izquierda-variable">
+                        <div class="columna-tabla-variable">
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/RPT_Tabla 1.html" class="iframe-tabla-variable"></iframe>
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/RPT_Tabla_2.html" class="iframe-tabla-variable"></iframe>
+                        </div>
+
+                        <!-- BOTÓN VER MÁS SECCIÓN 2 -->
+                        <div class="contenedor-boton">
+                            <a href="#modalCountry" class="boton-tooltip vermas-seccion2">Ver más</a>
+                        </div>
+
+                        <!-- MODAL SECCIÓN 2 -->
+                        <div id="modalCountry" class="modal">
+                            <div class="modal-contenido">
+                                <a href="#!" class="cerrar">&times;</a>
+                                <h3>Código R utilizado</h3>
+                                <iframe src="resultados_documentos/1_S_Variable-Nominal-Pais.html"
+                                        class="iframe-modal-codigo"></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Imágenes -->
+                    <div class="columna-derecha-variable">
+                        <div class="columna-imagen-variable">
+                            <img src="TDF y GDF/REGRES_Graficas y tablas Variables/RP_Access Days Time vs NG PSI.png" alt="Ejemplo 1">
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- COMENTATIO INFERIOR VARIABLE PAIS-->
+             <section class="comentario-variable">
+                    <!-- Columna izquierda con el h2 -->
+                    <div class="columna-variable-h2">
+                        <h2>Conclusión Regresión <em>Potencial</em></h2>
+                    </div>
+
+                    <!-- Columna derecha con el texto -->
+                    <div class="columna-variable-texto">
+                        <p>Existe una relación lineal positiva muy débil entre la Latitud (°) y la Duración del Acceso (horas), lo que indica que, en promedio, la ubicación geográfica presenta escasa influencia sobre el tiempo de acceso diario registrado. El modelo lineal arroja un coeficiente de correlación de Pearson de 0.0345, lo cual implica una correlación prácticamente nula entre ambas variables. Los datos analizados corresponden a valores de latitud entre 18.38° y 64.85°, y duraciones entre 0 y 24 horas. La relación identificada sugiere que, aunque existe una ligera tendencia ascendente, la Latitud no es un predictor significativo de la Duración.</p>
+
+                    </div>
+             </section>
+
+            <!---------------------------------------------- Seccion R-2 ---------------------------------------------------------->
+            <!-- SECCIÓN REGRESION EXPONENCIAL -->
+            <section class="seccion-variable-discreta">
+                <h2>Regresión Exponencial</h2>
+
+                <div class="contenedor-dos-columnas-variable">
+
+                    <!-- Columna Izquierda: tabla + botón -->
+                    <div class="columna-izquierda-variable">
+                        <div class="columna-tabla-variable">
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/REXP_TABLA_1.html" class="iframe-tabla-variable"></iframe>
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/REXP_TABLA_2.html" class="iframe-tabla-variable"></iframe>
+                        </div>
+
+                        <!-- BOTÓN VER MÁS SECCIÓN 2 -->
+                        <div class="contenedor-boton">
+                            <a href="#modalCountry" class="boton-tooltip vermas-seccion2">Ver más</a>
+                        </div>
+
+                        <!-- MODAL SECCIÓN 2 -->
+                        <div id="modalCountry" class="modal">
+                            <div class="modal-contenido">
+                                <a href="#!" class="cerrar">&times;</a>
+                                <h3>Código R utilizado</h3>
+                                <iframe src="resultados_documentos/1_S_Variable-Nominal-Pais.html"
+                                        class="iframe-modal-codigo"></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Imágenes -->
+                    <div class="columna-derecha-variable">
+                        <div class="columna-imagen-variable">
+                            <img src="TDF y GDF/REGRES_Graficas y tablas Variables/REXP_GRAFICA_1.png" alt="Ejemplo 1">
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- COMENTATIO INFERIOR VARIABLE PAIS-->
+             <section class="comentario-variable">
+                    <!-- Columna izquierda con el h2 -->
+                    <div class="columna-variable-h2">
+                        <h2>Conclusión Regresión <em>Exponencial</em></h2>
+                    </div>
+
+                    <!-- Columna derecha con el texto -->
+                    <div class="columna-variable-texto">
+                        <p>Entre la presión de gas natural (NG.PSI) y la duración del acceso en días existe una relación exponencial. El modelo obtuvo un coeficiente de correlación de Pearson de -0.5748, lo que indica una relación negativa moderada entre las variables. Es decir, a mayor presión de gas natural, la duración del acceso tiende a disminuir, lo cual puede estar asociado a condiciones operativas más eficientes en instalaciones con mayor presión. Por ejemplo, para una presión de 3,500 PSI, el modelo estimaría una duración de acceso menor que en presiones cercanas a 3,000 PSI, lo cual puede ser relevante para decisiones logísticas en el manejo de estaciones con suministro a alta presión.</p>
+
+                    </div>
+             </section>
+
+            <!---------------------------------------------- Seccion R-2 ---------------------------------------------------------->
+            <!-- SECCIÓN REGRESION LOGARITMICA -->
+            <section class="seccion-variable-discreta">
+                <h2>Regresión Logarítmica</h2>
+
+                <div class="contenedor-dos-columnas-variable">
+
+                    <!-- Columna Izquierda: tabla + botón -->
+                    <div class="columna-izquierda-variable">
+                        <div class="columna-tabla-variable">
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/RLG_Tabla_1_Access days time vs latitude.html" class="iframe-tabla-variable"></iframe>
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/RLG_Tabla_2_Access days time vs latitude.html" class="iframe-tabla-variable"></iframe>
+                        </div>
+
+                        <!-- BOTÓN VER MÁS SECCIÓN 2 -->
+                        <div class="contenedor-boton">
+                            <a href="#modalCountry" class="boton-tooltip vermas-seccion2">Ver más</a>
+                        </div>
+
+                        <!-- MODAL SECCIÓN 2 -->
+                        <div id="modalCountry" class="modal">
+                            <div class="modal-contenido">
+                                <a href="#!" class="cerrar">&times;</a>
+                                <h3>Código R utilizado</h3>
+                                <iframe src="resultados_documentos/1_S_Variable-Nominal-Pais.html"
+                                        class="iframe-modal-codigo"></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Imágenes -->
+                    <div class="columna-derecha-variable">
+                        <div class="columna-imagen-variable">
+                            <img src="TDF y GDF/REGRES_Graficas y tablas Variables/RLG_Access days time vs latitude.png" alt="Ejemplo 1">
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- COMENTATIO INFERIOR VARIABLE PAIS-->
+             <section class="comentario-variable">
+                    <!-- Columna izquierda con el h2 -->
+                    <div class="columna-variable-h2">
+                        <h2>Conclusión Regresión <em>Logarítmica</em></h2>
+                    </div>
+
+                    <!-- Columna derecha con el texto -->
+                    <div class="columna-variable-texto">
+                        <p>La relación entre log(Latitude) y la Duración del Acceso (horas por día) se ajusta mejor a un modelo lineal simple,con un coeficiente de correlación de Pearson de 0.0348, lo que indica que el modelo explica una proporción muy baja de la variabilidad en la duración del acceso a partir de la latitud .A pesar del ajuste lineal, la correlación débil sugiere que la latitud tiene un impacto mínimo sobre la duración de horas por día..</p>
+
+                    </div>
+             </section>
+
+            <!---------------------------------------------- Seccion R-2 ---------------------------------------------------------->
+            <!-- SECCIÓN REGRESION POLINOMICA -->
+            <section class="seccion-variable-discreta">
+                <h2>Regresión Polinómica</h2>
+
+                <div class="contenedor-dos-columnas-variable">
+
+                    <!-- Columna Izquierda: tabla + botón -->
+                    <div class="columna-izquierda-variable">
+                        <div class="columna-tabla-variable">
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/RPOLI_TABLA_1.html" class="iframe-tabla-variable"></iframe>
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/RPOLI_TABLA_2.html" class="iframe-tabla-variable"></iframe>
+                        </div>
+
+                        <!-- BOTÓN VER MÁS SECCIÓN 2 -->
+                        <div class="contenedor-boton">
+                            <a href="#modalCountry" class="boton-tooltip vermas-seccion2">Ver más</a>
+                        </div>
+
+                        <!-- MODAL SECCIÓN 2 -->
+                        <div id="modalCountry" class="modal">
+                            <div class="modal-contenido">
+                                <a href="#!" class="cerrar">&times;</a>
+                                <h3>Código R utilizado</h3>
+                                <iframe src="resultados_documentos/1_S_Variable-Nominal-Pais.html"
+                                        class="iframe-modal-codigo"></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Imágenes -->
+                    <div class="columna-derecha-variable">
+                        <div class="columna-imagen-variable">
+                            <img src="TDF y GDF/REGRES_Graficas y tablas Variables/RPOLI_GRAFICA 1.png" alt="Ejemplo 1">
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- COMENTATIO INFERIOR VARIABLE PAIS-->
+             <section class="comentario-variable">
+                    <!-- Columna izquierda con el h2 -->
+                    <div class="columna-variable-h2">
+                        <h2>Conclusión Regresión <em>Polinómica</em></h2>
+                    </div>
+
+                    <!-- Columna derecha con el texto -->
+                    <div class="columna-variable-texto">
+                        <p>Existe una relación lineal positiva muy débil entre la Latitud (°) y la Duración del Acceso (horas), lo que indica que, en promedio, la ubicación geográfica presenta escasa influencia sobre el tiempo de acceso diario registrado. El modelo lineal arroja un coeficiente de correlación de Pearson de 0.0345, lo cual implica una correlación prácticamente nula entre ambas variables. Los datos analizados corresponden a valores de latitud entre 18.38° y 64.85°, y duraciones entre 0 y 24 horas. La relación identificada sugiere que, aunque existe una ligera tendencia ascendente, la Latitud no es un predictor significativo de la Duración.</p>
+
+                    </div>
+             </section>
+
+            <!---------------------------------------------- Seccion R-2 ---------------------------------------------------------->
+            <!-- SECCIÓN REGRESION Multiple -->
+            <section class="seccion-variable-discreta">
+                <h2>Regresión Multiple</h2>
+
+                <div class="contenedor-dos-columnas-variable">
+
+                    <!-- Columna Izquierda: tabla + botón -->
+                    <div class="columna-izquierda-variable">
+                        <div class="columna-tabla-variable">
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/RMUL_TABLA_1.html" class="iframe-tabla-variable"></iframe>
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/RMUL_TABLA_2.html" class="iframe-tabla-variable"></iframe>
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/RMUL_TABLA_3.html" class="iframe-tabla-variable"></iframe>
+
+                        
+                        
+                        </div>
+
+                        <!-- BOTÓN VER MÁS SECCIÓN 2 -->
+                        <div class="contenedor-boton">
+                            <a href="#modalCountry" class="boton-tooltip vermas-seccion2">Ver más</a>
+                        </div>
+
+                        <!-- MODAL SECCIÓN 2 -->
+                        <div id="modalCountry" class="modal">
+                            <div class="modal-contenido">
+                                <a href="#!" class="cerrar">&times;</a>
+                                <h3>Código R utilizado</h3>
+                                <iframe src="resultados_documentos/1_S_Variable-Nominal-Pais.html"
+                                        class="iframe-modal-codigo"></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Imágenes -->
+                    <div class="columna-derecha-variable">
+                        <div class="columna-tabla-variable">
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/grafico_1_regresion multiple_rev_1.html" class="iframe-tabla-variable"></iframe>
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/RMUL_GRAFICO AJUSTADO_2.html" class="iframe-tabla-variable"></iframe>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- COMENTATIO INFERIOR VARIABLE PAIS-->
+             <section class="comentario-variable">
+                    <!-- Columna izquierda con el h2 -->
+                    <div class="columna-variable-h2">
+                        <h2>Conclusión Regresión <em>Múltiple</em></h2>
+                    </div>
+
+                    <!-- Columna derecha con el texto -->
+                    <div class="columna-variable-texto">
+                        <p>El modelo de regresión múltiple aplicado demuestra que la duración operativa de un establecimiento (medida en Access Days Time) está influenciada en cierta medida por su ubicación geográfica, particularmente la latitud. Este análisis permite concluir que la ubicación geográfica, en términos de latitud, es un predictor útil para explicar diferencias en el tiempo de operación de los establecimientos.</p>
+
+                    </div>
+             </section>
+
+            <!---------------------------------------------- Seccion R-2 ---------------------------------------------------------->
+            <!-- SECCIÓN REGRESION Multiple -->
+            <section class="seccion-variable-discreta">
+                <h2>Regresión Multiple</h2>
+
+                <div class="contenedor-dos-columnas-variable">
+
+                    <!-- Columna Izquierda: tabla + botón -->
+                    <div class="columna-izquierda-variable">
+                        <div class="columna-tabla-variable">
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/RMUL_2_TABLA_1.html" class="iframe-tabla-variable"></iframe>
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/RMUL_2_TABLA_2.html" class="iframe-tabla-variable"></iframe>
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/RMUL_2_TABLA_3.html" class="iframe-tabla-variable"></iframe>
+
+                        
+                        
+                        </div>
+
+                        <!-- BOTÓN VER MÁS SECCIÓN 2 -->
+                        <div class="contenedor-boton">
+                            <a href="#modalCountry" class="boton-tooltip vermas-seccion2">Ver más</a>
+                        </div>
+
+                        <!-- MODAL SECCIÓN 2 -->
+                        <div id="modalCountry" class="modal">
+                            <div class="modal-contenido">
+                                <a href="#!" class="cerrar">&times;</a>
+                                <h3>Código R utilizado</h3>
+                                <iframe src="resultados_documentos/1_S_Variable-Nominal-Pais.html"
+                                        class="iframe-modal-codigo"></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Imágenes -->
+                    <div class="columna-derecha-variable">
+                        <div class="columna-tabla-variable">
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/RMUL_2_GRAFICA_1.html" class="iframe-tabla-variable"></iframe>
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/RMUL_2_GRAFICA_2.html" class="iframe-tabla-variable"></iframe>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- COMENTATIO INFERIOR VARIABLE PAIS-->
+             <section class="comentario-variable">
+                    <!-- Columna izquierda con el h2 -->
+                    <div class="columna-variable-h2">
+                        <h2>Conclusión Regresión <em>Múltiple</em></h2>
+                    </div>
+
+                    <!-- Columna derecha con el texto -->
+                    <div class="columna-variable-texto">
+                        <p>El modelo de regresión múltiple demuestra que la ubicación geográfica tiene una influencia significativa, aunque moderada, en el tiempo que un establecimiento ha permanecido en operación (Open_Days). Este tipo de análisis es particularmente útil para identificar patrones espaciales asociados con la antigüedad empresarial, Cada coeficiente estimado en el modelo representa el cambio esperado en los días de operación (Open_Days) ante una variación de una unidad en la variable geográfica correspondiente, manteniendo constante la otra. Por ejemplo, un coeficiente negativo para Latitude implica que a mayor latitud, se espera una menor antigüedad del establecimiento, asumiendo una misma longitud.</p>
+
+                    </div>
+             </section>
+
+
+        </main>
+
+        <footer>
+            <div class="footer-content">
+                <img src="img/logo-facultad_Negro.png" alt="Logo UCE" class="footer-logo">
+                <div class="footer-copy">
+                    &copy; 2025 Universidad Central del Ecuador. Todos los derechos reservados.<br>
+                    Proyecto académico G4 Estadística.
+                </div>
+            </div>
+        </footer>
+    </body>
+</html>

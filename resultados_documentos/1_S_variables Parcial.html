@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Tabla de Variables Convertida</title>
+    <style>
+        body {
+            font-family: 'Segoe UI';
+            margin: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: darkblue;
+        }
+        .styled-table {
+            border-collapse: collapse;
+            width: 100%;
+            font-family: 'Segoe UI';
+            font-size: 14px;
+        }
+        .styled-table thead {
+            background-color: darkblue;
+            color: white;
+            font-weight: bold;
+        }
+        .styled-table th, .styled-table td {
+            border: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+        }
+        .styled-table tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .styled-table tbody tr:nth-child(odd) {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <table class="dataframe styled-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>NOMBRE DE LA VARIABLE</th>
+      <th>DESCRIPCIÓN</th>
+      <th>TIPO</th>
+      <th>SUPTIPO 1</th>
+      <th>SUPTIPO 2</th>
+      <th>DOMINIO</th>
+      <th>RANGO</th>
+      <th>INSTRUMENTO DE MEDIDA</th>
+      <th>ESCALA DE MEDIDA</th>
+      <th>UNIDAD DE MEDIDA</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Country</td>
+      <td>Dónde se ubica la estación de carga en Estados Unidos o Canadá</td>
+      <td>Cualitativa</td>
+      <td>Nominal</td>
+      <td>NaN</td>
+      <td>P={x/x  ∈  País ^ Lugar(x)="Mundo"}</td>
+      <td>P={"EEE.UU", "Canada"}</td>
+      <td>Registro administrativo</td>
+      <td>Nominal</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>State</td>
+      <td>Estado o provincia donde se ubica la estación de carga</td>
+      <td>Cualitativa</td>
+      <td>Nominal</td>
+      <td>NaN</td>
+      <td>E={x/x  ∈  Estado ^ Lugar(x)="País"}</td>
+      <td>E={x/x ∈ Estado ^ País(x) = "EE.UU v Canada" ^ x ∈ dataset}</td>
+      <td>Registro administrativo</td>
+      <td>Nominal</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>City</td>
+      <td>Ciudad en donde esta ubica la estación de carga</td>
+      <td>Cualitativa</td>
+      <td>Nominal</td>
+      <td>NaN</td>
+      <td>C={x/x ∈ Ciudad ^ Lugar(x)="Pais"}</td>
+      <td>C={x/x ∈ Ciudad ^ Estado(x) = "EE.UU v Canada" ^ x ∈ dataset}</td>
+      <td>Registro administrativo</td>
+      <td>Nominal</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Latitude</td>
+      <td>Coordena geografica para ubicacion precisa de las estaciones de carga</td>
+      <td>Cuantitativa</td>
+      <td>NaN</td>
+      <td>Continua</td>
+      <td>Lat={x  / x ∈  R ^ -90 (sur) ≤ x ≤ 90(norte). }</td>
+      <td>Lat={x  / x ∈  R ^ -90 ≤ x ≤ 90 ^ Pais(x) = "EE.UU v Canada ^ x ∈ dataset}</td>
+      <td>GPS</td>
+      <td>Intervalo</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Fuel Type Code</td>
+      <td>Tipos de combustibles</td>
+      <td>Cualitativa</td>
+      <td>Nominal</td>
+      <td>NaN</td>
+      <td>T_Com={x/x ∈ Tipo de combustible ^ lugar(x)="Estaciones de carga valido de EE.UU v Canada"}</td>
+      <td>T_Com={"BD", "CNG", "E85", "ELEC", "HY", "LNG", "LPG"}</td>
+      <td>Registro administrativo</td>
+      <td>Nominal</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Facility Type</td>
+      <td>Tipo de Estación de servicio</td>
+      <td>Cualitativa</td>
+      <td>Ordinal</td>
+      <td>NaN</td>
+      <td>Tip_Inst={x/x  ∈ tipo  de instalacion ^Publico v Privada (x)="Ubicacion de instalacion valido de EE.UU v  Canada"}</td>
+      <td>Tip_Inst={x/x ∈ tipo de instalacion ^ Ciudad(x)= "EE.UU v Canada ^ x ∈ dataset}</td>
+      <td>Registro administrativo</td>
+      <td>Nominal</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Open Date</td>
+      <td>Fecha de apertura estación</td>
+      <td>Cuantitativa</td>
+      <td>NaN</td>
+      <td>Continua</td>
+      <td>F_Aper={x/x ∈ Fecha ^ formato (x) = "AAAA-MM-DD"}</td>
+      <td>F_Aper= [Lunes ; Domingo] U [0:00 ; 23:59]</td>
+      <td>Registro administrativo</td>
+      <td>Ordinal</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Access Days Time</td>
+      <td>Disponibilidad del servicio Horarios</td>
+      <td>Cuantitativa</td>
+      <td>NaN</td>
+      <td>Discreta</td>
+      <td>Hor_Ate={x/x  ∈ Horas de atencion ^ Días de atención(x)= "Lunes a Domingo" ^ Horas de atención(x)= "00:00 a 23:59"}</td>
+      <td>Hor_Ate= [Lunes ; Domingo] U [0:00 ; 23:59]</td>
+      <td>Registro administrativo</td>
+      <td>Ordinal</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>NG Vehicle Class</td>
+      <td>Clase de vehículos atendidos.</td>
+      <td>Cualitativa</td>
+      <td>Ordinal</td>
+      <td>NaN</td>
+      <td>Veh={x/x ∈ Clase de vehiculos ^   clase(x)= "HD v LD v  MD"}</td>
+      <td>Veh={"HD", "LD", "MD"}</td>
+      <td>Registro administrativo</td>
+      <td>Ordinal</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>ZIP</td>
+      <td>Código postal</td>
+      <td>Cuantitativa</td>
+      <td>NaN</td>
+      <td>Discreta</td>
+      <td>Cod={x/x ∈ código postal^ lugar(x)= "código postal valido de EE.UU v Canada"}</td>
+      <td>Cod={x/x ∈ código postal^ dirección(x)= "EE.UU v Canada ^ x ∈ dataset}</td>
+      <td>Registro postal</td>
+      <td>Nominal</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</body>
+</html>

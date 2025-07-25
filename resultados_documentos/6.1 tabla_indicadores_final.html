@@ -1,0 +1,51 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #ffffff;
+            padding: 20px;
+        }
+        table.dataTable thead th {
+            background-color: darkblue;
+            color: white;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            border: 1px solid #ddd;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        tr:nth-child(even) {background-color: #f9f9f9;}
+    </style>
+</head>
+<body>
+
+
+<table id="tabla" class="display">
+    <thead>
+        <tr><th>Variable</th><th>Rango</th><th>Tendencia_Central_Media</th><th>Tendencia_Central_Mediana</th><th>Tendencia_Central_Moda</th><th>Dispersión_SD</th><th>Dispersión_CV</th><th>Forma_Asimetría</th><th>Forma_Curtosis</th><th>Outliers</th></tr>
+    </thead>
+    <tbody>
+        <tr><td> Pais "Country"</td><td>P={"EEE.UU", "Canada"}</td><td>-</td><td>-</td><td>"EEUU"</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr><tr><td>Estado "State"</td><td>E={x/x ∈ Estado ^ País(x) = "EE.UU v Canada" ^ x ∈ dataset}</td><td>-</td><td>-</td><td>"Otros y CA"</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr><tr><td> Ciudad "City"</td><td>C={x/x ∈ Ciudad ^ Estado(x) = "EE.UU v Canada" ^ x ∈ dataset}</td><td>-</td><td>-</td><td>"Otros y LA"</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr><tr><td>Tipo de Estación de servicio "Facility Type"</td><td>Tip_Inst={x/x ∈ tipo de instalacion ^ Ciudad(x)= "EE.UU v Canada ^ x ∈ dataset}</td><td>-</td><td>"NA"</td><td>"NA"</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr><tr><td>Clase de vehiculos atendidos "NG Vehicle Class"</td><td>Veh={"HD", "LD", "MD"}</td><td>-</td><td>"Na"</td><td>"NA"</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr><tr><td>Latitud "Latitude"</td><td>Lat={x  / x ∈  R ^ -90 ≤ x ≤ 90 ^ Pais(x) = "EE.UU v Canada ^ x ∈ dataset}</td><td>38.929</td><td>39.106</td><td>46.348</td><td>5.628</td><td>0.3168</td><td>-0.133</td><td>0.1445</td><td>469</td></tr><tr><td>Disponibilidad de servicio Horario "Access Days Time"</td><td>Hor_Ate= [Lunes ; Domingo] U [0:00 ; 23:59]</td><td>"15.47"</td><td>"14.5"</td><td>"24 horas"</td><td>6.28</td><td>0.3938</td><td>0.138</td><td>0.406</td><td>nan</td></tr>
+    </tbody>
+</table>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#tabla').DataTable();
+    });
+</script>
+
+</body>
+</html>

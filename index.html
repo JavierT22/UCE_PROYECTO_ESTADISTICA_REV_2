@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <title>UCE Estadistica G4</title> <!-- 🔶 AÑADIR TÍTULO -->
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    
+       
+    
+    <body>
+        <!-- HEADER -->
+        <header class="site-header">
+            <div class="logo-texto">
+                <img src="img/logo-universidad.png" alt="Logo del sitio" class="logo">
+                <span class="nombre-sitio">Universidad Central del Ecuador </span>
+            </div>
+            <nav class="menu-navegacion">
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="Descriptiva.html">Descriptiva</a></li>
+                    <li><a href="inferencial.html">Inferencial</a></li>
+                    <li><a href="Regresiones.html">Regresiones</a></li>
+                    <li><a href="Machine Learning.html">Machine Learning</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <!-- MAIN -->
+        <main class="main-container">
+
+            <!-- Sección 1 -->
+            <section class="seccion-1" id="seccion1">
+                <video class="fondo-seccion-1" autoplay muted loop playsinline>
+                    <source src="img/Video_Portada_Principal_1.mp4" type="video/mp4">
+                </video>
+                <div class="contenido-seccion">
+                    <h1>ESTACIONES DE CARGA</h1>
+                        <p>Hacia una descarbonización sostenible y equitativa en EE.UU y Canadá para 2035.</p>
+                </div>
+            </section>
+
+            <!-- MENÚ DE NAVEGACIÓN ENTRE SECCIONES -->
+            <nav class="menu-interno">
+                <div class="menu-contenido">
+                    <ul class="menu-izquierda">
+                        <li><a href="#seccion1">Sección 1</a></li>
+                        <li><a href="#seccion2">Sección 2</a></li>
+                    </ul>
+
+                    <img src="img/logo-facultad_Negro.png" alt="Logo del menú" class="logo-menu">
+                   
+                    <ul class="menu-derecha">
+                        <li><a href="#seccion3">Sección 3</a></li>
+                        <li><a href="#seccion4">Sección 4</a></li>
+                    </ul>
+                </div>
+        
+            </nav>
+            <!-- Sección 2 -->
+            <section class="seccion-2">
+                <div class="contenedor-col">
+                    <div class="columna-1">
+                        <h2>Nuestro Equipo.</h2>
+                        <p>Somos estudiantes de segundo semestre de Ingeniería en Petróleos 
+                            en la <strong>Universidad Central del Ecuador</strong>. Nuestro proyecto se enfoca 
+                            en el análisis estadístico de datos sobre las estaciones de carga y 
+                            la descarbonización del transporte en Estados Unidos y Canadá. 
+                        </p>
+                        <!-- BOTÓN VER MÁS SECCIÓN 2 -->
+                        <div class="contenedor-boton">
+                            <a href="#modalCountry" class="boton-tooltip vermas-seccion2">Ver más</a>
+                        </div>
+                        <!-- MODAL SECCIÓN 2 -->
+                        <div id="modalCountry" class="modal">
+                            <div class="modal-contenido">
+                            <a href="#!" class="cerrar">&times;</a> <!-- IMPORTANTE PARA CERRAR VENTANA EMERGENTE -->
+                            <h3>Código R utilizado</h3>
+                            <iframe src="resultados_documentos/resultados_documentos/CV_Nuestro Equipo.pdf" class="iframe-modal-codigo"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="columna-2">
+                        <h2>Introducción.</h2>
+                        <h2>Hacia una movilidad limpia y justa.</h2>
+                        <p>Estados Unidos y Canadá enfrentan un desafío en su transición 
+                            hacia un transporte sin emisiones: la infraestructura de carga 
+                            no avanza al ritmo del crecimiento de los vehículos eléctricos (EVs). 
+                            Este proyecto analiza cómo las ciudades de ambos países pueden integrar 
+                            estaciones de carga eléctricas y de combustibles alternativos. 
+                            Los datos utilizados provienen de la plataforma Kaggle, lo que permite 
+                            un análisis basado en información real.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección 3 -->
+            <section class="seccion-3">
+            <div class="contenedor-col">
+
+                <!-- COLUMNA 1: Solo imagen -->
+                <div class="columna-1">
+                    <img src="img/estacion-electrica_blanco.png" alt="Descripción de la imagen" style="max-width: 100%; height: auto;">
+                </div>
+
+                <!-- COLUMNA 2: Texto completo -->
+                <div class="columna-2">                
+                    <h2>Planteamiento del Problema</h2>
+                    <p>
+                        El análisis de la descarbonización del transporte es esencial 
+                        para evaluar la eficiencia operativa y la sostenibilidad. 
+                        A través del análisis estadístico, se examinan los datos recopilados 
+                        hasta el año 2022, transformando esta información en insumos relevantes 
+                        para el estudio de la descarbonización.
+                    </p>
+                </div>
+
+            </div>
+            </section>
+
+            <div id="modal1" class="modal">...</div>
+            <!-- Sección 4 -->
+            <section class="seccion-4">
+                <div class="contenedor-col">
+                    <!-- Columna 1: 4 filas con imagen + texto -->
+                    <div class="columna-1">
+                        <div class="fila-item">
+                            <img src="img/objetivo-general.svg" alt="Infraestructura" />
+                            <h3>Objetivo General</h3>
+                            <p><strong>Aplicar herramientas estadísticas</strong> y de Machine Learning para <strong>analizar</strong> el desarrollo de <strong>infraestructura de carga sostenible</strong> y equitativa en EE. UU. y Canadá para el al año 2035, mediante <strong>herramientas</strong> computacionales.</p>
+                        </div>
+                        <div class="fila-item">
+                            <img src="img/objetivo-especifico-1.svg" alt="Ciudades sostenibles" />
+                            <h3>Objetivo Específico 1</h3>
+                            <p><strong>Conocer la situación actual</strong> de la infraestructura de carga para vehículos eléctricos en EE. UU. y Canadá, mediante el <strong>análisis</strong> de medidas estadísticas, que nos permitan <strong>identificar</strong> brechas de acceso y distribución.</p>
+                        </div>
+                        <div class="fila-item">
+                            <img src="img/objetivo-especifico-2.svg" alt="Políticas públicas" />
+                            <h3>Objetivo Específico 2</h3>
+                            <p>Emplear un <strong>modelo de probabilidad</strong> para establecer <strong>conclusiones</strong> sobre el acceso y distribución de infraestructura de carga a partir del <strong>análisis de datos</strong>, que nos facilite una transición equitativa hacia el <strong>transporte descarbonizado</strong> al año 2035.</p>
+                        </div>
+                        <div class="fila-item">
+                            <img src="img/objetivo-especifico-3.svg" alt="Políticas públicas" />
+                            <h3>Objetivo Específico 3</h3>
+                            <p>Analizar la <strong>relación</strong> entre variables con el propósito de generar <strong>estimaciones</strong></p>
+                        </div>
+
+                            <!-- Botón Sección 4 -->
+                            <a href="#modalObjetivo3" class="boton-tooltip vermas-seccion4">Ver más</a>
+
+                            <!-- Modal Sección 4 -->
+                            <div id="modalObjetivo3" class="modal">
+                                <div class="modal-contenido">
+                                    <a href="#!" class="cerrar">&times;</a>
+                                    <h3>Detalle Objetivo Específico 3</h3>
+                                    <iframe src="resultados_documentos/Electric & Alternative Fuel Charge EE.UU Canada_Actualizacion_REV_3.pdf" class="iframe-modal-codigo"></iframe>
+                                </div>
+                            </div>
+                    </div>
+                    <!-- Columna 2: iframe (ejemplo de video, mapa, etc.) -->
+                    <div class="columna-2">
+                        <div class="iframe-overlay"></div>
+                        <div class="iframe-container">
+                            <iframe src="Qgis Web/qgis2web_2025_06_08-09_07_46_312960/index.html"></iframe>
+                        </div>
+                    </div>
+                    
+                </div>
+        </section>
+
+        </main>
+
+        <footer>
+            <div class="footer-content">
+                <img src="img/logo-facultad_Negro.png" alt="Logo UCE" class="footer-logo">
+                <div class="footer-copy">
+                    &copy; 2025 Universidad Central del Ecuador. Todos los derechos reservados.<br>
+                    Proyecto académico G4 Estadística.
+                </div>
+            </div>
+        </footer>
+    </body>
+</html>

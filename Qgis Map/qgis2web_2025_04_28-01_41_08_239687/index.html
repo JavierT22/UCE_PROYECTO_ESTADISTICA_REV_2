@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
+        <link rel="stylesheet" href="css/qgis2web.css">
+        <link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/L.Control.Layers.Tree.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="data/StateDensityEEUU_1.js"></script>
+        <script src="data/StateDensityCanada_2.js"></script>
+        <script src="data/ElectricAlternativeFuelChargingStations2023_REV_1_3.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+            highlightLayer.openPopup();
+        }
+        var map = L.map('map', {
+            zoomControl:false, maxZoom:28, minZoom:1
+        }).fitBounds([[-71.16237960270462,133.88978994621087],[81.09731279127186,146.02661583834677]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        // remove popup's row if "visible-with-data"
+        function removeEmptyRowsFromPopupContent(content, feature) {
+         var tempDiv = document.createElement('div');
+         tempDiv.innerHTML = content;
+         var rows = tempDiv.querySelectorAll('tr');
+         for (var i = 0; i < rows.length; i++) {
+             var td = rows[i].querySelector('td.visible-with-data');
+             var key = td ? td.id : '';
+             if (td && td.classList.contains('visible-with-data') && feature.properties[key] == null) {
+                 rows[i].parentNode.removeChild(rows[i]);
+             }
+         }
+         return tempDiv.innerHTML;
+        }
+        // add class to format popup if it contains media
+		function addClassToPopupIfMedia(content, popup) {
+			var tempDiv = document.createElement('div');
+			tempDiv.innerHTML = content;
+			if (tempDiv.querySelector('td img')) {
+				popup._contentNode.classList.add('media');
+					// Delay to force the redraw
+					setTimeout(function() {
+						popup.update();
+					}, 10);
+			} else {
+				popup._contentNode.classList.remove('media');
+			}
+		}
+        var zoomControl = L.control.zoom({
+            position: 'topleft'
+        }).addTo(map);
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_OpenStreetMap_0');
+        map.getPane('pane_OpenStreetMap_0').style.zIndex = 400;
+        var layer_OpenStreetMap_0 = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            pane: 'pane_OpenStreetMap_0',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 19
+        });
+        layer_OpenStreetMap_0;
+        map.addLayer(layer_OpenStreetMap_0);
+        function pop_StateDensityEEUU_1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['STATEFP'] !== null ? autolinker.link(String(feature.properties['STATEFP']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['STATENS'] !== null ? autolinker.link(String(feature.properties['STATENS']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['AFFGEOID'] !== null ? autolinker.link(String(feature.properties['AFFGEOID']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['GEOID'] !== null ? autolinker.link(String(feature.properties['GEOID']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['STUSPS'] !== null ? autolinker.link(String(feature.properties['STUSPS']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['NAME'] !== null ? autolinker.link(String(feature.properties['NAME']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['LSAD'] !== null ? autolinker.link(String(feature.properties['LSAD']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ALAND'] !== null ? autolinker.link(String(feature.properties['ALAND']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['AWATER'] !== null ? autolinker.link(String(feature.properties['AWATER']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Country_count'] !== null ? autolinker.link(String(feature.properties['Country_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Fuel Type_count'] !== null ? autolinker.link(String(feature.properties['Fuel Type_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Station Na_count'] !== null ? autolinker.link(String(feature.properties['Station Na_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Street Add_count'] !== null ? autolinker.link(String(feature.properties['Street Add_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Intersecti_count'] !== null ? autolinker.link(String(feature.properties['Intersecti_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['City_count'] !== null ? autolinker.link(String(feature.properties['City_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['State_count'] !== null ? autolinker.link(String(feature.properties['State_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ZIP_count'] !== null ? autolinker.link(String(feature.properties['ZIP_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Station Ph_count'] !== null ? autolinker.link(String(feature.properties['Station Ph_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Status Cod_count'] !== null ? autolinker.link(String(feature.properties['Status Cod_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Expected D_count'] !== null ? autolinker.link(String(feature.properties['Expected D_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Access Cod_count'] !== null ? autolinker.link(String(feature.properties['Access Cod_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Access Det_count'] !== null ? autolinker.link(String(feature.properties['Access Det_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Facility T_count'] !== null ? autolinker.link(String(feature.properties['Facility T_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Access Day_count'] !== null ? autolinker.link(String(feature.properties['Access Day_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Cards Acce_count'] !== null ? autolinker.link(String(feature.properties['Cards Acce_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['NG Fill Ty_count'] !== null ? autolinker.link(String(feature.properties['NG Fill Ty_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['NG PSI_count'] !== null ? autolinker.link(String(feature.properties['NG PSI_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['field_19_count'] !== null ? autolinker.link(String(feature.properties['field_19_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Geocode St_count'] !== null ? autolinker.link(String(feature.properties['Geocode St_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Latitude_count'] !== null ? autolinker.link(String(feature.properties['Latitude_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Longitude_count'] !== null ? autolinker.link(String(feature.properties['Longitude_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Date Last_count'] !== null ? autolinker.link(String(feature.properties['Date Last_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ID_count'] !== null ? autolinker.link(String(feature.properties['ID_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Updated At_count'] !== null ? autolinker.link(String(feature.properties['Updated At_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Open Date_count'] !== null ? autolinker.link(String(feature.properties['Open Date_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['NG Vehicle_count'] !== null ? autolinker.link(String(feature.properties['NG Vehicle_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_StateDensityEEUU_1_0(feature) {
+            if (feature.properties['ID_count'] >= 58.000000 && feature.properties['ID_count'] <= 220.400000 ) {
+                return {
+                pane: 'pane_StateDensityEEUU_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.599)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(216,216,216,0.599)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['ID_count'] >= 220.400000 && feature.properties['ID_count'] <= 485.600000 ) {
+                return {
+                pane: 'pane_StateDensityEEUU_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.599)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(171,171,171,0.599)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['ID_count'] >= 485.600000 && feature.properties['ID_count'] <= 934.600000 ) {
+                return {
+                pane: 'pane_StateDensityEEUU_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.599)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(133,133,133,0.599)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['ID_count'] >= 934.600000 && feature.properties['ID_count'] <= 1495.400000 ) {
+                return {
+                pane: 'pane_StateDensityEEUU_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.599)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(82,82,82,0.599)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['ID_count'] >= 1495.400000 && feature.properties['ID_count'] <= 16071.000000 ) {
+                return {
+                pane: 'pane_StateDensityEEUU_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.599)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(0,0,0,0.599)',
+                interactive: true,
+            }
+            }
+        }
+        map.createPane('pane_StateDensityEEUU_1');
+        map.getPane('pane_StateDensityEEUU_1').style.zIndex = 401;
+        map.getPane('pane_StateDensityEEUU_1').style['mix-blend-mode'] = 'normal';
+        var layer_StateDensityEEUU_1 = new L.geoJson(json_StateDensityEEUU_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_StateDensityEEUU_1',
+            layerName: 'layer_StateDensityEEUU_1',
+            pane: 'pane_StateDensityEEUU_1',
+            onEachFeature: pop_StateDensityEEUU_1,
+            style: style_StateDensityEEUU_1_0,
+        });
+        bounds_group.addLayer(layer_StateDensityEEUU_1);
+        map.addLayer(layer_StateDensityEEUU_1);
+        function pop_StateDensityCanada_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['fid'] !== null ? autolinker.link(String(feature.properties['fid']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['id'] !== null ? autolinker.link(String(feature.properties['id']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['name'] !== null ? autolinker.link(String(feature.properties['name']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['source'] !== null ? autolinker.link(String(feature.properties['source']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Country_count'] !== null ? autolinker.link(String(feature.properties['Country_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Fuel Type_count'] !== null ? autolinker.link(String(feature.properties['Fuel Type_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Station Na_count'] !== null ? autolinker.link(String(feature.properties['Station Na_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Street Add_count'] !== null ? autolinker.link(String(feature.properties['Street Add_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Intersecti_count'] !== null ? autolinker.link(String(feature.properties['Intersecti_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['City_count'] !== null ? autolinker.link(String(feature.properties['City_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['State_count'] !== null ? autolinker.link(String(feature.properties['State_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ZIP_count'] !== null ? autolinker.link(String(feature.properties['ZIP_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Station Ph_count'] !== null ? autolinker.link(String(feature.properties['Station Ph_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Status Cod_count'] !== null ? autolinker.link(String(feature.properties['Status Cod_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Expected D_count'] !== null ? autolinker.link(String(feature.properties['Expected D_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Access Cod_count'] !== null ? autolinker.link(String(feature.properties['Access Cod_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Access Det_count'] !== null ? autolinker.link(String(feature.properties['Access Det_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Facility T_count'] !== null ? autolinker.link(String(feature.properties['Facility T_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Access Day_count'] !== null ? autolinker.link(String(feature.properties['Access Day_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Cards Acce_count'] !== null ? autolinker.link(String(feature.properties['Cards Acce_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['NG Fill Ty_count'] !== null ? autolinker.link(String(feature.properties['NG Fill Ty_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['NG PSI_count'] !== null ? autolinker.link(String(feature.properties['NG PSI_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['field_19_count'] !== null ? autolinker.link(String(feature.properties['field_19_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Geocode St_count'] !== null ? autolinker.link(String(feature.properties['Geocode St_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Latitude_count'] !== null ? autolinker.link(String(feature.properties['Latitude_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Longitude_count'] !== null ? autolinker.link(String(feature.properties['Longitude_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Date Last_count'] !== null ? autolinker.link(String(feature.properties['Date Last_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ID_count'] !== null ? autolinker.link(String(feature.properties['ID_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Updated At_count'] !== null ? autolinker.link(String(feature.properties['Updated At_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Open Date_count'] !== null ? autolinker.link(String(feature.properties['Open Date_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['NG Vehicle_count'] !== null ? autolinker.link(String(feature.properties['NG Vehicle_count']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_StateDensityCanada_2_0(feature) {
+            if (feature.properties['ID_count'] >= 0.000000 && feature.properties['ID_count'] <= 28.800000 ) {
+                return {
+                pane: 'pane_StateDensityCanada_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.615)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(247,252,245,0.615)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['ID_count'] >= 28.800000 && feature.properties['ID_count'] <= 124.200000 ) {
+                return {
+                pane: 'pane_StateDensityCanada_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.615)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(201,234,194,0.615)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['ID_count'] >= 124.200000 && feature.properties['ID_count'] <= 143.200000 ) {
+                return {
+                pane: 'pane_StateDensityCanada_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.615)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(123,199,124,0.615)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['ID_count'] >= 143.200000 && feature.properties['ID_count'] <= 1085.400000 ) {
+                return {
+                pane: 'pane_StateDensityCanada_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.615)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(42,146,75,0.615)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['ID_count'] >= 1085.400000 && feature.properties['ID_count'] <= 3169.000000 ) {
+                return {
+                pane: 'pane_StateDensityCanada_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.615)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(0,68,27,0.615)',
+                interactive: true,
+            }
+            }
+        }
+        map.createPane('pane_StateDensityCanada_2');
+        map.getPane('pane_StateDensityCanada_2').style.zIndex = 402;
+        map.getPane('pane_StateDensityCanada_2').style['mix-blend-mode'] = 'normal';
+        var layer_StateDensityCanada_2 = new L.geoJson(json_StateDensityCanada_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_StateDensityCanada_2',
+            layerName: 'layer_StateDensityCanada_2',
+            pane: 'pane_StateDensityCanada_2',
+            onEachFeature: pop_StateDensityCanada_2,
+            style: style_StateDensityCanada_2_0,
+        });
+        bounds_group.addLayer(layer_StateDensityCanada_2);
+        map.addLayer(layer_StateDensityCanada_2);
+        function pop_ElectricAlternativeFuelChargingStations2023_REV_1_3(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Country'] !== null ? autolinker.link(String(feature.properties['Country']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Fuel Type'] !== null ? autolinker.link(String(feature.properties['Fuel Type']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Station Na'] !== null ? autolinker.link(String(feature.properties['Station Na']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Street Add'] !== null ? autolinker.link(String(feature.properties['Street Add']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Intersecti'] !== null ? autolinker.link(String(feature.properties['Intersecti']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['City'] !== null ? autolinker.link(String(feature.properties['City']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['State'] !== null ? autolinker.link(String(feature.properties['State']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ZIP'] !== null ? autolinker.link(String(feature.properties['ZIP']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Station Ph'] !== null ? autolinker.link(String(feature.properties['Station Ph']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Status Cod'] !== null ? autolinker.link(String(feature.properties['Status Cod']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Expected D'] !== null ? autolinker.link(String(feature.properties['Expected D']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Access Cod'] !== null ? autolinker.link(String(feature.properties['Access Cod']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Access Det'] !== null ? autolinker.link(String(feature.properties['Access Det']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Facility T'] !== null ? autolinker.link(String(feature.properties['Facility T']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Access Day'] !== null ? autolinker.link(String(feature.properties['Access Day']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Cards Acce'] !== null ? autolinker.link(String(feature.properties['Cards Acce']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['NG Fill Ty'] !== null ? autolinker.link(String(feature.properties['NG Fill Ty']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['NG PSI'] !== null ? autolinker.link(String(feature.properties['NG PSI']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['field_19'] !== null ? autolinker.link(String(feature.properties['field_19']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Geocode St'] !== null ? autolinker.link(String(feature.properties['Geocode St']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Latitude'] !== null ? autolinker.link(String(feature.properties['Latitude']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Longitude'] !== null ? autolinker.link(String(feature.properties['Longitude']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Date Last'] !== null ? autolinker.link(String(feature.properties['Date Last']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ID'] !== null ? autolinker.link(String(feature.properties['ID']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Updated At'] !== null ? autolinker.link(String(feature.properties['Updated At']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Open Date'] !== null ? autolinker.link(String(feature.properties['Open Date']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['NG Vehicle'] !== null ? autolinker.link(String(feature.properties['NG Vehicle']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_ElectricAlternativeFuelChargingStations2023_REV_1_3_0(feature) {
+            switch(String(feature.properties['Fuel Type'])) {
+                case 'BD':
+                    return {
+                pane: 'pane_ElectricAlternativeFuelChargingStations2023_REV_1_3',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(239,239,24,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'CNG':
+                    return {
+                pane: 'pane_ElectricAlternativeFuelChargingStations2023_REV_1_3',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(223,59,209,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'E85':
+                    return {
+                pane: 'pane_ElectricAlternativeFuelChargingStations2023_REV_1_3',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(89,31,206,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'ELEC':
+                    return {
+                pane: 'pane_ElectricAlternativeFuelChargingStations2023_REV_1_3',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(104,157,232,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'HY':
+                    return {
+                pane: 'pane_ElectricAlternativeFuelChargingStations2023_REV_1_3',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(40,235,202,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'LNG':
+                    return {
+                pane: 'pane_ElectricAlternativeFuelChargingStations2023_REV_1_3',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(217,142,37,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'LPG':
+                    return {
+                pane: 'pane_ElectricAlternativeFuelChargingStations2023_REV_1_3',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(197,229,127,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_ElectricAlternativeFuelChargingStations2023_REV_1_3');
+        map.getPane('pane_ElectricAlternativeFuelChargingStations2023_REV_1_3').style.zIndex = 403;
+        map.getPane('pane_ElectricAlternativeFuelChargingStations2023_REV_1_3').style['mix-blend-mode'] = 'normal';
+        var layer_ElectricAlternativeFuelChargingStations2023_REV_1_3 = new L.geoJson(json_ElectricAlternativeFuelChargingStations2023_REV_1_3, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_ElectricAlternativeFuelChargingStations2023_REV_1_3',
+            layerName: 'layer_ElectricAlternativeFuelChargingStations2023_REV_1_3',
+            pane: 'pane_ElectricAlternativeFuelChargingStations2023_REV_1_3',
+            onEachFeature: pop_ElectricAlternativeFuelChargingStations2023_REV_1_3,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_ElectricAlternativeFuelChargingStations2023_REV_1_3_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_ElectricAlternativeFuelChargingStations2023_REV_1_3);
+        map.addLayer(layer_ElectricAlternativeFuelChargingStations2023_REV_1_3);
+        setBounds();
+        </script>
+    </body>
+</html>
