@@ -1,4 +1,3 @@
-
 /*-------------------------------------*/
 /* ESTILO BASICO DE LA PAGINA */
 /*-------------------------------------*/
@@ -413,6 +412,7 @@ body {
     flex: 1 1 50%;
     min-width: 0px;
     text-align: left;
+    margin-left: 240px;
     justify-content: left;
     flex-direction: column;
     font-family: 'Segoe UI', sans-serif;
@@ -422,11 +422,9 @@ body {
 }
 .seccion-2 .columna-2 h2 {
     padding-left: 0px;
-    font-weight: bold;
-    color: #00008b;
-    margin: 0;
     margin-bottom: 16px;
     font-family: "Segoe UI Semibold", "Segoe UI", sans-serif;
+     color: #00008b;
 }
 .seccion-2 .columna-2 p {
     padding-left: 0px;
@@ -477,7 +475,7 @@ body {
     padding-top: 20px;
 }
 .seccion-3 .columna-1 img {
-    width: 100%;
+    width: 60%;
     height: auto;
     display: block;
     margin-left: 20px;
@@ -1554,26 +1552,4 @@ footer .footer-copy {
 .logo-herramienta:hover {
     transform: scale(1.1);
     filter: drop-shadow(0 0 8px rgba(0, 0, 139, 0.6)); /* #00008b sombra */
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .contenedor-colh {
-        flex-direction: column;
-        padding: 0 20px;
-    }
-
-    .columna-1h,
-    .columna-2h {
-        max-width: 100%;
-        padding: 0;
-    }
-
-    .fila-logos {
-        justify-content: center;
-    }
-
-    .logo-herramienta {
-        height: 50px;
-    }
 }
