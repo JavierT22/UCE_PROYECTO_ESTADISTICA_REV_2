@@ -112,7 +112,14 @@
 
                     <!-- Columna derecha con el texto -->
                     <div class="columna-variable-texto">
-                        <p>Existe una relación lineal positiva muy débil entre la Latitud (°) y la Duración del Acceso (horas), lo que indica que, en promedio, la ubicación geográfica presenta escasa influencia sobre el tiempo de acceso diario registrado. El modelo lineal arroja un coeficiente de correlación de Pearson de 0.0345, lo cual implica una correlación prácticamente nula entre ambas variables. Los datos analizados corresponden a valores de latitud entre 18.38° y 64.85°, y duraciones entre 0 y 24 horas. La relación identificada sugiere que, aunque existe una ligera tendencia ascendente, la Latitud no es un predictor significativo de la Duración.</p>
+                        <p>El análisis muestra una relación lineal positiva, aunque débil, entre la latitud (°) y el año de apertura de las estaciones.
+                            El modelo sugiere que las ubicaciones más al norte tienden a abrirse ligeramente más tarde, con un incremento estimado de 0.31 años (~113 días) por cada grado de latitud.<br>
+                            El coeficiente de correlación de Pearson (r = 0.4815) indica una asociación baja a moderada entre ambas variables.
+                            En promedio, las estaciones se sitúan en una latitud de 41.89° y presentan un año de apertura medio de 2003.98.
+                            El modelo lineal ajustado es: Año estimado = 1990.89 + 0.31 × Latitud.
+                            La bondad de ajuste es limitada (R² = 0.2318), lo que implica que la latitud explica apenas el 23.18% de la variación observada.
+                            Aunque el efecto es estadísticamente significativo (p = 0), no constituye un predictor fuerte del año de apertura.
+                        </p>
 
                     </div>
              </section>
@@ -170,7 +177,13 @@
 
                     <!-- Columna derecha con el texto -->
                     <div class="columna-variable-texto">
-                        <p>Existe una relación lineal positiva muy débil entre la Latitud (°) y la Duración del Acceso (horas), lo que indica que, en promedio, la ubicación geográfica presenta escasa influencia sobre el tiempo de acceso diario registrado. El modelo lineal arroja un coeficiente de correlación de Pearson de 0.0345, lo cual implica una correlación prácticamente nula entre ambas variables. Los datos analizados corresponden a valores de latitud entre 18.38° y 64.85°, y duraciones entre 0 y 24 horas. La relación identificada sugiere que, aunque existe una ligera tendencia ascendente, la Latitud no es un predictor significativo de la Duración.</p>
+                        <p>El modelo muestra una relación positiva entre la latitud (°) y los días desde el 01-01-1974 hasta la apertura de las estaciones.
+                            La ecuación ajustada y = 2406.82 · x^0.408 indica que el tiempo de apertura aumenta de forma no lineal con la latitud.
+                            El coeficiente 0.408 es estadísticamente significativo (p = 0), confirmando una tendencia ascendente.
+                            El valor de R² = 0.2222 señala que solo el 22.22% de la variación en los días de apertura es explicada por la latitud.
+                            En promedio, las estaciones están en 41.89° de latitud y se abren tras 11090 días (~30.4 años) desde 1974.
+                            Aunque el modelo detecta una tendencia general, su capacidad predictiva es limitada.
+                        </p>
 
                     </div>
              </section>
@@ -224,7 +237,11 @@
 
                     <!-- Columna derecha con el texto -->
                     <div class="columna-variable-texto">
-                        <p>Entre la presión de gas natural (NG.PSI) y la duración del acceso en días existe una relación exponencial. El modelo obtuvo un coeficiente de correlación de Pearson de -0.5748, lo que indica una relación negativa moderada entre las variables. Es decir, a mayor presión de gas natural, la duración del acceso tiende a disminuir, lo cual puede estar asociado a condiciones operativas más eficientes en instalaciones con mayor presión. Por ejemplo, para una presión de 3,500 PSI, el modelo estimaría una duración de acceso menor que en presiones cercanas a 3,000 PSI, lo cual puede ser relevante para decisiones logísticas en el manejo de estaciones con suministro a alta presión.</p>
+                        <p>El modelo identifica una relación inversa entre el número de días desde 1974 y el conteo de estaciones.
+                        La ecuación estimada es del tipo y = e^(7.2386 - 0.0005·x), donde el coeficiente negativo (-0.0005) sugiere que, conforme aumenta el tiempo, el número de estaciones tiende a decrecer de forma exponencial.
+                        El coeficiente asociado a Días_promedio es estadísticamente significativo (p = 0), confirmando la presencia de una tendencia descendente clara.
+                        En promedio, los datos muestran 12750 días (~34.9 años) desde 1974 y un conteo medio de 5.71 estaciones.
+                        El modelo es útil para describir la disminución de estaciones en función del tiempo, pero no explica toda la variabilidad observada en los datos.</p>
 
                     </div>
              </section>
@@ -282,7 +299,10 @@
 
                     <!-- Columna derecha con el texto -->
                     <div class="columna-variable-texto">
-                        <p>La relación entre log(Latitude) y la Duración del Acceso (horas por día) se ajusta mejor a un modelo lineal simple,con un coeficiente de correlación de Pearson de 0.0348, lo que indica que el modelo explica una proporción muy baja de la variabilidad en la duración del acceso a partir de la latitud .A pesar del ajuste lineal, la correlación débil sugiere que la latitud tiene un impacto mínimo sobre la duración de horas por día..</p>
+                        <p>La relación entre log(Latitude) y el Año de Apertura se ajusta a un modelo logarítmico simple, con un coeficiente de correlación de Pearson de 0.462, lo que indica una correlación moderada.
+                            El modelo estimado es: Año estimado = 1956.08 + 12.86 · log(Latitude), donde el término logarítmico es estadísticamente significativo (p = 0).
+                            En promedio, las estaciones se ubican a una latitud de 41.89° y presentan un año de apertura medio de 2003.98.
+                            Aunque el modelo logra capturar una tendencia ascendente, la latitud explica solo una fracción moderada de la variabilidad del año de apertura.</p>
 
                     </div>
              </section>
@@ -340,7 +360,7 @@
 
                     <!-- Columna derecha con el texto -->
                     <div class="columna-variable-texto">
-                        <p>Existe una relación lineal positiva muy débil entre la Latitud (°) y la Duración del Acceso (horas), lo que indica que, en promedio, la ubicación geográfica presenta escasa influencia sobre el tiempo de acceso diario registrado. El modelo lineal arroja un coeficiente de correlación de Pearson de 0.0345, lo cual implica una correlación prácticamente nula entre ambas variables. Los datos analizados corresponden a valores de latitud entre 18.38° y 64.85°, y duraciones entre 0 y 24 horas. La relación identificada sugiere que, aunque existe una ligera tendencia ascendente, la Latitud no es un predictor significativo de la Duración.</p>
+                        <p>Existe una relación no lineal entre la Latitud (°) y los días desde 1974-01-01 hasta la apertura de las estaciones, lo que indica que la ubicación geográfica tiene una influencia limitada pero detectable en el tiempo de apertura. El modelo polinómico de segundo grado presenta un término cuadrático significativo (p = 0.0287), mientras que el término lineal no es estadísticamente relevante (p = 0.0913). En promedio, las estaciones se ubican a una latitud de 41.89°, con 11090 días (~30.4 años) transcurridos desde 1974. Aunque se observa una ligera curvatura ascendente en la relación, la latitud no es un predictor fuerte del tiempo de apertura.</p>
 
                     </div>
              </section>
@@ -399,7 +419,11 @@
 
                     <!-- Columna derecha con el texto -->
                     <div class="columna-variable-texto">
-                        <p>El modelo de regresión múltiple aplicado demuestra que la duración operativa de un establecimiento (medida en Access Days Time) está influenciada en cierta medida por su ubicación geográfica, particularmente la latitud. Este análisis permite concluir que la ubicación geográfica, en términos de latitud, es un predictor útil para explicar diferencias en el tiempo de operación de los establecimientos.</p>
+                        <p>El modelo de regresión múltiple indica que la duración desde 1974-01-01 hasta la apertura de las estaciones está influenciada parcialmente por la latitud.
+                        La ecuación y = 9557.74 + 26.08·x₁ + 154.52·x₂ refleja dos pendientes distintas según un punto de quiebre, sugiriendo una relación segmentada.
+                        Con un R² = 0.2604, el modelo explica alrededor del 26% de la variabilidad en los días hasta la apertura, aunque el valor p = 0.6696 indica baja significancia global.
+                        En promedio, las estaciones están a una latitud de 41.89° y se abren tras aproximadamente 11090 días (~30.4 años) desde 1974.
+                        Este análisis sugiere que la latitud puede ser un predictor útil, aunque con limitaciones estadísticas y que la relación no es uniforme a lo largo de todo el rango.</p>
 
                     </div>
              </section>
