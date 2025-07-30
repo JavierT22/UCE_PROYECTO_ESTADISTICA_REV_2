@@ -44,15 +44,12 @@
             <!-- MENÚ DE NAVEGACIÓN ENTRE SECCIONES -->
             <nav class="menu-interno">
                 <div class="menu-contenido">
-                    <ul class="menu-izquierda">
-                        <li><a href="#seccion1">Sección 1</a></li>
-                        <li><a href="#seccion2">Sección 2</a></li>
+    
+
                     </ul>
 
                     <img src="img/logo-facultad_Negro.png" alt="Logo del menú" class="logo-menu">
-                    <ul class="menu-derecha">
-                        <li><a href="#seccion3">Sección 3</a></li>
-                        <li><a href="#seccion4">Sección 4</a></li>
+
                     </ul>
                 </div>
             </nav>
@@ -67,10 +64,10 @@
                     <!-- Columna Izquierda: tabla + botón -->
                     <div class="columna-izquierda-variable">
                         <div class="columna-tabla-variable">
-                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/regresion_lineal/Ecuación_Regresión_lineal.html"class="iframe-tabla-variable"></iframe>
-                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/regresion_lineal/tabla_coeficiente de person.html"class="iframe-tabla-variable"></iframe>
-                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/regresion_lineal/tabla_promedio.html"class="iframe-tabla-variable"></iframe>
-                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/regresion_lineal/tabla_resumen_de_regresión.html"class="iframe-tabla-variable"></iframe>
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/regresion_lineal/Tabla_regresion lineal_F_Agrupamiento Zonas.html"class="iframe-tabla-variable"></iframe>
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/regresion_lineal/Tabla_regresion lineal_F_Correlacion Pearson.html"class="iframe-tabla-variable"></iframe>
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/regresion_lineal/Tabla_regresion lineal_F_Promedio Variables.html"class="iframe-tabla-variable"></iframe>
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/regresion_lineal/Tabla_regresion lineal_F_Resumen Regresion.html"class="iframe-tabla-variable"></iframe>
 
 
 
@@ -96,7 +93,7 @@
                     <!-- Columna Derecha: Imágenes -->
                     <div class="columna-derecha-variable">
                         <div class="columna-imagen-variable">
-                            <img src="TDF y GDF/REGRES_Graficas y tablas Variables/regresion_lineal/Grafica_Regresión_lineal.png" alt="Ejemplo 1">
+                            <img src="TDF y GDF/REGRES_Graficas y tablas Variables/regresion_lineal/Regresion Lineal_F_1.png" alt="Ejemplo 1">
                         </div>
                     </div>
                 </div>
@@ -112,81 +109,17 @@
 
                     <!-- Columna derecha con el texto -->
                     <div class="columna-variable-texto">
-                        <p>El análisis muestra una relación lineal positiva, aunque débil, entre la latitud (°) y el año de apertura de las estaciones.
-                            El modelo sugiere que las ubicaciones más al norte tienden a abrirse ligeramente más tarde, con un incremento estimado de 0.31 años (~113 días) por cada grado de latitud.<br>
-                            El coeficiente de correlación de Pearson (r = 0.4815) indica una asociación baja a moderada entre ambas variables.
-                            En promedio, las estaciones se sitúan en una latitud de 41.89° y presentan un año de apertura medio de 2003.98.
-                            El modelo lineal ajustado es: Año estimado = 1990.89 + 0.31 × Latitud.
-                            La bondad de ajuste es limitada (R² = 0.2318), lo que implica que la latitud explica apenas el 23.18% de la variación observada.
-                            Aunque el efecto es estadísticamente significativo (p = 0), no constituye un predictor fuerte del año de apertura.
+                        <p>El modelo de regresión lineal aplicado entre las variables Año y el Conteo de Estaciones 
+                            (dependiente) por Año para la Zona 1 muestra una fuerte relación significativa, el modelo explica el 83.23% 
+                            de la variabilidad en el conteo anual por cada año adicional, el conteo promedio de estaciones en la 
+                            zona aumenta en aproximadamente 174 estaciones. Para el 2025 la predicción estima 2,002 estaciones nuevas 
+                            en la Zona 1 este resultado respalda una expansión sostenida de la infraestructura de carga en la región noreste
+                            de EE. UU, siendo el tiempo un fuerte predictor del crecimiento.
                         </p>
 
                     </div>
              </section>
 
-
-
-            <!---------------------------------------------- Seccion R-2 ---------------------------------------------------------->
-            <!-- SECCIÓN REGRESION POTENCIAL -->
-            <section class="seccion-variable-discreta">
-                <h2>Regresión Potencial</h2>
-
-                <div class="contenedor-dos-columnas-variable">
-
-                    <!-- Columna Izquierda: tabla + botón -->
-                    <div class="columna-izquierda-variable">
-                        <div class="columna-tabla-variable">
-                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion_Potencial/Tabla 1_Ecuacion_RegresionPotencial.html" class="iframe-tabla-variable"></iframe>
-                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion_Potencial/Tabla2_Promedios.html" class="iframe-tabla-variable"></iframe>
-                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion_Potencial/Tabla3_Resumen_Regresión_Potencial.html" class="iframe-tabla-variable"></iframe>
-
-                        </div>
-
-                        <!-- BOTÓN VER MÁS SECCIÓN 2 -->
-                        <div class="contenedor-boton">
-                            <a href="#modalPotencial" class="boton-tooltip vermas-seccion2">Ver más</a>
-                        </div>
-
-                        <!-- MODAL SECCIÓN 2 -->
-                        <div id="modalPotencial" class="modal">
-                            <div class="modal-contenido">
-                                <a href="#!" class="cerrar">&times;</a>
-                                <h3>Código R utilizado</h3>
-                                <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion_Codigo_Regresión/R.-Exponencial.html"
-                                        class="iframe-modal-codigo"></iframe>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Columna Derecha: Imágenes -->
-                    <div class="columna-derecha-variable">
-                        <div class="columna-imagen-variable">
-                            <img src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion_Potencial/Grafica_Regresion_Potencial.png" alt="Ejemplo 1">
-                        </div>
-                    </div>
-                </div>
-
-            </section>
-
-            <!-- COMENTATIO INFERIOR VARIABLE PAIS-->
-             <section class="comentario-variable">
-                    <!-- Columna izquierda con el h2 -->
-                    <div class="columna-variable-h2">
-                        <h2>Conclusión Regresión <em>Potencial</em></h2>
-                    </div>
-
-                    <!-- Columna derecha con el texto -->
-                    <div class="columna-variable-texto">
-                        <p>El modelo muestra una relación positiva entre la latitud (°) y los días desde el 01-01-1974 hasta la apertura de las estaciones.
-                            La ecuación ajustada y = 2406.82 · x^0.408 indica que el tiempo de apertura aumenta de forma no lineal con la latitud.
-                            El coeficiente 0.408 es estadísticamente significativo (p = 0), confirmando una tendencia ascendente.
-                            El valor de R² = 0.2222 señala que solo el 22.22% de la variación en los días de apertura es explicada por la latitud.
-                            En promedio, las estaciones están en 41.89° de latitud y se abren tras 11090 días (~30.4 años) desde 1974.
-                            Aunque el modelo detecta una tendencia general, su capacidad predictiva es limitada.
-                        </p>
-
-                    </div>
-             </section>
 
             <!---------------------------------------------- Seccion R-2 ---------------------------------------------------------->
             <!-- SECCIÓN REGRESION EXPONENCIAL -->
@@ -256,11 +189,9 @@
                     <!-- Columna Izquierda: tabla + botón -->
                     <div class="columna-izquierda-variable">
                         <div class="columna-tabla-variable">
-                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion_logaritmica/Tabla1_Ecuacion_Regresionlogaritmica.html" class="iframe-tabla-variable"></iframe>
-                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion_logaritmica/Tabla2_Promedios.html" class="iframe-tabla-variable"></iframe>
-                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion_logaritmica/tabla3_correlacion_person.html" class="iframe-tabla-variable"></iframe>
-                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion_logaritmica/Tabla4_resumen_modelo.html" class="iframe-tabla-variable"></iframe>
-
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion_logaritmica/Tabla1_F_REsuemen del modelo.html" class="iframe-tabla-variable"></iframe>
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion_logaritmica/Tabla2_F_Resumen por decadas.html" class="iframe-tabla-variable"></iframe>
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion_logaritmica/Tabla3_F_total de estaciones por año.html" class="iframe-tabla-variable"></iframe>
                         
                         </div>
 
@@ -283,7 +214,7 @@
                     <!-- Columna Derecha: Imágenes -->
                     <div class="columna-derecha-variable">
                         <div class="columna-imagen-variable">
-                            <img src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion_logaritmica/Grafica_Regresion_logaritmica.png" alt="Ejemplo 1">
+                            <img src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion_logaritmica/Grafica_F_de regresiones_logaritmica.png" alt="Ejemplo 1">
                         </div>
                     </div>
                 </div>
@@ -299,10 +230,9 @@
 
                     <!-- Columna derecha con el texto -->
                     <div class="columna-variable-texto">
-                        <p>La relación entre log(Latitude) y el Año de Apertura se ajusta a un modelo logarítmico simple, con un coeficiente de correlación de Pearson de 0.462, lo que indica una correlación moderada.
-                            El modelo estimado es: Año estimado = 1956.08 + 12.86 · log(Latitude), donde el término logarítmico es estadísticamente significativo (p = 0).
-                            En promedio, las estaciones se ubican a una latitud de 41.89° y presentan un año de apertura medio de 2003.98.
-                            Aunque el modelo logra capturar una tendencia ascendente, la latitud explica solo una fracción moderada de la variabilidad del año de apertura.</p>
+                        <p>La relación entre el logaritmo del conteo de estaciones por año y el año de apertura se ajusta a un modelo logarítmico simple, con un coeficiente de determinación de R² = 0.9121, lo que indica que el modelo explica aproximadamente el 91.21% de la variabilidad en el año de apertura. El modelo estimado es:
+                            Año estimado = -3.3845 · ln(Conteo de estaciones) + 2006.3362,
+                            El error estándar residual de 1.1771 sugiere una baja dispersión entre los valores reales y los valores ajustados. Estos resultados indican que el modelo logra capturar de forma muy precisa la relación inversa entre la cantidad de estaciones registradas por año y el tiempo, siendo el conteo de estaciones un predictor altamente explicativo del año de apertura.</p>
 
                     </div>
              </section>
@@ -317,9 +247,10 @@
                     <!-- Columna Izquierda: tabla + botón -->
                     <div class="columna-izquierda-variable">
                         <div class="columna-tabla-variable">
-                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion_polinomica 4 grado/Tabla 1_promedios.html" class="iframe-tabla-variable"></iframe>
-                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion_Polinomica/Tabla2_Promedios.html" class="iframe-tabla-variable"></iframe>
-                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion_Polinomica/Tabla 3_Resumen_Modelo.html" class="iframe-tabla-variable"></iframe>
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion_Polinomica/Tabla_F_coeficientes polinomico _ Grado 3.html" class="iframe-tabla-variable"></iframe>
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion_Polinomica/Tabla_F_coeficientes polinomico _ Grado 4.html" class="iframe-tabla-variable"></iframe>
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion_Polinomica/Tabla_F_Promedio de variables del modelo _ Grado 3.html" class="iframe-tabla-variable"></iframe>
+                            <iframe src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion_Polinomica/Tabla_F_Promedio de variables del modelo _ Grado 4.html" class="iframe-tabla-variable"></iframe>
 
                         </div>
 
@@ -342,8 +273,8 @@
                     <!-- Columna Derecha: Imágenes -->
                     <div class="columna-derecha-variable">
                         <div class="columna-imagen-variable">
-                            <img src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion_polinomica 4 grado/Regresion polinomica grado 4.png" alt="Ejemplo 1">
-                            <img src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion_polinomica 4 grado/Curva ajustada polinomica grado 4.png" alt="Ejemplo 1">
+                            <img src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion_Polinomica/Polinomica_F_grado 3.png" alt="Ejemplo 1">
+                            <img src="TDF y GDF/REGRES_Graficas y tablas Variables/Regresion_Polinomica/Polinomica_F_grado 4.png" alt="Ejemplo 1">
 
                         </div>
                     </div>
@@ -360,7 +291,7 @@
 
                     <!-- Columna derecha con el texto -->
                     <div class="columna-variable-texto">
-                        <p>Existe una relación no lineal entre la Latitud (°) y los días desde 1974-01-01 hasta la apertura de las estaciones, lo que indica que la ubicación geográfica tiene una influencia limitada pero detectable en el tiempo de apertura. El modelo polinómico de segundo grado presenta un término cuadrático significativo (p = 0.0287), mientras que el término lineal no es estadísticamente relevante (p = 0.0913). En promedio, las estaciones se ubican a una latitud de 41.89°, con 11090 días (~30.4 años) transcurridos desde 1974. Aunque se observa una ligera curvatura ascendente en la relación, la latitud no es un predictor fuerte del tiempo de apertura.</p>
+                        <p>Existe una relación no lineal entre el Conteo de Estaciones y el Año de Apertura, lo que sugiere que el crecimiento en la instalación de estaciones ha seguido una evolución compleja a lo largo del tiempo. El modelo polinómico de tercer grado presenta un término cúbico estadísticamente significativo (p = 0.0113), al igual que el término lineal (p < 0.00001), mientras que el coeficiente cuadrático también muestra evidencia de relevancia (p = 0.0017). En promedio, las estaciones se abren en el año 1974, con un conteo medio de 1564.58 estaciones anuales. La curvatura del modelo indica un crecimiento acelerado en años recientes, compatible con una expansión tecnológica y una mayor inversión en infraestructura de carga eléctrica.</p>
 
                     </div>
              </section>

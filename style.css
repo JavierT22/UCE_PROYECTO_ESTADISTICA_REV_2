@@ -1553,3 +1553,10 @@ footer .footer-copy {
     transform: scale(1.1);
     filter: drop-shadow(0 0 8px rgba(0, 0, 139, 0.6)); /* #00008b sombra */
 }
+
+.iframe-tabla-variable,
+.columna-imagen-variable img {
+    min-height: 120px; /* Ajusta según tu diseño */
+    margin-bottom: 16px;
+    display: block;
+}

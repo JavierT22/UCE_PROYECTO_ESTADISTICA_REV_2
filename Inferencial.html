@@ -44,16 +44,10 @@
             <!-- MENÚ DE NAVEGACIÓN ENTRE SECCIONES -->
             <nav class="menu-interno">
                 <div class="menu-contenido">
-                    <ul class="menu-izquierda">
-                        <li><a href="#seccion1">Sección 1</a></li>
-                        <li><a href="#seccion2">Sección 2</a></li>
-                    </ul>
+
 
                     <img src="img/logo-facultad_Negro.png" alt="Logo del menú" class="logo-menu">
-                    <ul class="menu-derecha">
-                        <li><a href="#seccion3">Sección 3</a></li>
-                        <li><a href="#seccion4">Sección 4</a></li>
-                    </ul>
+
                 </div>
             </nav>
             
@@ -62,10 +56,10 @@
             <section class="seccion-variable-discreta">
                 <h2>Variable NOMINAL: STATE</h2>
 
-                <div class="contenedor-dos-columnas-variable">
+                <div class="contenedor-dos-columnas-variable" style="display: flex;">
 
                     <!-- Columna Izquierda: tabla + botón -->
-                    <div class="columna-izquierda-variable">
+                    <div class="columna-izquierda-variable" style="display: flex; flex-direction: column;">
                         <div class="columna-tabla-variable">
                             <iframe src="TDF y GDF/INFEREN_Graficas y tablas Nominal/Tabla 1.2 Nominal Sate.html" class="iframe-tabla-variable"></iframe>
                         </div>
@@ -84,16 +78,16 @@
                                         class="iframe-modal-codigo"></iframe>
                             </div>
                         </div>
+                       <!----- TEXTO ------->
+                        <div class="columna-tabla-variable">
+                            <iframe src="TDF y GDF/INFEREN_Graficas y tablas Nominal/Diferencial_analisis_comparativo_STATE.html" class="iframe-tabla-variable" style="margin-top: 1220px;"></iframe>
+                        </div>
 
-                        <!-- Texto explicativo agregado -->
-                        <p style="margin: 16px 0 8px 0; font-size: 16px; color: #252525;">
-                        La gráfica muestra una distribución geográfica altamente desigual de estaciones de carga, con California destacando significativamente (16,106 registros) y la mayoría de estados agrupados bajo “Otros” (30,844 registros). Esta concentración sugiere un fuerte sesgo regional, lo cual debe ser considerado en análisis inferenciales o modelos predictivos, especialmente para evitar distorsiones debidas al desbalance de datos por estado.
-            </p>
 
                     </div>
 
                     <!-- Columna Derecha: Imágenes -->
-                    <div class="columna-derecha-variable">
+                    <div class="columna-derecha-variable" style="display: flex; flex-direction: column;">
                         <div class="columna-imagen-variable">
                             <img src="TDF y GDF/INFEREN_Graficas y tablas Nominal/Gráfica 1.1 State.png" alt="Ejemplo 1">
                             <img src="TDF y GDF/INFEREN_Graficas y tablas Nominal/Gráfica 1.2 F.R State.png" alt="Ejemplo 2">
