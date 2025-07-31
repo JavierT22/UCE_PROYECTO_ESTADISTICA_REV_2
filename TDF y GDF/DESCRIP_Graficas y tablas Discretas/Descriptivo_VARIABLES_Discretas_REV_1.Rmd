@@ -1,0 +1,1001 @@
+---
+title: "Variable_Discreta"
+author: "Grupo 4"
+date: "2025-07-28"
+output: html_document
+---
+
+## Variables Discretas
+
+
+```{r cars}
+#-------------------------------------------------------
+#CARGA DATASET VARIABLES DISCRETAS
+#-------------------------------------------------------
+
+datos <- read.csv("C:/Users/User/OneDrive/Documentos/estadistica/Electric and Alternative Fuel Charging Stations.csv", header = TRUE, sep = ",", dec = ",")
+head(datos$Access.Days.Time)
+str(datos)
+
+# MOSTRAR NOMBRES DE COLUMNAS
+colnames(datos)
+
+#-------------------------------
+# LIBRERIAS
+#-------------------------------
+library(dplyr)
+library(skimr)
+library(ggplot2)
+library(skimr)
+library(DT)
+library(tidyverse)
+library(htmltools)
+library(RColorBrewer)
+library(lubridate)
+library(stringr)
+library(scales)
+library(moments)
+library(tibble)
+library(ggrepel)
+library(htmlwidgets) 
+library(lubridate)
+
+
+
+#--------------------VARIABLE DISCRETA ACCESS DAY TIME -----------------------#
+
+
+#---------------------- FUNCIÓN AUXILIAR ---------------------------------#
+# Detecta si un valor es una cadena vacía o solo espacios
+es_sospechoso <- function(x) grepl("^\\s*$", x)
+
+#--------- EXTRACCIÓN Y LIMPIEZA DE LA VARIABLE ACCESS.DAYS.TIME ---------#
+
+access_days_time_values_raw <- unique(datos$Access.Days.Time)
+access_days_time_values_raw <- access_days_time_values_raw[!is.na(access_days_time_values_raw)]
+
+valores_sospechosos_access_days_time <- access_days_time_values_raw[es_sospechoso(access_days_time_values_raw)]
+valores_validos_access_days_time <- setdiff(access_days_time_values_raw, valores_sospechosos_access_days_time)
+
+cat("Cantidad de valores válidos:", length(valores_validos_access_days_time), "\n")
+cat("Cantidad de valores sospechosos:", length(valores_sospechosos_access_days_time), "\n")
+
+print(valores_validos_access_days_time)
+print(valores_sospechosos_access_days_time)
+
+#------------------------ FILTRO ACCESS.DAYS.TIME POR PAÍS ----------------#
+# Librerías necesarias
+library(dplyr)     # Para %>% y funciones de manipulación de datos
+library(magrittr)  # Para el operador %>%, aunque dplyr ya lo incluye
+
+filtrar_por_pais <- function(pais) {
+  access_days <- datos %>%
+    filter(Country == pais) %>%
+    pull(Access.Days.Time) %>%
+    unique() %>%
+    na.omit()
+  
+  sospechosos <- access_days[es_sospechoso(access_days)]
+  validos <- setdiff(access_days, sospechosos)
+  
+  cat("\nCantidad de valores válidos en", pais, ":", length(validos), "\n")
+  print(validos)
+  cat("Cantidad de valores sospechosos en", pais, ":", length(sospechosos), "\n")
+  print(sospechosos)
+}
+
+filtrar_por_pais("US")
+filtrar_por_pais("CA")
+
+#------------------------- CONVERSIÓN Y TABLA BASE ---------------------------#
+tabla_access_days_time <- datos %>%
+  filter(!is.na(Access.Days.Time)) %>%
+  distinct(Access.Days.Time) %>%
+  rename(Texto = Access.Days.Time)
+
+hora_a_decimal <- function(hora_str) {
+  hora_str <- tolower(hora_str)
+  partes <- str_match(hora_str, "(\\d{1,2})(?::(\\d{2}))?(am|pm)")
+  hora <- as.numeric(partes[,2])
+  minuto <- as.numeric(ifelse(is.na(partes[,3]), "0", partes[,3]))
+  meridiano <- partes[,4]
+  if (meridiano == "pm" & hora != 12) hora <- hora + 12
+  if (meridiano == "am" & hora == 12) hora <- 0
+  hora + minuto / 60
+}
+
+#-------------------------- CONVERTIR A HORAS ------------------------------#
+library(stringr)
+
+extraer_horas <- function(texto) {
+  texto <- tolower(texto)
+  if (str_detect(texto, "24 hours")) return(c(0, 24))
+  
+  horas_am_pm <- str_extract_all(texto, "\\d{1,2}(:\\d{2})?(am|pm)")[[1]]
+  if (length(horas_am_pm) >= 2) return(range(sapply(horas_am_pm, hora_a_decimal)))
+  
+  numeros <- str_extract_all(texto, "\\b\\d{1,2}\\b")[[1]]
+  if (length(numeros) >= 2) return(range(as.numeric(numeros)))
+  
+  c(NA, NA)
+}
+
+horas_extraidas <- t(sapply(tabla_access_days_time$Texto, extraer_horas))
+tabla_access_days_time <- tabla_access_days_time %>%
+  mutate(
+    Hora_apertura = round(horas_extraidas[,1]),
+    Hora_cierre  = round(horas_extraidas[,2]),
+    Duracion = Hora_cierre - Hora_apertura
+  ) %>%
+  filter(!is.na(Duracion), Duracion >= 0, Duracion <= 24)
+
+
+print(head(tabla_access_days_time, 10))
+cat("Total de registros válidos:", nrow(tabla_access_days_time), "\n")
+
+#------------------- CÁLCULO DE STURGES "DURACION" ------------------------------#
+
+# Número de observaciones válidas (ya filtradas)
+n_observaciones_access <- nrow(tabla_access_days_time)
+
+# Cálculo de Sturges (número de clases)
+k_sturges_access <- round(1 + log2(n_observaciones_access))
+
+# Rango y ancho de clase
+rango_duracion_access <- diff(range(tabla_access_days_time$Duracion))
+ancho_clase_access <- rango_duracion_access / k_sturges_access
+
+# Límites y etiquetas de clase
+lim_min <- min(tabla_access_days_time$Duracion)
+lim_max <- lim_min + k_sturges_access * ancho_clase_access
+
+limites_clases <- seq(lim_min, lim_max, by = ancho_clase_access)
+etiquetas_clases <- paste(round(limites_clases[-length(limites_clases)], 2),
+                          "-", round(limites_clases[-1], 2))
+
+cat("Clases obtenidas según Sturges (exactamente", k_sturges_access, "clases):\n")
+print(etiquetas_clases)
+
+#------------------------ TABLA RESULTADO STURGES ---------------------------#
+library(DT)
+
+tabla_resultado_sturges_access <- data.frame(
+  "Total Observaciones" = n_observaciones_access,
+  "Número de Clases (Sturges)" = k_sturges_access,
+  "Rango de Duración (hrs)" = rango_duracion_access,
+  "Ancho de Clase (hrs)" = ancho_clase_access
+)
+
+datatable(tabla_resultado_sturges_access,
+          options = list(
+            pageLength = 5,
+            autoWidth = TRUE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().header()).css({",
+              "'background-color': 'darkblue',",
+              "'color': 'white',",
+              "'font-weight': 'bold',",
+              "'font-family': 'Segoe UI'",
+              "});",
+              "}"
+            ),
+            rowCallback = JS(
+              "function(row, data, index) {",
+              "$(row).css('font-family', 'Segoe UI');",
+              "$(row).css({'font-weight': 'bold', 'background-color': '#f2f2f2'});",
+              "$('td:eq(1)', row).css({'text-align': 'right', 'padding-right': '10px'});",
+              "$('td:eq(2)', row).css({'text-align': 'right', 'padding-right': '10px'});",
+              "$('td:eq(3)', row).css({'text-align': 'right', 'padding-right': '10px'});",
+              "}"
+            ),
+            dom = 't'
+          ),
+          rownames = FALSE,
+          colnames = colnames(tabla_resultado_sturges_access),
+          caption = htmltools::tags$caption(
+            style = 'caption-side: top; text-align: center; font-weight: bold; padding: 10px; font-family: Segoe UI;',
+            "Tabla N 4 - Resultados del Método de Sturges para la Variable Duración (Access.Days.Time)"
+          )
+)
+
+#--------------- RESUMEN ESTADÍSTICO DE DURACIÓN – ACCESS.DAYS.TIME ------------------#
+library(moments)
+
+Mode <- function(x) {
+  ux <- unique(na.omit(x))
+  ux[which.max(tabulate(match(x, ux)))]
+}
+
+datos_validos <- tabla_access_days_time$Duracion
+
+q1 <- quantile(datos_validos, 0.25)
+q3 <- quantile(datos_validos, 0.75)
+iqr <- q3 - q1
+
+resumen_estadistico_access <- data.frame(
+  Total_Observaciones = length(datos_validos),
+  Media   = mean(datos_validos),
+  Mediana = median(datos_validos),
+  Desviacion_Estandar = sd(datos_validos),
+  Minimo  = min(datos_validos),
+  Maximo  = max(datos_validos),
+  Q1      = q1,
+  Q3      = q3,
+  IQR     = iqr,
+  Curtosis  = kurtosis(datos_validos),
+  Asimetria = skewness(datos_validos),
+  Moda      = Mode(datos_validos),
+  Outliers  = sum(datos_validos < (q1 - 1.5 * iqr) | datos_validos > (q3 + 1.5 * iqr))
+)
+
+print(resumen_estadistico_access)
+
+#--------------- TABLA INTERACTIVA RESUMEN ESTADISTICO ------------------------#
+
+resumen_estadistico_access_formateado <- resumen_estadistico_access %>%
+  mutate(across(where(is.numeric), ~round(., 2)))
+
+datatable(resumen_estadistico_access_formateado,
+          options = list(
+            pageLength = 5,
+            autoWidth = TRUE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().header()).css({",
+              "'background-color': 'darkblue',",
+              "'color': 'white',",
+              "'font-weight': 'bold',",
+              "'font-family': 'Segoe UI'",
+              "});",
+              "}"
+            ),
+            rowCallback = JS(
+              "function(row, data, index) {",
+              "$(row).css('font-family', 'Segoe UI');",
+              "$(row).css({'font-weight': 'bold', 'background-color': '#f2f2f2'});",
+              "$('td', row).css({'text-align': 'right', 'padding-right': '10px'});",
+              "}"
+            ),
+            dom = 't'
+          ),
+          rownames = FALSE,
+          colnames = c(
+            "Total Observaciones",
+            "Media",
+            "Mediana",
+            "Desviación Estándar",
+            "Mínimo",
+            "Máximo",
+            "Q1",
+            "Q3",
+            "IQR",
+            "Curtosis",
+            "Asimetría",
+            "Moda",
+            "Outliers"
+          ),
+          caption = htmltools::tags$caption(
+            style = 'caption-side: top; text-align: center; font-weight: bold; padding: 10px; font-family: Segoe UI;',
+            "Tabla N 5 - Resumen Estadístico de la Duración (Access.Days.Time)"
+          )
+)
+
+#----------- GRÁFICA DE BARRAS – FRECUENCIA ABSOLUTA ACCESS.DAYS.TIME --------------#
+
+# Crear cortes de clase con Sturges (reutilizando k_sturges_access)
+tabla_access_days_time$Clase_Duracion <- cut(
+  tabla_access_days_time$Duracion,
+  breaks = k_sturges_access,
+  include.lowest = TRUE,
+  right = FALSE
+)
+
+# Calcular frecuencia absoluta por clase
+frecuencia_duracion <- tabla_access_days_time %>%
+  group_by(Clase_Duracion) %>%
+  summarise(Frecuencia = n())
+
+# Graficar barras con etiquetas y degradado
+ggplot(frecuencia_duracion, aes(x = Clase_Duracion, y = Frecuencia, fill = Frecuencia)) +
+  geom_bar(stat = "identity", width = 0.95) +
+  geom_text(aes(label = Frecuencia), vjust = -0.5, color = "black", size = 4) +
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +
+  labs(
+    title = "Gráfica N°10: Tiempo Estimado de Acceso",
+    x = "Intervalos de duración (horas)",
+    y = "N° de Registros",
+    fill = "Frecuencia"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(color = "black"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(hjust = 0.3,size = 12, face = "bold")
+  )
+
+
+#------------ GRÁFICA DE BARRAS – FRECUENCIA RELATIVA ACCESS.DAYS.TIME ---------------#
+
+# Calcular frecuencia relativa por clase
+frecuencia_relativa_duracion <- tabla_access_days_time %>%
+  filter(!is.na(Clase_Duracion)) %>%
+  group_by(Clase_Duracion) %>%
+  summarise(Frecuencia = n()) %>%
+  mutate(Frecuencia_Relativa = Frecuencia / sum(Frecuencia))
+
+# Graficar
+ggplot(frecuencia_relativa_duracion, aes(x = Clase_Duracion, y = Frecuencia_Relativa, fill = Frecuencia_Relativa)) +
+  geom_bar(stat = "identity", width = 0.95) +
+  geom_text(aes(label = scales::percent(Frecuencia_Relativa, accuracy = 0.1)), 
+            vjust = -0.5, color = "black", size = 3) +
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(
+    title = "Gráfica N°10.1: Frecuencia Relativa del Tiempo de Acceso",
+    x = "Intervalos de duración (horas)",
+    y = "Frecuencia Relativa",
+    fill = "Frecuencia Relativa"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(color = "black"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(hjust = 0.3,size = 12, face = "bold")
+  )
+
+#-------------- BOXPLOT CLASIFICACIÓN DE HORARIOS POR DURACIÓN ----------------------#
+
+# Clasificación artificial única
+tabla_access_days_time$clasificacion <- "Duración"
+
+# Filtrar datos válidos
+datos_top3 <- tabla_access_days_time %>%
+  filter(!is.na(Duracion)) %>%
+  filter(clasificacion %in% c("Duración"))
+
+# Calcular estadísticas principales
+estadisticas <- datos_top3 %>%
+  summarise(
+    xmin = min(Duracion, na.rm = TRUE),
+    q1   = quantile(Duracion, 0.25, na.rm = TRUE),
+    q2   = median(Duracion, na.rm = TRUE),
+    q3   = quantile(Duracion, 0.75, na.rm = TRUE),
+    xmax = max(Duracion, na.rm = TRUE)
+  ) %>%
+  mutate(
+    iqr = q3 - q1,
+    lower_fence = q1 - 1.5 * iqr,
+    upper_fence = q3 + 1.5 * iqr
+  )
+
+# Extraer valores
+xmin <- estadisticas$xmin
+q1 <- estadisticas$q1
+q2 <- estadisticas$q2
+q3 <- estadisticas$q3
+xmax <- estadisticas$xmax
+lower_fence <- estadisticas$lower_fence
+upper_fence <- estadisticas$upper_fence
+
+# Detectar outliers
+datos_outliers <- datos_top3 %>%
+  filter(Duracion < lower_fence | Duracion > upper_fence)
+
+# Crear cajas intercuartiles
+cajas <- data.frame(
+  xmin = c(q1, q2),
+  xmax = c(q2, q3),
+  fill = c(0.3, 0.8)
+)
+
+# Altura vertical de las cajas
+ymin_caja <- -0.02
+ymax_caja <-  0.02
+
+#--------------------- Gráfico Boxplot ---------------------------------------#
+
+ggplot() +
+  # Cajas coloreadas entre Q1-Q2 y Q2-Q3
+  geom_rect(data = cajas, aes(xmin = xmin, xmax = xmax, ymin = ymin_caja, ymax = ymax_caja, fill = fill), color = "black") +
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +
+  
+  # Bigotes horizontales
+  geom_segment(aes(x = lower_fence, xend = q1, y = 0, yend = 0), size = 0.6) +
+  geom_segment(aes(x = q3, xend = upper_fence, y = 0, yend = 0), size = 0.6) +
+  
+  # Línea base (eje)
+  geom_hline(yintercept = 0, color = "black", size = 0.5) +
+  
+  # Líneas verticales punteadas en puntos clave
+  geom_vline(xintercept = c(lower_fence, q1, q2, q3, upper_fence),
+             linetype = "dotted", color = "darkblue", size = 0.8) +
+  
+  # Etiquetas de valores en el eje X
+  annotate("text", x = lower_fence, y = -0.05, label = paste0("Lim. Inf\n", round(lower_fence, 2)), color = "blue", size = 4) +
+  annotate("text", x = q1, y = -0.05, label = paste0("Q1\n", round(q1, 2)), color = "blue", size = 4) +
+  annotate("text", x = q2, y = -0.05, label = paste0("Q2\n", round(q2, 2)), color = "blue", size = 4) +
+  annotate("text", x = q3, y = -0.05, label = paste0("Q3\n", round(q3, 2)), color = "blue", size = 4) +
+  annotate("text", x = upper_fence, y = -0.05, label = paste0("Lim. Sup\n", round(upper_fence, 2)), color = "blue", size = 4) +
+  
+  # Outliers como puntos naranjas
+  geom_point(data = datos_outliers, aes(x = Duracion, y = 0), shape = 21,
+             fill = "orange", color = "black", size = 2) +
+  
+  # Estética y título
+  scale_x_continuous(name = "Duración del acceso (horas)", breaks = NULL) +
+  ggtitle("Gráfica N°10.2: Identificación de Outliers en Access Days Time (Duración)") +
+  theme(
+    panel.background = element_rect(fill = "white", colour = NA),
+    plot.background = element_rect(fill = "white", colour = NA),
+    panel.grid = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    legend.position = "none",
+    plot.title = element_text(hjust = 0.2, size = 10, face = "bold")
+  )
+
+#------- GRAFICA OJIVAS ACCESS DAYS TIME ---------------------------#
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(scales)
+
+#------------------- CÁLCULO DE STURGES "DURACION" ------------------------------#
+
+# Número de observaciones válidas (ya filtradas)
+datos_ojiva <- tabla_access_days_time %>%
+  filter(!is.na(Duracion)) %>%
+  select(Duracion)
+
+n_observaciones_access <- nrow(datos_ojiva)
+
+# Cálculo de Sturges (número de clases)
+k_sturges_access <- round(1 + log2(n_observaciones_access))
+
+# Rango y ancho de clase
+rango_duracion_access <- diff(range(datos_ojiva$Duracion))
+ancho_clase_access <- rango_duracion_access / k_sturges_access
+
+# Límites y etiquetas de clase
+lim_min <- min(datos_ojiva$Duracion)
+lim_max <- lim_min + k_sturges_access * ancho_clase_access
+
+limites_clases <- seq(lim_min, lim_max, by = ancho_clase_access)
+etiquetas_clases <- paste(round(limites_clases[-length(limites_clases)], 2),
+                          "-", round(limites_clases[-1], 2))
+
+cat("Clases obtenidas según Sturges (exactamente", k_sturges_access, "clases):\n")
+print(etiquetas_clases)
+
+# Crear tabla de frecuencias absoluta y acumulada con cortes definidos
+tabla_freq <- datos_ojiva %>%
+  mutate(clase = cut(Duracion, breaks = limites_clases, include.lowest = TRUE, right = FALSE)) %>%
+  count(clase) %>%
+  mutate(
+    fi = n,
+    Fi_c = cumsum(fi) / sum(fi),                    # Ojiva creciente
+    Fi_d = rev(cumsum(rev(fi))) / sum(fi),          # Ojiva decreciente
+    xi = (limites_clases[-length(limites_clases)] + limites_clases[-1]) / 2,
+    Nombre_grupo = as.character(clase)
+  )
+
+
+#-------------- Convertir a formato largo para graficar ambas ojivas --------------#
+
+tabla_ojiva <- tabla_freq %>%
+  select(Nombre_grupo, xi, Fi_c, Fi_d) %>%
+  pivot_longer(cols = c(Fi_c, Fi_d),
+               names_to = "Tipo",
+               values_to = "Frecuencia") %>%
+  mutate(
+    Tipo = factor(Tipo,
+                  levels = c("Fi_c", "Fi_d"),
+                  labels = c("Ojiva Creciente (Fi)", "Ojiva Decreciente (Fi)"))
+  )
+
+#------------------- Graficar ojivas ajustando márgenes ------------------------#
+
+ggplot(tabla_ojiva, aes(x = xi, y = Frecuencia, color = Tipo, linetype = Tipo)) +
+  geom_line(aes(group = Tipo), size = 1.2) +
+  geom_point(size = 3) +
+  geom_label(aes(label = xi),
+             vjust = -1.2,
+             size = 4,
+             fill = "white",
+             label.size = 0.3,
+             label.r = unit(0.15, "lines")) +
+  scale_y_continuous(
+    limits = c(0, 1.15),
+    breaks = seq(0, 1, 0.1),
+    labels = scales::percent_format(accuracy = 1)
+  ) +
+  scale_color_manual(values = c(
+    "Ojiva Creciente (Fi)" = "skyblue",
+    "Ojiva Decreciente (Fi)" = "darkblue"
+  )) +
+  labs(
+    title = paste0("Gráfica N°10.3:Ojivas para la variable Duración (", k_sturges_access, " clases según Sturges)"),
+    x = "Marca de clase (xi)",
+    y = "Frecuencia acumulada relativa"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.margin = margin(t = 30, r = 20, b = 20, l = 20),
+    panel.grid = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(hjust = 0.2, size=10,face = "bold"),
+    legend.position = "bottom",
+    legend.direction = "horizontal",
+    legend.box.margin = margin(t = 10),
+    legend.title = element_blank(),
+    axis.line = element_line(color = "black", linewidth = 0.6),
+    panel.grid.minor = element_blank()
+  )
+```
+```{r}
+
+#--------------------VARIABLE DISCRETA GEOCODE.STATUS -----------------------#
+
+#---------------------- FUNCIÓN AUXILIAR ---------------------------------#
+# Detecta si un valor es una cadena vacía o solo espacios
+es_sospechoso <- function(x) grepl("^\\s*$", x)
+
+#--------- EXTRACCIÓN Y LIMPIEZA DE LA VARIABLE GEOCODE.STATUS ---------#
+
+geocode_status_values_raw <- unique(datos$Geocode.Status)
+geocode_status_values_raw <- geocode_status_values_raw[!is.na(geocode_status_values_raw)]
+
+valores_sospechosos_geocode_status <- geocode_status_values_raw[es_sospechoso(geocode_status_values_raw)]
+valores_validos_geocode_status <- setdiff(geocode_status_values_raw, valores_sospechosos_geocode_status)
+
+cat("Cantidad de valores válidos en Geocode.Status:", length(valores_validos_geocode_status), "\n")
+cat("Cantidad de valores sospechosos en Geocode.Status:", length(valores_sospechosos_geocode_status), "\n")
+
+print(valores_validos_geocode_status)
+print(valores_sospechosos_geocode_status)
+
+
+#---------------------- TABLA Y FILTROS BASE -----------------------------#
+
+
+# Definir clases objetivo
+clases_objetivo <- c("200-9", "200-8", "GPS", "200-6", "200-7", "200-5", "200-4", "200-3")
+
+# Función auxiliar para filtrar valores sospechosos (si la tienes definida)
+es_sospechoso <- function(x) grepl("^\\s*$", x)
+
+# Crear tabla de frecuencias por clase Geocode.Status
+tabla_frecuencia_geocode_clases <- datos %>%
+  filter(!is.na(Geocode.Status)) %>%
+  filter(!es_sospechoso(Geocode.Status)) %>%
+  filter(Geocode.Status %in% clases_objetivo) %>%
+  group_by(Geocode.Status) %>%
+  summarise(Frecuencia = n()) %>%
+  arrange(desc(Frecuencia))
+
+# Mostrar tabla de frecuencias
+print(tabla_frecuencia_geocode_clases)
+
+# Crear tabla con todos los datos cuyo Geocode.Status esté en tabla_frecuencia_geocode_clases
+tabla_datos_geocode_filtrados <- datos %>%
+  filter(Geocode.Status %in% tabla_frecuencia_geocode_clases$Geocode.Status)
+
+# Mostrar tabla filtrada con todos los datos
+print(head(tabla_datos_geocode_filtrados, 10))
+
+
+#------------------------- CONVERSIÓN Y TABLA BASE ---------------------------#
+
+library(dplyr)
+library(stringr)
+
+# Definir clases objetivo
+clases_objetivo <- c("GPS", "200-9", "200-8", "200-6", "200-7", "200-5", "200-4")
+
+# Filtrar y transformar Geocode.Status
+tabla_datos_geocode_filtrados <- datos %>%
+  filter(Geocode.Status %in% clases_objetivo) %>%
+  mutate(
+    # Reemplazar "GPS" por "200-10" para mantener estructura
+    Geocode.Status_Limpio = if_else(Geocode.Status == "GPS", "200-10", Geocode.Status),
+    
+    # Versión con guion intacto pero transformada a clase numérica interpretativa
+    Geocode.Status_NuméricoConGuion = Geocode.Status_Limpio,
+    
+    # Quitar guión para facilitar conversión a número
+    Geocode.Status_SinGuion = str_replace_all(Geocode.Status_Limpio, "-", ""),
+    
+    # Columna numérica real para ordenación o análisis
+    Valor_numerico = as.numeric(Geocode.Status_SinGuion)
+  )
+
+# Mostrar valores únicos con sus equivalencias
+print(
+  tabla_datos_geocode_filtrados %>%
+    select(Geocode.Status, Geocode.Status_NuméricoConGuion, Valor_numerico) %>%
+    distinct()
+)
+
+
+#------------------- CÁLCULO DE STURGES -------------------------------------#
+
+library(dplyr)
+library(stringr)
+
+# ⬇️ Procesamiento completo para GPS y códigos tipo 200-4
+tabla_datos_geocode_filtrados <- tabla_datos_geocode_filtrados %>%
+  filter(!is.na(Geocode.Status) & Geocode.Status != "") %>%  # ⬅️ ACTUALIZADO: trabajamos sobre Geocode.Status original
+  mutate(
+    Geocode.Status_Limpio = if_else(Geocode.Status == "GPS", "200-10", Geocode.Status),   # ⬅️ NUEVO: GPS → 200-10
+    Geocode.Status_SinGuion = str_replace_all(Geocode.Status_Limpio, "-", ""),            # ⬅️ NUEVO: quitar guiones
+    Valor_numerico = as.numeric(Geocode.Status_SinGuion)                                   # ⬅️ NUEVO: convertir a número
+  ) %>%
+  filter(!is.na(Valor_numerico))  # ⬅️ MANTENIDO
+
+# Número de observaciones válidas
+n_observaciones_geocode <- nrow(tabla_datos_geocode_filtrados)
+
+# Número de clases según Sturges
+k_sturges_geocode <- round(1 + log2(n_observaciones_geocode))
+
+# Rango total
+valor_min <- min(tabla_datos_geocode_filtrados$Valor_numerico)
+valor_max <- max(tabla_datos_geocode_filtrados$Valor_numerico)
+rango_geocode <- valor_max - valor_min
+
+# Ancho de clase
+ancho_clase_geocode <- rango_geocode / k_sturges_geocode
+
+# Límites de clase (sin redondear)
+limites_clases_geo <- seq(
+  from = valor_min,
+  to = valor_min + k_sturges_geocode * ancho_clase_geocode,
+  by = ancho_clase_geocode
+)
+
+# Etiquetas redondeadas a enteros
+etiquetas_clases_geo <- paste0(
+  floor(limites_clases_geo[-length(limites_clases_geo)]),
+  " - ",
+  ceiling(limites_clases_geo[-1])
+)
+
+# Mostrar resultados
+cat("Número de observaciones (sin vacíos):", n_observaciones_geocode, "\n")
+cat("Clases (según Sturges):", k_sturges_geocode, "\n")
+cat("Ancho de clase:", round(ancho_clase_geocode, 2), "\n")
+cat("Rango:", rango_geocode, "\n")
+cat("Etiquetas de clases (redondeadas):\n")
+print(etiquetas_clases_geo)
+
+
+#------------------------ TABLA RESULTADO STURGES ---------------------------#
+
+library(DT)
+library(htmltools)
+
+# Crear data frame con los resultados de Sturges
+tabla_resultado_sturges_geocode <- data.frame(
+  "Total Observaciones" = n_observaciones_geocode,
+  "Número de Clases (Sturges)" = k_sturges_geocode,
+  "Rango de Valores" = round(rango_geocode, 2),
+  "Ancho de Clase" = round(ancho_clase_geocode, 2)
+)
+
+#---------------------- VISUALIZACIÓN -----------------------------------#
+
+datatable(
+  tabla_resultado_sturges_geocode,
+  options = list(
+    pageLength = 5,
+    autoWidth = TRUE,
+    initComplete = JS(
+      "function(settings, json) {",
+      "$(this.api().table().header()).css({",
+      "'background-color': 'darkblue',",
+      "'color': 'white',",
+      "'font-weight': 'bold',",
+      "'font-family': 'Segoe UI'",
+      "});",
+      "}"
+    ),
+    rowCallback = JS(
+      "function(row, data, index) {",
+      "$(row).css('font-family', 'Segoe UI');",
+      "$(row).css({'font-weight': 'bold', 'background-color': '#f2f2f2'});",
+      "$('td:eq(1)', row).css({'text-align': 'right', 'padding-right': '10px'});",
+      "$('td:eq(2)', row).css({'text-align': 'right', 'padding-right': '10px'});",
+      "$('td:eq(3)', row).css({'text-align': 'right', 'padding-right': '10px'});",
+      "}"
+    ),
+    dom = 't'
+  ),
+  rownames = FALSE,
+  colnames = colnames(tabla_resultado_sturges_geocode),
+  caption = tags$caption(
+    style = 'caption-side: top; text-align: center; font-weight: bold; padding: 10px; font-family: Segoe UI;',
+    "Tabla N° 5 - Resultados del Método de Sturges para la Variable Geocode.Status"
+  )
+)
+
+
+#------------------ RESUMEN ESTADISTICO VARIABLE GEOCODE STATUS ------------------#
+
+library(dplyr)
+library(moments)
+library(DT)
+library(htmltools)
+
+#------------------ FUNCIÓN PARA MODA ------------------#
+Mode <- function(x) {
+  ux <- unique(na.omit(x))
+  ux[which.max(tabulate(match(x, ux)))]
+}
+
+#------------------ DATOS VÁLIDOS ------------------#
+valores_geocode <- tabla_datos_geocode_filtrados$Valor_numerico  # Ya corregido con GPS → 20010
+
+# Cuartiles e IQR
+q1_geo <- quantile(valores_geocode, 0.25)
+q3_geo <- quantile(valores_geocode, 0.75)
+iqr_geo <- q3_geo - q1_geo
+
+#------------------ RESUMEN ESTADÍSTICO ------------------#
+resumen_estadistico_geocode <- data.frame(
+  Total_Observaciones = length(valores_geocode),
+  Media               = mean(valores_geocode),
+  Mediana             = median(valores_geocode),
+  Desviacion_Estandar = sd(valores_geocode),
+  Minimo              = min(valores_geocode),
+  Maximo              = max(valores_geocode),
+  Q1                  = q1_geo,
+  Q3                  = q3_geo,
+  IQR                 = iqr_geo,
+  Curtosis            = kurtosis(valores_geocode),
+  Asimetria           = skewness(valores_geocode),
+  Moda                = Mode(valores_geocode),
+  Outliers            = sum(valores_geocode < (q1_geo - 1.5 * iqr_geo) | valores_geocode > (q3_geo + 1.5 * iqr_geo))
+)
+
+# Redondear los valores numéricos
+resumen_estadistico_geocode_formateado <- resumen_estadistico_geocode %>%
+  mutate(across(where(is.numeric), ~ round(., 2)))
+
+#------------------ TABLA INTERACTIVA ------------------#
+datatable(
+  resumen_estadistico_geocode_formateado,
+  options = list(
+    pageLength = 5,
+    autoWidth = TRUE,
+    initComplete = JS(
+      "function(settings, json) {",
+      "$(this.api().table().header()).css({",
+      "'background-color': 'darkblue',",
+      "'color': 'white',",
+      "'font-weight': 'bold',",
+      "'font-family': 'Segoe UI'",
+      "});",
+      "}"
+    ),
+    rowCallback = JS(
+      "function(row, data, index) {",
+      "$(row).css('font-family', 'Segoe UI');",
+      "$(row).css({'font-weight': 'bold', 'background-color': '#f2f2f2'});",
+      "$('td', row).css({'text-align': 'right', 'padding-right': '10px'});",
+      "}"
+    ),
+    dom = 't'
+  ),
+  rownames = FALSE,
+  colnames = c(
+    "Total Observaciones",
+    "Media",
+    "Mediana",
+    "Desviación Estándar",
+    "Mínimo",
+    "Máximo",
+    "Q1",
+    "Q3",
+    "IQR",
+    "Curtosis",
+    "Asimetría",
+    "Moda",
+    "Outliers"
+  ),
+  caption = tags$caption(
+    style = 'caption-side: top; text-align: center; font-weight: bold; padding: 10px; font-family: Segoe UI;',
+    "Tabla N° 6 - Resumen Estadístico de la Variable Geocode.Status"
+  )
+)
+
+
+#----------- GRÁFICA DE BARRAS – FRECUENCIA ABSOLUTA GEOCODE.STATUS --------------#
+
+library(ggplot2)
+library(dplyr)
+
+# Asignar clase usando límites calculados con Sturges
+tabla_datos_geocode_filtrados$Clase_Valor <- cut(
+  tabla_datos_geocode_filtrados$Valor_numerico,
+  breaks = limites_clases_geo,
+  labels = etiquetas_clases_geo,
+  include.lowest = TRUE,
+  right = FALSE
+)
+
+# Calcular frecuencia absoluta por clase
+frecuencia_geocode <- tabla_datos_geocode_filtrados %>%
+  group_by(Clase_Valor) %>%
+  summarise(Frecuencia = n(), .groups = "drop")
+
+# Graficar barras con degradado de color
+ggplot(frecuencia_geocode, aes(x = Clase_Valor, y = Frecuencia, fill = Frecuencia)) +
+  geom_bar(stat = "identity", width = 0.95) +
+  geom_text(aes(label = Frecuencia), vjust = -0.5, color = "black", size = 4) +
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +
+  labs(
+    title = "Gráfica N°19: Distribución Numérica del Geocode Status",
+    x = "Intervalos de valores",
+    y = "N° de Registros",
+    fill = "Frecuencia"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(color = "black"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+
+
+#------------ GRÁFICA DE BARRAS – FRECUENCIA RELATIVA GEOCODE.STATUS ---------------#
+
+library(ggplot2)
+library(dplyr)
+library(scales)
+
+# Asignar clases usando los límites calculados con Sturges
+tabla_datos_geocode_filtrados$Clase_Valor <- cut(
+  tabla_datos_geocode_filtrados$Valor_numerico,
+  breaks = limites_clases_geo,
+  labels = etiquetas_clases_geo,
+  include.lowest = TRUE,
+  right = FALSE
+)
+
+# Calcular frecuencia relativa por clase
+frecuencia_relativa_geocode <- tabla_datos_geocode_filtrados %>%
+  filter(!is.na(Clase_Valor)) %>%
+  group_by(Clase_Valor) %>%
+  summarise(Frecuencia = n(), .groups = "drop") %>%
+  mutate(Frecuencia_Relativa = Frecuencia / sum(Frecuencia))
+
+# Graficar
+ggplot(frecuencia_relativa_geocode, aes(x = Clase_Valor, y = Frecuencia_Relativa, fill = Frecuencia_Relativa)) +
+  geom_bar(stat = "identity", width = 0.95) +
+  geom_text(aes(label = percent(Frecuencia_Relativa, accuracy = 0.1)),
+            vjust = -0.5, color = "black", size = 4) +
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +
+  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  labs(
+    title = "Gráfica N°19.1: Frecuencia Relativa del Geocode Status",
+    x = "Intervalos de valores",
+    y = "Frecuencia Relativa",
+    fill = "Frecuencia Relativa"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(color = "black"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+
+
+#-------------- BOXPLOT – GEOCODE.STATUS ----------------------#
+
+library(dplyr)
+library(ggplot2)
+
+# Clasificación artificial única
+tabla_datos_geocode_filtrados$clasificacion <- "Geocode"
+
+# Filtrar datos válidos
+datos_geo <- tabla_datos_geocode_filtrados %>%
+  filter(!is.na(Valor_numerico)) %>%
+  filter(clasificacion == "Geocode")
+
+# Calcular estadísticas principales
+estadisticas_geo <- datos_geo %>%
+  summarise(
+    xmin = min(Valor_numerico, na.rm = TRUE),
+    q1   = quantile(Valor_numerico, 0.25, na.rm = TRUE),
+    q2   = median(Valor_numerico, na.rm = TRUE),
+    q3   = quantile(Valor_numerico, 0.75, na.rm = TRUE),
+    xmax = max(Valor_numerico, na.rm = TRUE)
+  ) %>%
+  mutate(
+    iqr = q3 - q1,
+    lower_fence = q1 - 1.5 * iqr,
+    upper_fence = q3 + 1.5 * iqr
+  )
+
+# Extraer valores
+xmin <- estadisticas_geo$xmin
+q1 <- estadisticas_geo$q1
+q2 <- estadisticas_geo$q2
+q3 <- estadisticas_geo$q3
+xmax <- estadisticas_geo$xmax
+lower_fence <- estadisticas_geo$lower_fence
+upper_fence <- estadisticas_geo$upper_fence
+
+# Detectar outliers
+datos_outliers_geo <- datos_geo %>%
+  filter(Valor_numerico < lower_fence | Valor_numerico > upper_fence)
+
+# Crear cajas intercuartiles
+cajas_geo <- data.frame(
+  xmin = c(q1, q2),
+  xmax = c(q2, q3),
+  fill = c(0.3, 0.8)
+)
+
+# Altura vertical de las cajas
+ymin_caja <- -0.02
+ymax_caja <-  0.02
+
+#--------------------- Gráfico Boxplot ---------------------------------------#
+
+ggplot() +
+  # Cajas coloreadas entre Q1-Q2 y Q2-Q3
+  geom_rect(data = cajas_geo, aes(xmin = xmin, xmax = xmax, ymin = ymin_caja, ymax = ymax_caja, fill = fill), color = "black") +
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +
+  
+  # Bigotes horizontales
+  geom_segment(aes(x = lower_fence, xend = q1, y = 0, yend = 0), size = 0.6) +
+  geom_segment(aes(x = q3, xend = upper_fence, y = 0, yend = 0), size = 0.6) +
+  
+  # Línea base
+  geom_hline(yintercept = 0, color = "black", size = 0.5) +
+  
+  # Líneas punteadas
+  geom_vline(xintercept = c(lower_fence, q1, q2, q3, upper_fence),
+             linetype = "dotted", color = "darkblue", size = 0.8) +
+  
+  # Etiquetas numéricas
+  annotate("text", x = lower_fence, y = -0.05, label = paste0("Lim. Inf\n", round(lower_fence, 2)), color = "blue", size = 4) +
+  annotate("text", x = q1, y = -0.05, label = paste0("Q1\n", round(q1, 2)), color = "blue", size = 4) +
+  annotate("text", x = q2, y = -0.05, label = paste0("Q2\n", round(q2, 2)), color = "blue", size = 4) +
+  annotate("text", x = q3, y = -0.05, label = paste0("Q3\n", round(q3, 2)), color = "blue", size = 4) +
+  annotate("text", x = upper_fence, y = -0.05, label = paste0("Lim. Sup\n", round(upper_fence, 2)), color = "blue", size = 4) +
+  
+  # Outliers como puntos naranjas
+  geom_point(data = datos_outliers_geo, aes(x = Valor_numerico, y = 0), shape = 21,
+             fill = "orange", color = "black", size = 2) +
+  
+  # Estética general
+  scale_x_continuous(name = "Valores Numéricos de Geocode.Status", breaks = NULL) +
+  ggtitle("Gráfica N°19.3:Identificación de Outliers en Geocode.Status") +
+  theme(
+    panel.background = element_rect(fill = "white", colour = NA),
+    plot.background = element_rect(fill = "white", colour = NA),
+    panel.grid = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    legend.position = "none",
+    plot.title = element_text(hjust = 0.5, size = 18, face = "bold")
+  )
+
+
+
+```

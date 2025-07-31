@@ -1,0 +1,558 @@
+---
+title: "Variable_City"
+author: "Grupo 4"
+date: "2025-07-28"
+output: html_document
+---
+
+
+## R Markdown
+
+
+```{r cars}
+
+datos <- read.csv("C:/Users/User/OneDrive/Documentos/estadistica/Electric and Alternative Fuel Charging Stations.csv",
+                  header = TRUE, sep = ",", dec = ",")
+
+# Ver estructura del dataset
+str(datos)
+
+# Mostrar nombres de las columnas
+colnames(datos)
+
+
+
+#-------------------------------------------------------------------------------
+3
+#------------------- VARIABLE NOMINAL: CITY -------------------------------#
+
+
+# BLOQUE DE LIBRERÍAS
+#-------------------------------------------------------
+library(DT)           # Tablas interactivas
+library(dplyr)        # Manipulación de datos
+library(ggplot2)      # Gráficos
+library(htmltools)    # Para captions en datatable
+library(htmlwidgets)  # Necesario para JS()
+library(scales)       # Para escalas (por ejemplo, percentajes)
+#--------------- EXTRACCIÓN Y LIMPIEZA DE LA VARIABLE City --------------#
+
+# Copia de respaldo por seguridad
+datos$City_original <- datos$City
+
+# Reemplazar todo carácter que NO sea letra (con acentos), espacio o ñ/ü → por espacio
+datos$City <- gsub("[^A-Za-zÁÉÍÓÚáéíóúÑñüÜ \\-]", " ", datos$City)
+
+# Reemplazar múltiples espacios por uno solo
+datos$City <- gsub("\\s+", " ", datos$City)
+
+# Eliminar espacios al inicio y fin
+datos$City <- trimws(datos$City)
+
+#-------------- CLASIFICACIÓN Y VALIDACIÓN DE VALORES DE CITY ----------------#
+
+# Extraer valores únicos no nulos después de limpieza
+city_values <- unique(na.omit(datos$City))
+
+# Clasificar valores válidos: solo letras (con tildes), espacios y guiones
+pattern_valido <- "^[A-Za-zÁÉÍÓÚáéíóúÑñüÜ \\-]+$"
+valores_validos_city <- city_values[grepl(pattern_valido, city_values)]
+
+# Valores sospechosos: no cumplen patrón válido
+valores_sospechosos_city <- city_values[!grepl(pattern_valido, city_values)]
+
+#-------------- RESULTADOS EXPLORATORIOS - VARIABLE CITY ----------------------#
+
+cat("Cantidad de valores válidos (solo letras, espacios o guiones): ", length(valores_validos_city), "\n")
+cat("Cantidad de valores sospechosos (con símbolos, números, etc.): ", length(valores_sospechosos_city), "\n")
+
+cat("\nValores válidos:\n")
+print(valores_validos_city)
+
+cat("\nValores sospechosos:\n")
+print(valores_sospechosos_city)
+
+#---------------------- FILTRO CIUDADES POR PAÍS --------------------------------#
+
+ciudades_eeuu <- datos %>%
+  filter(Country == "US") %>%
+  pull(City) %>%
+  unique() %>%
+  na.omit()
+
+ciudades_canada <- datos %>%
+  filter(Country == "CA") %>%
+  pull(City) %>%
+  unique() %>%
+  na.omit()
+
+cat("Cantidad de ciudades únicas en EE.UU.:", length(ciudades_eeuu), "\n")
+cat("Ciudades únicas en EE.UU.:\n")
+print(ciudades_eeuu)
+
+cat("\nCantidad de ciudades únicas en Canadá:", length(ciudades_canada), "\n")
+cat("Ciudades únicas en Canadá:\n")
+print(ciudades_canada)
+
+#------------- TABLA DE FRECUENCIAS: VALORES VÁLIDOS DE CITY -----------------# 
+
+datos_filtrados <- datos %>% filter(Country %in% c("US", "CA") & !is.na(City))
+
+# Crear tabla de frecuencia con valores válidos
+tabla_city_validos <- datos_filtrados %>%
+  filter(City %in% valores_validos_city) %>%
+  count(City, name = "Frecuencia") %>%
+  arrange(desc(Frecuencia))
+
+cat("\nCantidad de valores válidos de City:", nrow(tabla_city_validos), "\n")
+cat("Valores válidos:\n")
+print(tabla_city_validos$City)
+
+# Valores sospechosos (para revisión)
+cat("\nCantidad de valores sospechosos de City:", length(valores_sospechosos_city), "\n")
+cat("Valores sospechosos:\n")
+print(valores_sospechosos_city)
+
+#--------------- RESUMEN ESTADÍSTICO POR FRECUENCIA – MODA DE CITY --------------#
+
+max_frecuencia_city <- max(tabla_city_validos$Frecuencia, na.rm = TRUE)
+tabla_moda_city <- tabla_city_validos %>% filter(Frecuencia == max_frecuencia_city)
+
+cat("RESUMEN ESTADÍSTICO POR FRECUENCIA – MODA (CITY):\n")
+print(tabla_moda_city)
+
+#------------- TABLA INTERACTIVA MODA FORMATO PERSONALIZADO PARA CITY ------------#
+
+datatable(tabla_moda_city,
+          options = list(
+            pageLength = 5,
+            autoWidth = TRUE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().header()).css({",
+              "'background-color': 'darkblue',",
+              "'color': 'white',",
+              "'font-weight': 'bold',",
+              "'font-family': 'Segoe UI'",
+              "});",
+              "}"
+            ),
+            rowCallback = JS(
+              "function(row, data, index) {",
+              "$(row).css('font-family', 'Segoe UI');",
+              "$(row).css({'font-weight': 'bold', 'background-color': '#f0f0f0'});",
+              "$('td:eq(1)', row).css({'text-align': 'right', 'padding-right': '10px'});",
+              "}"
+            ),
+            dom = 't'
+          ),
+          rownames = FALSE,
+          colnames = c("Ciudad", "Frecuencia"),
+          caption = htmltools::tags$caption(
+            style = 'caption-side: top; text-align: center; font-weight: bold; padding: 10px; font-family: Segoe UI;',
+            "Tabla- Resumen Estadístico por Frecuencia (Moda de Ciudades)"
+          )
+)
+
+#-------------- CREAR TABLA DE FRECUENCIA Y ORDENAR PARA CITY ----------------------#
+
+tabla_ordenada_city <- tabla_city_validos
+
+#-------- AGRUPAR POR RANGOS DECILES DEFINIDOS – CITY -----------------------#
+
+tabla_ordenada_city <- tabla_ordenada_city %>%
+  mutate(Grupo = case_when(
+    Frecuencia >= 1     & Frecuencia <= 10     ~ "001 - 010",
+    Frecuencia >= 11    & Frecuencia <= 20     ~ "011 - 020",
+    Frecuencia >= 21    & Frecuencia <= 50     ~ "021 - 050",
+    Frecuencia >= 51    & Frecuencia <= 70     ~ "051 - 070",
+    Frecuencia >= 71    & Frecuencia <= 100    ~ "071 - 100",
+    Frecuencia >= 101   & Frecuencia <= 200    ~ "101 - 200",
+    Frecuencia >= 201   & Frecuencia <= 300    ~ "201 - 300",
+    Frecuencia >= 301   & Frecuencia <= 400    ~ "301 - 400",
+    Frecuencia >= 401   & Frecuencia <= 1000   ~ "401 - 1000",
+    Frecuencia >= 1001  & Frecuencia <= 1586   ~ "1001 - 1586",
+    TRUE ~ "Fuera de Rango"
+  ))
+
+#------------- AGRUPAR POR RANGO Y CALCULAR FRECUENCIA TOTAL – CITY ----------------#
+
+tabla_por_grupo_city <- tabla_ordenada_city %>%
+  group_by(Grupo) %>%
+  summarise(Total_Frecuencia = sum(Frecuencia), .groups = "drop") %>%
+  arrange(factor(Grupo, levels = c(
+    "001 - 010", "011 - 020", "021 - 050", "051 - 070", "071 - 100",
+    "101 - 200", "201 - 300", "301 - 400", "401 - 1000", "1001 - 1586"
+  )))
+
+#---------------- AGREGAR FILA DE TOTAL GENERAL – CITY ---------------------------#
+
+total_general_city <- sum(tabla_por_grupo_city$Total_Frecuencia, na.rm = TRUE)
+fila_total_city <- data.frame(Grupo = "TOTAL", Total_Frecuencia = total_general_city)
+tabla_por_grupo_city_con_total <- bind_rows(tabla_por_grupo_city, fila_total_city)
+
+#------------------ MOSTRAR TABLA RESULTANTE – CITY -------------------------------#
+
+print(tabla_por_grupo_city_con_total)
+
+#--------- TABLA INTERACTIVA FRECUENCIA ABSOLUTA CITY VS EST. CARGA -------------#
+
+library(htmltools)
+
+datatable(tabla_por_grupo_city_con_total,
+          options = list(
+            pageLength = 10,
+            autoWidth = TRUE,
+            columnDefs = list(
+              list(width = '100px', targets = 1)
+            ),
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().header()).css({",
+              "'background-color': 'darkblue',",
+              "'color': 'white',",
+              "'font-weight': 'bold',",
+              "'font-family': 'Segoe UI'",
+              "});",
+              "}"
+            ),
+            rowCallback = JS(
+              "function(row, data, index) {",
+              "$(row).css('font-family', 'Segoe UI');",
+              
+              "if(data[0] === 'TOTAL') {",
+              "$(row).css({'font-weight': 'bold', 'background-color': '#e0e0e0'});",
+              "} else if(index % 2 === 0) {",
+              "$(row).css('background-color', 'white');",
+              "} else {",
+              "$(row).css('background-color', '#f2f2f2');",
+              "}",
+              
+              "$('td:eq(1)', row).css({'text-align': 'right', 'padding-right': '10px'});",
+              "}"
+            ),
+            dom = 't'
+          ),
+          rownames = FALSE,
+          colnames = c("Rango de Frecuencia", "Frecuencia Total"),
+          caption = tags$caption(
+            style = 'caption-side: top; text-align: center; font-weight: bold; padding: 10px; font-family: Segoe UI;',
+            "Tabla 3. Frecuencia por Intervalo de estaciones de carga de Ciudades"
+          )
+)
+
+#-------------------- TABLA AGRUPADA INCLUYE RANGOS Y CIUDADES ---------------------#
+
+tabla_ciudades_por_grupo <- tabla_ordenada_city %>%
+  filter(Grupo != "Fuera de Rango") %>%
+  group_by(Grupo) %>%
+  summarise(
+    Ciudades = paste0(City, " (", Frecuencia, ")", collapse = ", "),
+    Total_Frecuencia = sum(Frecuencia),
+    .groups = "drop"
+  ) %>%
+  arrange(factor(Grupo, levels = c(
+    "001 - 010", "011 - 020", "021 - 050", "051 - 070", "071 - 100",
+    "101 - 200", "201 - 300", "301 - 400", "401 - 1000", "1001 - 1586"
+  )))
+
+print(tabla_ciudades_por_grupo)
+
+#------- TABLA INTERACTIVA FRECUENCIA ABSOLUTA CIUDAD VS EST. CARGA ---------------#
+
+library(htmltools)
+
+datatable(tabla_ciudades_por_grupo,
+          options = list(
+            pageLength = 10,
+            autoWidth = TRUE,
+            columnDefs = list(
+              list(width = '150px', targets = 0),  # Rango
+              list(width = '450px', targets = 1),  # Ciudades
+              list(width = '130px', targets = 2)   # Total Frecuencia
+            ),
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().header()).css({",
+              "'background-color': 'darkblue',",
+              "'color': 'white',",
+              "'font-weight': 'bold',",
+              "'font-family': 'Segoe UI'",
+              "});",
+              "}"
+            ),
+            rowCallback = JS(
+              "function(row, data, index) {",
+              "$(row).css('font-family', 'Segoe UI');",
+              "if(index % 2 === 0) {",
+              "$(row).css('background-color', 'white');",
+              "} else {",
+              "$(row).css('background-color', '#f9f9f9');",
+              "}",
+              "$('td:eq(2)', row).css({'text-align': 'right', 'padding-right': '10px'});",
+              "}"
+            ),
+            dom = 't'
+          ),
+          rownames = FALSE,
+          colnames = c("Rango de Frecuencia", "Ciudades (Frecuencia)", "Frecuencia Total"),
+          caption = tags$caption(
+            style = 'caption-side: top; text-align: center; font-weight: bold; padding: 10px; font-family: Segoe UI;',
+            "Tabla: Ciudades agrupadas por rango de frecuencia con totales"
+          )
+)
+
+#------------- GRÁFICA DE BARRAS - FRECUENCIA ABSOLUTA POR CIUDAD ---------------------#
+
+library(ggplot2)
+library(dplyr)
+
+# Excluir fila TOTAL y asegurar tipo numérico
+tabla_ciudades_por_grupo_grafico <- tabla_ciudades_por_grupo %>%
+  filter(Grupo != "TOTAL") %>%
+  mutate(Total_Frecuencia = as.numeric(Total_Frecuencia))
+
+# Crear gráfico de barras para City por rangos
+ggplot(tabla_ciudades_por_grupo_grafico, aes(x = reorder(Grupo, -Total_Frecuencia), y = Total_Frecuencia, fill = Total_Frecuencia)) +
+  geom_bar(stat = "identity", width = 0.9) +
+  geom_text(
+    aes(label = Total_Frecuencia),
+    vjust = -0.5,
+    size = 5,
+    family = "Segoe UI",
+    color = "black"
+  ) +
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +  # Gama de colores conservada
+  labs(
+    title = "Gráfica N° 3.1 Frecuencia Absoluta de Estaciones de Carga por Rango de Ciudades",
+    x = "Rango de Frecuencia",
+    y = "Frecuencia Total",
+    fill = "Frecuencia Total"
+  ) +
+  theme_minimal(base_family = "Segoe UI") +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    axis.title.x = element_text(size = 14, face = "bold"),
+    axis.title.y = element_text(size = 14, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 13),
+    axis.text.y = element_text(size = 13),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line.x = element_line(color = "black"),
+    axis.line.y = element_line(color = "black"),
+    legend.position = c(0.88, 0.85),
+    legend.title = element_text(face = "bold")
+  )
+
+#-------------- GRÁFICA CIRCULAR - FRECUENCIA ABSOLUTA POR CITY --------------#
+
+library(ggplot2)
+library(dplyr)
+library(scales)
+
+# Preparar datos para gráfica circular
+tabla_ciudades_por_grupo_circular <- tabla_ciudades_por_grupo %>%
+  filter(Grupo != "TOTAL") %>%
+  mutate(
+    Total_Frecuencia = as.numeric(Total_Frecuencia),
+    porcentaje = Total_Frecuencia / sum(Total_Frecuencia)
+  ) %>%
+  arrange(Total_Frecuencia)  # Para mantener orden de colores
+
+# Reordenar factor Grupo según Total_Frecuencia ascendente
+tabla_ciudades_por_grupo_circular$Grupo <- factor(
+  tabla_ciudades_por_grupo_circular$Grupo,
+  levels = tabla_ciudades_por_grupo_circular$Grupo
+)
+
+# Calcular posiciones para gráfico circular
+tabla_ciudades_por_grupo_circular <- tabla_ciudades_por_grupo_circular %>%
+  arrange(desc(Total_Frecuencia)) %>%
+  mutate(
+    ymax = cumsum(porcentaje),
+    ymin = lag(ymax, default = 0),
+    pos = (ymax + ymin) / 2
+  )
+
+# Paleta de colores skyblue → darkblue según orden ascendente
+colores_por_grupo_circular <- setNames(
+  colorRampPalette(c("skyblue", "darkblue"))(length(levels(tabla_ciudades_por_grupo_circular$Grupo))),
+  levels(tabla_ciudades_por_grupo_circular$Grupo)
+)
+
+# Agregar color para etiquetas
+tabla_ciudades_por_grupo_circular$color_etiqueta <- colores_por_grupo_circular[
+  as.character(tabla_ciudades_por_grupo_circular$Grupo)
+]
+
+# Crear gráfico circular
+ggplot(tabla_ciudades_por_grupo_circular, aes(
+  ymax = ymax, ymin = ymin,
+  xmax = 2, xmin = 0,
+  fill = Grupo
+)) +
+  geom_rect(color = "white") +
+  coord_polar(theta = "y") +
+  
+  # Líneas guía
+  geom_segment(aes(x = 2, xend = 2.2, y = pos, yend = pos), color = "gray30") +
+  geom_segment(aes(x = 2.2, xend = 2.3, y = pos, yend = pos), color = "gray30") +
+  
+  # Etiquetas con color por grupo
+  geom_label(
+    aes(x = 2.5, y = pos, label = Total_Frecuencia),
+    fill = NA,
+    color = tabla_ciudades_por_grupo_circular$color_etiqueta,
+    size = 5,
+    family = "Segoe UI",
+    label.size = 0.8
+  ) +
+  
+  # Escala de colores personalizada
+  scale_fill_manual(values = colores_por_grupo_circular) +
+  
+  # Título y leyenda
+  labs(
+    title = "Gráfica N° 3.2 Distribucion de la Frecuencia Absoluta de Estaciones de Carga por Rango de Ciudades",
+    fill = "Grupo"
+  ) +
+  theme_void(base_family = "Segoe UI") +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    legend.position = c(1.1, 0.7),
+    legend.title = element_text(face = "bold", size = 12),
+    legend.text = element_text(size = 11)
+  )
+
+#----------- GRÁFICA DE BARRAS - FRECUENCIA RELATIVA POR CIUDAD -------------------#
+
+library(ggplot2)
+library(dplyr)
+library(scales)  # para formatear porcentajes
+
+# Preparar tabla para gráfico (sin fila TOTAL y con proporciones)
+tabla_ciudades_por_grupo_relativa <- tabla_ciudades_por_grupo %>% 
+  filter(Grupo != "TOTAL") %>%
+  mutate(
+    Total_Frecuencia = as.numeric(Total_Frecuencia),
+    Frecuencia_Relativa = Total_Frecuencia / sum(Total_Frecuencia)
+  )
+
+# Crear gráfico de barras para frecuencia relativa
+ggplot(tabla_ciudades_por_grupo_relativa, aes(
+  x = reorder(Grupo, -Frecuencia_Relativa),
+  y = Frecuencia_Relativa,
+  fill = Frecuencia_Relativa
+)) +
+  geom_bar(stat = "identity", width = 0.9) +
+  geom_text(
+    aes(label = percent(Frecuencia_Relativa, accuracy = 0.1)),
+    vjust = -0.5,
+    size = 5,
+    family = "Segoe UI",
+    color = "black"
+  ) +
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +
+  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  labs(
+    title = "Gráfica N° 3.3 Frecuencia Relativa (%) de Estaciones de Carga por Rango de Ciudades",
+    x = "Rango de Frecuencia",
+    y = "Frecuencia Relativa",
+    fill = "Frecuencia Relativa"
+  ) +
+  theme_minimal(base_family = "Segoe UI") +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    axis.title.x = element_text(size = 14, face = "bold"),
+    axis.title.y = element_text(size = 14, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 13),
+    axis.text.y = element_text(size = 13),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line.x = element_line(color = "black"),
+    axis.line.y = element_line(color = "black"),
+    legend.position = c(0.88, 0.85),
+    legend.title = element_text(face = "bold")
+  )
+
+#-------------- GRÁFICA CIRCULAR - FRECUENCIA RELATIVA POR CITY -----------#
+
+library(ggplot2)
+library(dplyr)
+library(scales)
+
+# Preparar datos: eliminar TOTAL, convertir y calcular % relativa
+tabla_ciudades_por_grupo_relativa <- tabla_ciudades_por_grupo %>%
+  filter(Grupo != "TOTAL") %>%
+  mutate(
+    Total_Frecuencia = as.numeric(Total_Frecuencia),
+    porcentaje = Total_Frecuencia / sum(Total_Frecuencia)
+  )
+
+# Ordenar por frecuencia ascendente (para asignar colores suaves a menores frecuencias)
+tabla_ciudades_por_grupo_relativa <- tabla_ciudades_por_grupo_relativa %>%
+  arrange(Total_Frecuencia)
+
+# Reordenar factor de niveles para mantener colores ordenados
+tabla_ciudades_por_grupo_relativa$Grupo <- factor(
+  tabla_ciudades_por_grupo_relativa$Grupo,
+  levels = tabla_ciudades_por_grupo_relativa$Grupo
+)
+
+# Calcular posiciones para el gráfico circular (orden descendente)
+tabla_ciudades_por_grupo_relativa <- tabla_ciudades_por_grupo_relativa %>%
+  arrange(desc(Total_Frecuencia)) %>%
+  mutate(
+    ymax = cumsum(porcentaje),
+    ymin = lag(ymax, default = 0),
+    pos = (ymax + ymin) / 2
+  )
+
+# Paleta personalizada de skyblue a darkblue
+colores_por_grupo_relativa <- setNames(
+  colorRampPalette(c("skyblue", "darkblue"))(length(levels(tabla_ciudades_por_grupo_relativa$Grupo))),
+  levels(tabla_ciudades_por_grupo_relativa$Grupo)
+)
+
+# Etiquetas del mismo color que el grupo
+tabla_ciudades_por_grupo_relativa$color_etiqueta <- colores_por_grupo_relativa[as.character(tabla_ciudades_por_grupo_relativa$Grupo)]
+
+# Crear gráfico circular
+ggplot(tabla_ciudades_por_grupo_relativa, aes(
+  ymax = ymax, ymin = ymin,
+  xmax = 2, xmin = 0,
+  fill = Grupo
+)) +
+  geom_rect(color = "white") +
+  coord_polar(theta = "y") +
+  
+  # Líneas guía
+  geom_segment(aes(x = 2, xend = 2.2, y = pos, yend = pos), color = "gray30") +
+  geom_segment(aes(x = 2.2, xend = 2.3, y = pos, yend = pos), color = "gray30") +
+  
+  # Etiquetas porcentuales
+  geom_label(
+    aes(x = 2.5, y = pos, label = percent(porcentaje, accuracy = 0.1)),
+    fill = NA,
+    color = tabla_ciudades_por_grupo_relativa$color_etiqueta,
+    size = 5,
+    family = "Segoe UI",
+    label.size = 0.8
+  ) +
+  
+  # Escala de colores manual
+  scale_fill_manual(values = colores_por_grupo_relativa) +
+  
+  labs(
+    title = "Gráfica N° 3.4 Porcentaje de Frecuencia Relativa de Estaciones de Carga por Rango de Estados",
+    fill = "Grupo"
+  ) +
+  theme_void(base_family = "Segoe UI") +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    legend.position = c(1.1, 0.7),
+    legend.title = element_text(face = "bold", size = 12),
+    legend.text = element_text(size = 11)
+  )
+
+```

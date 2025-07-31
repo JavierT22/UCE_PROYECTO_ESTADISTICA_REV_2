@@ -1,0 +1,329 @@
+---
+title: "Regresion Lineal"
+author: "Grupo 4 Petroleos"
+date: "2025-07-31"
+output: html_document
+---
+
+
+## Regresion Lineal
+
+
+```{r cars}
+
+#------------------ CARGA DATASET REGRESIONES -------------------------------------
+datos_regresion <- read.csv("C:/Users/Javier/Documents/UCE_2024/UCE_25_ESTADISTICA/UCE_25_PROYECTO/Charging_Stations_Regression_REV_1.csv", 
+                            header = TRUE, sep = ",", dec = ",")
+
+# MOSTRAR NOMBRES DE COLUMNAS
+colnames(datos_regresion)
+
+
+#----------------- REGRESION LINEAL: Conteo_estaciones_por_Año VS Año -------------------------
+
+
+#================ LIBRERÍAS
+library(ggplot2)
+library(DT)
+library(lubridate)
+library(dplyr)
+
+#================ PARÁMETROS GENERALES
+anio_minimo <- 1990
+fecha_base <- as.Date("1974-01-01")
+
+#================ PREPROCESAMIENTO
+# Convertir la fecha
+datos_regresion$Open.Date <- as.Date(datos_regresion$Open.Date, format = "%d/%m/%Y")
+
+# Crear columnas auxiliares
+datos_regresion <- datos_regresion %>%
+  mutate(
+    Año = year(Open.Date),
+    AñoMes = format(Open.Date, "%Y-%m"),
+    Dias_seleccion = as.numeric(difftime(Open.Date, fecha_base, units = "days"))
+  )
+
+#================ CONTEO ANUAL
+conteo_anual <- datos_regresion %>%
+  count(Año, name = "Conteo_estaciones_por_Año")
+
+# Unir el conteo al dataset original
+datos_regresion <- left_join(datos_regresion, conteo_anual, by = "Año")
+
+#================ AGRUPAMIENTO GEOGRÁFICO (Zona_Cluster)
+# Convertir Latitude.y y LongitudeMes a numérico
+datos_regresion$Latitude <- as.numeric(gsub(",", ".", as.character(datos_regresion$Latitude)))
+datos_regresion$Longitude <- as.numeric(gsub(",", ".", as.character(datos_regresion$Longitud)))
+
+# Eliminar filas con coordenadas faltantes
+coordenadas_validas <- datos_regresion %>%
+  filter(!is.na(Latitude), !is.na(Longitude))
+
+# Clustering con k-means
+set.seed(123)
+k_clusters <- 5
+modelo_kmeans <- kmeans(coordenadas_validas[, c("Latitude", "Longitude")], centers = k_clusters)
+
+# Asignar cluster al dataset original
+datos_regresion$Zona_Cluster <- NA
+datos_regresion$Zona_Cluster[!is.na(datos_regresion$Latitude) & !is.na(datos_regresion$Longitude)] <- modelo_kmeans$cluster
+datos_regresion$Zona_Cluster <- as.factor(datos_regresion$Zona_Cluster)
+
+unique(datos_regresion$Zona_Cluster)
+
+#================ FILTRO POR ZONA SELECCIONADA
+zona_seleccionada <- "1"  # <---- CAMBIAR AQUÍ PARA OTRA ZONA
+
+# Aplicar filtro por zona, año y rango de latitud [40, 42]
+datos_filtrados <- datos_regresion %>%
+  filter(
+    Año >= anio_minimo,
+    !is.na(Año),
+    !is.na(Latitude),
+    !is.na(Longitude),
+    Zona_Cluster == zona_seleccionada,
+    Latitude >= 40.5,
+    Latitude <= 40.7
+  )
+#================ VARIABLES PARA REGRESIÓN
+x <- datos_filtrados$Longitude
+y <- datos_filtrados$Latitude
+
+# Eliminar NA
+valido <- complete.cases(x, y)
+x <- x[valido]
+y <- y[valido]
+
+datos_limpio <- data.frame(x = x, y = y)
+
+#================ PROMEDIOS
+promedios <- data.frame(
+  Variable = c("Longitude", "Latitude"),
+  Media = c(mean(x), mean(y))
+)
+print("=== Promedios de variables ===")
+print(promedios)
+
+#================ CORRELACIÓN
+correlacion_pearson <- cor(x, y, method = "pearson")
+print("=== Correlación de Pearson ===")
+print(correlacion_pearson)
+
+# Texto para mostrar en la gráfica
+texto_pearson <- paste0("r = ", round(correlacion_pearson, 3))
+
+#================ MODELO DE REGRESIÓN LINEAL
+modelo_lineal <- lm(y ~ x)
+resumen_modelo <- summary(modelo_lineal)
+print("=== Resumen del modelo de regresión ===")
+print(resumen_modelo)
+
+#================ PREDICCIÓN
+nuevo_x <- data.frame(x = mean(x))  # Longitud de ejemplo para predicción
+prediccion <- predict(modelo_lineal, newdata = nuevo_x)
+print("=== Predicción para valor medio de Longitude ===")
+print(prediccion)
+
+#================ ECUACIÓN Y PARÁMETROS
+a <- round(coef(modelo_lineal)[1], 2)
+b <- round(coef(modelo_lineal)[2], 2)
+r2 <- round(resumen_modelo$r.squared, 4)
+pval <- round(resumen_modelo$coefficients[2, 4], 4)
+
+ecuacion <- paste0("Latitude = ", a, " + ", b, " * Longitude\nR² = ", r2, ", p = ", pval)
+
+cat("=== Ecuación del modelo ===\n")
+cat("Latitude =", a, "+", b, "× Longitude\n")
+cat("R²:", r2, "\n")
+cat("p-valor:", pval, "\n")
+
+#================ VISUALIZACIÓN
+
+ggplot(data = datos_filtrados, aes(x = Longitude, y = Latitude)) +
+  geom_point(color = "red", alpha = 0.3) +
+  geom_smooth(method = "lm", se = FALSE, color = "darkblue", linewidth = 1.2) +
+  labs(
+    title = paste0("Zona ", zona_seleccionada, " - Regresión: Longitude vs Latitude (Solo rango 40–42°)"),
+    x = "Longitude",
+    y = "Latitude"
+  ) +
+  annotate("text", x = Inf, y = -Inf, label = ecuacion,
+           hjust = 1.05, vjust = -2.0, size = 4.2, color = "black") +
+  annotate("text", x = Inf, y = -Inf, label = texto_pearson,
+           hjust = 1.6, vjust = -3.5, size = 4.2, color = "red") +
+  theme_minimal(base_size = 13) +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(color = "black"),
+    axis.text.x = element_text(angle = 0, hjust = 0.5),
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+
+#================ TABLAS INTERACTIVAS
+
+library(htmltools)
+
+# 1. Ecuación del modelo
+datatable(
+  data.frame(
+    `Ecuación del Modelo` = ecuacion,
+    `Interpretación` = paste("Por cada unidad de longitud, la latitud cambia en promedio", b),
+    `R²` = r2,
+    `Valor p` = pval
+  ),
+  caption = htmltools::tags$caption(
+    style = 'caption-side: top; text-align: center; font-weight: bold; padding: 8px; font-family: Segoe UI;',
+    paste("Tabla - Ecuación del Modelo (Zona", zona_seleccionada, ")")
+  ),
+  options = list(
+    dom = 't',
+    initComplete = JS("
+      function(settings, json) {
+        $(this.api().table().header()).css({
+          'background-color': 'darkblue',
+          'color': 'white',
+          'font-family': 'Segoe UI',
+          'font-weight': 'bold'
+        });
+      }")
+  ),
+  rownames = FALSE
+)
+
+# 2. Resumen del modelo
+datatable(
+  data.frame(
+    Descripción = c("Ecuación del modelo", "Interpretación del coeficiente", "R² (Bondad del ajuste)", "Valor p"),
+    Resultado = c(
+      paste0("Latitude = ", a, " + ", b, " × Longitude"),
+      paste("Por cada unidad en longitud, la latitud cambia en", b),
+      r2,
+      pval
+    )
+  ),
+  caption = tags$caption(
+    style = 'caption-side: top; text-align: center; font-weight: bold; font-family: Segoe UI; padding: 8px;',
+    "Tabla - Resumen de la Regresión"
+  ),
+  options = list(
+    dom = 't',
+    initComplete = JS("
+      function(settings, json) {
+        $(this.api().table().header()).css({
+          'background-color': 'darkblue',
+          'color': 'white',
+          'font-weight': 'bold',
+          'font-family': 'Segoe UI'
+        });
+      }")
+  ),
+  rownames = FALSE
+)
+
+# 3. Promedios
+datatable(
+  promedios,
+  caption = tags$caption(
+    style = 'caption-side: top; text-align: center; font-weight: bold; font-family: Segoe UI; padding: 8px;',
+    "Tabla - Promedios de Variables"
+  ),
+  options = list(
+    dom = 't',
+    initComplete = JS("
+      function(settings, json) {
+        $(this.api().table().header()).css({
+          'background-color': 'darkblue',
+          'color': 'white',
+          'font-family': 'Segoe UI',
+          'font-weight': 'bold'
+        });
+      }")
+  )
+)
+
+# 4. Correlación
+datatable(
+  data.frame(`Correlación de Pearson (r)` = round(correlacion_pearson, 4)),
+  caption = tags$caption(
+    style = 'caption-side: top; text-align: center; font-weight: bold; font-family: Segoe UI; padding: 8px;',
+    "Tabla - Coeficiente de Correlación de Pearson"
+  ),
+  options = list(
+    dom = 't',
+    initComplete = JS("
+      function(settings, json) {
+        $(this.api().table().header()).css({
+          'background-color': 'darkblue',
+          'color': 'white',
+          'font-family': 'Segoe UI',
+          'font-weight': 'bold'
+        });
+      }")
+  ),
+  rownames = FALSE
+)
+
+# 5. Coeficientes del modelo
+datatable(
+  data.frame(
+    Coeficiente = names(coef(modelo_lineal)),
+    Estimación = round(coef(modelo_lineal), 4),
+    ErrorStd = round(resumen_modelo$coefficients[, "Std. Error"], 4),
+    t_Valor = round(resumen_modelo$coefficients[, "t value"], 4),
+    p_Valor = round(resumen_modelo$coefficients[, "Pr(>|t|)"], 4)
+  ),
+  caption = tags$caption(
+    style = 'caption-side: top; text-align: center; font-weight: bold; font-family: Segoe UI; padding: 8px;',
+    "Tabla - Coeficientes del Modelo Lineal"
+  ),
+  options = list(
+    dom = 't',
+    initComplete = JS("
+      function(settings, json) {
+        $(this.api().table().header()).css({
+          'background-color': 'darkblue',
+          'color': 'white',
+          'font-family': 'Segoe UI',
+          'font-weight': 'bold'
+        });
+      }")
+  ),
+  rownames = FALSE
+)
+
+# 6. Agrupamiento por zona
+datos_regresion %>%
+  group_by(Zona_Cluster) %>%
+  summarise(
+    Latitud_media = round(mean(Latitude, na.rm = TRUE), 2),
+    Longitud_media = round(mean(Longitude, na.rm = TRUE), 2),
+    Conteo = n()
+  ) %>%
+  datatable(
+    caption = tags$caption(
+      style = 'caption-side: top; text-align: center; font-weight: bold; font-family: Segoe UI; padding: 8px;',
+      "Tabla - Agrupamiento Geográfico por Zona"
+    ),
+    options = list(
+      dom = 't',
+      initComplete = JS("
+        function(settings, json) {
+          $(this.api().table().header()).css({
+            'background-color': 'darkblue',
+            'color': 'white',
+            'font-weight': 'bold',
+            'font-family': 'Segoe UI'
+          });
+        }")
+    ),
+    rownames = FALSE
+  )
+
+
+
+
+
+
+```

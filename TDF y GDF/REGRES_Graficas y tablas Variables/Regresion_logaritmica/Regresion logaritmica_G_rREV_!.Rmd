@@ -1,0 +1,151 @@
+---
+title: "Regresion Logaritmica"
+author: "Grupo 4 Petroleos"
+date: "2025-07-31"
+output: html_document
+---
+
+
+## Regresion Logaritmica
+
+
+```{r cars}
+
+library(DT)
+
+# ============================
+
+datos <- read.csv("C:/Users/Javier/Documents/UCE_2024/UCE_25_ESTADISTICA/UCE_25_PROYECTO/Charging_Stations_Regression_REV_2.csv", 
+                            header = TRUE, sep = ",", dec = ",")
+
+
+
+
+# Convertir columnas relevantes a num?rico
+datos$Año <- as.numeric(datos$Año)
+datos$Conteo_estaciones_por_Año <- as.numeric(datos$Conteo_estaciones_por_Año)
+
+# Filtrar desde el Año 2000 y eliminar valores inv?lidos
+datos <- subset(datos, Año >= 2000 & Conteo_estaciones_por_Año > 0)
+datos <- na.omit(datos)
+
+# ============================
+# 2. Crear columna logar?tmica
+# ============================
+datos$log_x <- log(datos$Año-1999)
+
+# ============================
+# 3. Ajustar modelo logar?tmico
+# ============================
+modelo_log <- lm(Conteo_estaciones_por_Año ~ log_x, data = datos)
+
+# Mostrar resultados
+summary(modelo_log)
+
+# Coeficientes
+a <- coef(modelo_log)[1]
+b <- coef(modelo_log)[2]
+cat("Modelo logar?tmico ajustado: y =", round(a, 4), "+", round(b, 4), "* ln(x)\n")
+
+# ============================
+# 4. Graficar modelo y datos
+# ============================
+# Secuencia de valores para predicci?n
+x_seq <- seq(min(datos$Año-1999), max(datos$Año-1999),by=0.01)
+log_x_seq <- log(x_seq)
+y_pred <- a + b * log_x_seq
+
+# Graficar puntos reales
+# Graficar puntos reales con t?tulo m?s peque?o
+plot(datos$Año - 1999, datos$Conteo_estaciones_por_Año,
+     main = "Gr?fica No1:Regresi?n Logar?tmica: Año convertido a Unidades vs Conteo de Estaciones ",
+     xlab = "Año", ylab = "Conteo de Estaciones por Año",
+     pch = 19, col = "darkblue",
+     cex.main = 0.8)  # Ajusta este valor para cambiar el tamAño del t?tulo
+
+# Agregar l?nea del modelo
+lines(x_seq, y_pred, col = "red", lwd = 2)
+# Graficar puntos reales con Año desnormalizado
+plot(datos$Año, datos$Conteo_estaciones_por_Año,
+     main = "Gr?fica No 1.2- Regresi?n Logar?tmica: Año real vs Conteo de Estaciones",
+     xlab = "Año", ylab = "Conteo de Estaciones",
+     pch = 19, col = "darkblue",
+     cex.main = 0.9)
+
+# L?nea del modelo con Año real
+x_seq_real <- seq(min(datos$Año), max(datos$Año), by = 0.01)
+log_x_seq_real <- log(x_seq_real - 1999)
+y_pred_real <- a + b * log_x_seq_real
+
+lines(x_seq_real, y_pred_real, col = "red", lwd = 2)
+
+
+# ============================
+# 5. Calcular R (correlaci?n)
+# ============================
+R <- cor(datos$Conteo_estaciones_por_Año, predict(modelo_log))
+cat("Coeficiente de correlaci?n R =", round(R, 4), "\n")
+# Crear tabla con predicciones y residuales
+datos$modelo_pred <- predict(modelo_log)
+datos$residual <- datos$Conteo_estaciones_por_Año - datos$modelo_pred
+# Crear data frame para mostrar
+tabla_pearson <- data.frame(
+  Relacion = "Observado vs Predicho",
+  Coeficiente_R = round(R, 4)
+)
+library(htmltools)
+# Mostrar como tabla interactiva
+datatable(tabla_pearson,
+          options = list(dom = 't'),  # Solo mostrar la tabla sin buscador/paginador
+          caption = "Coeficiente de correlaci?n de Pearson (Modelo Logar?tmico)")
+datatable(
+  tabla_pearson,
+  rownames = FALSE,
+  caption = tags$caption(
+    style = 'caption-side: top; text-align: center; font-weight: bold; font-family: Segoe UI; padding: 8px;',
+    "Tabla No 1: Coeficiente de Correlaci?n de Pearson (Modelo Logar?tmico)"
+  ),
+  options = list(
+    dom = 't',
+    initComplete = JS("
+      function(settings, json) {
+        $(this.api().table().header()).css({
+          'background-color': 'darkblue',
+          'color': 'white',
+          'font-weight': 'bold',
+          'font-family': 'Segoe UI'
+        });
+      }")
+  )
+)
+# Crear tabla din?mica
+library(DT)
+
+tabla_resultados <- datos[, c("Año", "Conteo_estaciones_por_Año", "modelo_pred", "residual")]
+colnames(tabla_resultados) <- c("Año", "Estaciones_Observadas", "Estaciones_Predichas", "Residual")
+
+# Mostrar tabla con estilo
+datatable(
+  tabla_resultados,
+  rownames = FALSE,
+  caption = tags$caption(
+    style = 'caption-side: top; text-align: center; font-weight: bold; font-family: Segoe UI; padding: 8px;',
+    "Tabla No 2:Observado vs Predicho (Modelo Logar?tmico)"
+  ),
+  options = list(
+    pageLength = 10,
+    autoWidth = TRUE,
+    initComplete = JS("
+      function(settings, json) {
+        $(this.api().table().header()).css({
+          'background-color': 'darkblue',
+          'color': 'white',
+          'font-weight': 'bold',
+          'font-family': 'Segoe UI'
+        });
+      }")
+  )
+)
+
+
+```

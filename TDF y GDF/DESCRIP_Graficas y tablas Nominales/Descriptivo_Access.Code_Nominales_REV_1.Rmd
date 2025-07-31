@@ -1,0 +1,898 @@
+---
+title: "Variable_Access.Code"
+author: "Grupo 4"
+date: "2025-07-28"
+output: html_document
+---
+
+
+
+## R Markdown
+
+
+```{r cars}
+#-------------------------------------------------------
+# CARGA DEL DATASET VARIABLES NOMINALES
+#-------------------------------------------------------
+
+datos <- read.csv("C:/Users/User/OneDrive/Documentos/estadistica/Electric and Alternative Fuel Charging Stations.csv",
+                  header = TRUE, sep = ",", dec = ",")
+
+# Ver estructura del dataset
+str(datos)
+
+# Mostrar nombres de las columnas
+colnames(datos)
+
+
+#-------------------------------------------------------------------------------
+4
+#---------------------- VARIABLE NOMINAL Access.Code ------------------------------#
+
+# BLOQUE DE LIBRERÍAS
+#-------------------------------------------------------
+library(DT)           # Tablas interactivas
+library(dplyr)        # Manipulación de datos
+library(ggplot2)      # Gráficos
+library(htmltools)    # Para captions en datatable
+library(htmlwidgets)  # Necesario para JS()
+library(scales)       # Para escalas (por ejemplo, percentajes)
+#--------- EXTRACCIÓN Y LIMPIEZA DE LA VARIABLE Access.Code ---------#
+
+# Obtener valores únicos no nulos de Access.Code (de datos originales, sin filtro)
+fuel_type_values_raw <- unique(na.omit(datos$Access.Code))
+
+
+#-------------- CLASIFICACIÓN DE VALORES DE Access.Code -------------#
+
+# Clasificar valores válidos: todos los valores sin filtrar, incluyendo sospechosos
+valores_validos_fuel_type_raw <- fuel_type_values_raw
+
+# Como todos son válidos, no hay valores sospechosos para mostrar
+valores_sospechosos_fuel_type_raw <- character(0)
+
+
+#------------------- RESULTADOS EXPLORATORIOS ---------------------#
+
+# Mostrar conteo de cada grupo
+cat("Cantidad de valores válidos (todos los valores, sin filtrar): ", length(valores_validos_fuel_type_raw), "\n")
+cat("Cantidad de valores sospechosos (ninguno, ya que se consideran válidos): ", length(valores_sospechosos_fuel_type_raw), "\n")
+
+# Mostrar los valores encontrados
+cat("\nValores válidos:\n")
+print(valores_validos_fuel_type_raw)
+
+cat("\nValores sospechosos:\n")
+print(valores_sospechosos_fuel_type_raw)
+
+
+#----------- TABLA DE FRECUENCIAS: VALORES VÁLIDOS DE Access.Code ------------#
+
+# Filtrar datos no nulos en Access.Code
+datos_fuel_filtrados <- datos %>% filter(!is.na(Access.Code))
+
+# Obtener valores únicos (sin filtrar, incluyendo sospechosos)
+fuel_type_values_filtrados <- unique(na.omit(datos_fuel_filtrados$Access.Code))
+
+# Considerar todos los valores como válidos (incluyendo sospechosos)
+valores_validos_fuel_type_filtrados <- fuel_type_values_filtrados
+
+# No quedan valores sospechosos excluidos
+valores_sospechosos_fuel_type_filtrados <- character(0)
+
+# Mostrar resultados
+cat("\nCantidad de valores válidos de Access.Code (incluyendo sospechosos):", length(valores_validos_fuel_type_filtrados), "\n")
+cat("Valores válidos:\n")
+print(valores_validos_fuel_type_filtrados)
+
+cat("\nCantidad de valores sospechosos de Access.Code:", length(valores_sospechosos_fuel_type_filtrados), "\n")
+cat("Valores sospechosos:\n")
+print(valores_sospechosos_fuel_type_filtrados)
+
+
+# Crear tabla de frecuencia solo con valores válidos (todos incluidos)
+tabla_fuel_type_validos <- table(datos_fuel_filtrados$Access.Code[datos_fuel_filtrados$Access.Code %in% valores_validos_fuel_type_filtrados])
+
+# Convertir a data.frame ordenado
+tabla_ordenada_fuel_type <- as.data.frame(tabla_fuel_type_validos)
+colnames(tabla_ordenada_fuel_type) <- c("Access.Code", "Frecuencia")
+tabla_ordenada_fuel_type <- tabla_ordenada_fuel_type[order(-tabla_ordenada_fuel_type$Frecuencia), ]
+
+# Mostrar tabla final
+print(tabla_ordenada_fuel_type)
+
+#--------- RESUMEN ESTADÍSTICO POR FRECUENCIA – MODA DE Access.Code ----------------#
+
+# Calcular la frecuencia máxima (moda)
+max_frecuencia_fuel_type <- max(tabla_ordenada_fuel_type$Frecuencia, na.rm = TRUE)
+
+# Filtrar la(s) moda(s)
+tabla_moda_fuel_type <- tabla_ordenada_fuel_type[tabla_ordenada_fuel_type$Frecuencia == max_frecuencia_fuel_type, ]
+
+# Imprimir resultado modal
+cat("RESUMEN ESTADÍSTICO POR FRECUENCIA – MODA (Access.Code):\n")
+print(tabla_moda_fuel_type)
+
+#----------- TABLA INTERACTIVA MODA FORMATO PERSONALIZADO PARA Access.Code -------------#
+
+datatable(tabla_moda_fuel_type,
+          options = list(
+            pageLength = 5,
+            autoWidth = TRUE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().header()).css({",
+              "'background-color': 'darkblue',",
+              "'color': 'white',",
+              "'font-weight': 'bold',",
+              "'font-family': 'Segoe UI'",
+              "});",
+              "}"
+            ),
+            rowCallback = JS(
+              "function(row, data, index) {",
+              "$(row).css('font-family', 'Segoe UI');",
+              "$(row).css({'font-weight': 'bold', 'background-color': '#e0e0e0'});",
+              "$('td:eq(1)', row).css({'text-align': 'right', 'padding-right': '10px'});",
+              "}"
+            ),
+            dom = 't'
+          ),
+          rownames = FALSE,
+          colnames = c("Access.Code", "Frecuencia"),
+          caption = htmltools::tags$caption(
+            style = 'caption-side: top; text-align: center; font-weight: bold; padding: 10px; font-family: Segoe UI;',
+            "Tabla - Resumen Estadístico por Frecuencia (Moda de Access.Code)"
+          )
+)
+
+#------------- AGREGAR FILA DE TOTAL GENERAL EN TABLA Access.Code -------------------#
+
+total_general_fuel_type <- sum(tabla_ordenada_fuel_type$Frecuencia, na.rm = TRUE)
+fila_total_fuel_type <- data.frame(Access.Code = "TOTAL", Frecuencia = total_general_fuel_type)
+tabla_fuel_type_con_total <- bind_rows(tabla_ordenada_fuel_type, fila_total_fuel_type)
+
+
+# Mostrar tabla con total
+print(tabla_fuel_type_con_total)
+
+
+#-------- TABLA INTERACTIVA FRECUENCIA ABSOLUTA FUEL TYPE CODE VS EST. CARGA ---------#
+
+library(DT)
+library(htmltools)
+
+datatable(tabla_fuel_type_con_total,
+          options = list(
+            pageLength = 10,
+            autoWidth = TRUE,
+            columnDefs = list(
+              list(width = '100px', targets = 1)
+            ),
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().header()).css({",
+              "'background-color': 'darkblue',",
+              "'color': 'white',",
+              "'font-weight': 'bold',",
+              "'font-family': 'Segoe UI'",
+              "});",
+              "}"
+            ),
+            rowCallback = JS(
+              "function(row, data, index) {",
+              "$(row).css('font-family', 'Segoe UI');",
+              
+              "if(data[0] === 'TOTAL') {",
+              "$(row).css({'font-weight': 'bold', 'background-color': '#e0e0e0'});",
+              "} else if(index % 2 === 0) {",
+              "$(row).css('background-color', 'white');",
+              "} else {",
+              "$(row).css('background-color', '#f2f2f2');",
+              "}",
+              
+              "$('td:eq(1)', row).css({'text-align': 'right', 'padding-right': '10px'});",
+              "}"
+            ),
+            dom = 't'
+          ),
+          rownames = FALSE,
+          colnames = c("Access.Code", "Frecuencia Total"),
+          caption = tags$caption(
+            style = 'caption-side: top; text-align: center; font-weight: bold; padding: 10px; font-family: Segoe UI;',
+            "Tabla 4. Frecuencia de Estaciones de Carga por Código de Acceso (Access.Code)"
+          )
+)
+
+#------------- GRÁFICA DE BARRAS - FRECUENCIA ABSOLUTA CODE ACCESS ----------------#
+
+
+library(ggplot2)
+library(dplyr)
+
+# Renombrar tabla original a un nombre más claro para Access.Code
+tabla_frecuencia_fuel_type <- tabla_fuel_type_con_total
+
+# Filtrar fila TOTAL si existe
+tabla_frecuencia_fuel_type_filtrada <- tabla_frecuencia_fuel_type %>% 
+  filter(Access.Code != "TOTAL") %>%
+  mutate(Frecuencia = as.numeric(Frecuencia))
+
+# Crear gráfico de barras por Access.Code
+ggplot(tabla_frecuencia_fuel_type_filtrada, aes(x = reorder(Access.Code, -Frecuencia), y = Frecuencia, fill = Frecuencia)) +
+  geom_bar(stat = "identity", width = 0.9) +
+  geom_text(
+    aes(label = Frecuencia),
+    vjust = -0.5,
+    size = 5,
+    family = "Segoe UI",
+    color = "black"
+  ) +
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +
+  labs(
+    title = "Gráfica N° 4.1 Frecuencia Absoluta de Estaciones de Carga por Código de Acceso (Access.Code)",
+    x = "Tipo de Combustible",
+    y = "Frecuencia Total",
+    fill = "Frecuencia Total"
+  ) +
+  theme_minimal(base_family = "Segoe UI") +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    axis.title.x = element_text(size = 14, face = "bold"),
+    axis.title.y = element_text(size = 14, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 13),
+    axis.text.y = element_text(size = 13),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line.x = element_line(color = "black"),
+    axis.line.y = element_line(color = "black"),
+    legend.position = "inside",
+    legend.position.inside = c(0.88, 0.85),
+    legend.title = element_text(face = "bold")
+  )
+
+
+#--------------- GRÁFICA CIRCULAR - FRECUENCIA ABSOLUTA CODIGO DE ACCESO--------------#
+
+library(ggplot2)
+library(dplyr)
+library(scales)
+library(ggrepel)  # <-- Añadir esta librería
+
+# Preparar datos (igual que antes)
+tabla_frecuencia_fuel_filtrada <- tabla_frecuencia_fuel_type %>%
+  filter(Access.Code != "TOTAL") %>%
+  mutate(
+    Frecuencia = as.numeric(Frecuencia),
+    porcentaje = Frecuencia / sum(Frecuencia)
+  ) %>%
+  arrange(Frecuencia)
+
+tabla_frecuencia_fuel_filtrada$Access.Code <- factor(tabla_frecuencia_fuel_filtrada$Access.Code, 
+                                                     levels = tabla_frecuencia_fuel_filtrada$Access.Code)
+
+tabla_frecuencia_fuel_filtrada <- tabla_frecuencia_fuel_filtrada %>%
+  arrange(desc(Frecuencia)) %>%
+  mutate(
+    ymax = cumsum(porcentaje),
+    ymin = lag(ymax, default = 0),
+    pos = (ymax + ymin) / 2
+  )
+
+colores_por_fuel <- setNames(
+  colorRampPalette(c("skyblue", "darkblue"))(length(levels(tabla_frecuencia_fuel_filtrada$Access.Code))),
+  levels(tabla_frecuencia_fuel_filtrada$Access.Code)
+)
+
+tabla_frecuencia_fuel_filtrada$color_etiqueta <- colores_por_fuel[as.character(tabla_frecuencia_fuel_filtrada$Access.Code)]
+
+# Gráfico circular con geom_label_repel para evitar amontonamiento
+ggplot(tabla_frecuencia_fuel_filtrada, aes(
+  ymax = ymax, ymin = ymin,
+  xmax = 2, xmin = 0,
+  fill = Access.Code
+)) +
+  geom_rect(color = "white") +
+  coord_polar(theta = "y") +
+  
+  # Líneas guía para etiquetas (puedes ajustar o eliminar si quieres)
+  geom_segment(aes(x = 2, xend = 2.2, y = pos, yend = pos), color = "gray30") +
+  geom_segment(aes(x = 2.2, xend = 2.3, y = pos, yend = pos), color = "gray30") +
+  
+  # Etiquetas con repel para evitar superposición
+  geom_label_repel(
+    aes(x = 2.5, y = pos, label = Frecuencia, color = Access.Code),
+    fill = NA,
+    size = 5,
+    family = "Segoe UI",
+    label.size = 0.8,
+    show.legend = FALSE,
+    nudge_x = 0.3,
+    segment.color = "gray30",
+    segment.size = 0.6,
+    force = 1.5,
+    max.overlaps = Inf
+  ) +
+  
+  scale_fill_manual(values = colores_por_fuel) +
+  scale_color_manual(values = colores_por_fuel) +  # Color de texto acorde a segmento
+  
+  labs(
+    title = "Gráfica N° 4.2 Distribución de la Frecuencia Absoluta de Estaciones de Carga por Código de Acceso (Access.Code)",
+    fill = "Access.Code"
+  ) +
+  theme_void(base_family = "Segoe UI") +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    legend.position = c(1.1, 0.7),
+    legend.title = element_text(face = "bold", size = 12),
+    legend.text = element_text(size = 11)
+  )
+
+
+#------------- GRÁFICA DE BARRAS - FRECUENCIA RELATIVA ACCESS CODE ----------------#
+
+library(ggplot2)
+library(dplyr)
+
+# Renombrar tabla original a un nombre más claro para Access.Code
+tabla_frecuencia_fuel_type <- tabla_fuel_type_con_total
+
+# Filtrar fila TOTAL si existe, convertir frecuencia a numérico y calcular frecuencia relativa
+tabla_frecuencia_fuel_type_relativa <- tabla_frecuencia_fuel_type %>% 
+  filter(Access.Code != "TOTAL") %>%
+  mutate(
+    Frecuencia = as.numeric(Frecuencia),
+    Frecuencia_Relativa = Frecuencia / sum(Frecuencia)
+  )
+
+# Crear gráfico de barras para frecuencia relativa
+ggplot(tabla_frecuencia_fuel_type_relativa, aes(x = reorder(Access.Code, -Frecuencia_Relativa), y = Frecuencia_Relativa, fill = Frecuencia_Relativa)) +
+  geom_bar(stat = "identity", width = 0.9) +
+  geom_text(
+    aes(label = scales::percent(Frecuencia_Relativa, accuracy = 0.1)),
+    vjust = -0.5,
+    size = 5,
+    family = "Segoe UI",
+    color = "black"
+  ) +
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(
+    title = "Gráfica N°4.3 Frecuencia Relativa de Estaciones de Carga por Código de Acceso (Access.Code) (%)",
+    x = "Tipo de Combustible",
+    y = "Frecuencia Relativa",
+    fill = "Frecuencia Relativa"
+  ) +
+  theme_minimal(base_family = "Segoe UI") +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    axis.title.x = element_text(size = 14, face = "bold"),
+    axis.title.y = element_text(size = 14, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 13),
+    axis.text.y = element_text(size = 13),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line.x = element_line(color = "black"),
+    axis.line.y = element_line(color = "black"),
+    legend.position = c(0.88, 0.85),
+    legend.title = element_text(face = "bold")
+  )
+
+
+#--------------- GRÁFICA CIRCULAR - FRECUENCIA RELATIVA CODIGO DE ACCESO --------------#
+
+library(ggplot2)
+library(dplyr)
+library(scales)
+library(ggrepel)  # Para etiquetas repelentes
+
+# Preparar datos (frecuencia relativa)
+tabla_frecuencia_fuel_filtrada <- tabla_frecuencia_fuel_type %>%
+  filter(Access.Code != "TOTAL") %>%
+  mutate(
+    Frecuencia = as.numeric(Frecuencia),
+    porcentaje = Frecuencia / sum(Frecuencia)
+  ) %>%
+  arrange(Frecuencia)
+
+tabla_frecuencia_fuel_filtrada$Access.Code <- factor(
+  tabla_frecuencia_fuel_filtrada$Access.Code, 
+  levels = tabla_frecuencia_fuel_filtrada$Access.Code
+)
+
+tabla_frecuencia_fuel_filtrada <- tabla_frecuencia_fuel_filtrada %>%
+  arrange(desc(Frecuencia)) %>%
+  mutate(
+    ymax = cumsum(porcentaje),
+    ymin = lag(ymax, default = 0),
+    pos = (ymax + ymin) / 2
+  )
+
+colores_por_fuel <- setNames(
+  colorRampPalette(c("skyblue", "darkblue"))(length(levels(tabla_frecuencia_fuel_filtrada$Access.Code))),
+  levels(tabla_frecuencia_fuel_filtrada$Access.Code)
+)
+
+tabla_frecuencia_fuel_filtrada$color_etiqueta <- colores_por_fuel[as.character(tabla_frecuencia_fuel_filtrada$Access.Code)]
+
+# Gráfico circular con etiquetas repelentes que muestran porcentaje
+ggplot(tabla_frecuencia_fuel_filtrada, aes(
+  ymax = ymax, ymin = ymin,
+  xmax = 2, xmin = 0,
+  fill = Access.Code
+)) +
+  geom_rect(color = "white") +
+  coord_polar(theta = "y") +
+  
+  # Líneas guía para etiquetas (ajustables)
+  geom_segment(aes(x = 2, xend = 2.2, y = pos, yend = pos), color = "gray30") +
+  geom_segment(aes(x = 2.2, xend = 2.3, y = pos, yend = pos), color = "gray30") +
+  
+  # Etiquetas repelentes con porcentaje
+  geom_label_repel(
+    aes(x = 2.5, y = pos, label = scales::percent(porcentaje, accuracy = 0.1), color = Access.Code),
+    fill = NA,
+    size = 5,
+    family = "Segoe UI",
+    label.size = 0.8,
+    show.legend = FALSE,
+    nudge_x = 0.3,
+    segment.color = "gray30",
+    segment.size = 0.6,
+    force = 1.5,
+    max.overlaps = Inf
+  ) +
+  
+  scale_fill_manual(values = colores_por_fuel) +
+  scale_color_manual(values = colores_por_fuel) +  # Color de texto acorde al segmento
+  
+  labs(
+    title = "Grafico Nº 4.4 Porcentaje de la Frecuencia Relativa de Estaciones de Carga por Código de Acceso (Access.Code)",
+    fill = "Access.Code"
+  ) +
+  theme_void(base_family = "Segoe UI") +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    legend.position = c(1.1, 0.7),
+    legend.title = element_text(face = "bold", size = 12),
+    legend.text = element_text(size = 11)
+  )
+
+
+
+
+
+#-------------------------------------------------------------------------------
+7
+#---------------------- VARIABLE NOMINAL FUEL.TYPE.CODE ------------------------------#
+
+#--------- EXTRACCIÓN Y LIMPIEZA DE LA VARIABLE FUEL.TYPE.CODE ---------#
+
+# Obtener valores únicos no nulos de Fuel.Type.Code (de datos originales, sin filtro)
+fuel_type_values_raw <- unique(na.omit(datos$Fuel.Type.Code))
+
+
+#-------------- CLASIFICACIÓN DE VALORES DE FUEL.TYPE.CODE -------------#
+
+# Clasificar valores válidos: todos los valores sin filtrar, incluyendo sospechosos
+valores_validos_fuel_type_raw <- fuel_type_values_raw
+
+# Como todos son válidos, no hay valores sospechosos para mostrar
+valores_sospechosos_fuel_type_raw <- character(0)
+
+
+#------------------- RESULTADOS EXPLORATORIOS ---------------------#
+
+# Mostrar conteo de cada grupo
+cat("Cantidad de valores válidos (todos los valores, sin filtrar): ", length(valores_validos_fuel_type_raw), "\n")
+cat("Cantidad de valores sospechosos (ninguno, ya que se consideran válidos): ", length(valores_sospechosos_fuel_type_raw), "\n")
+
+# Mostrar los valores encontrados
+cat("\nValores válidos:\n")
+print(valores_validos_fuel_type_raw)
+
+cat("\nValores sospechosos:\n")
+print(valores_sospechosos_fuel_type_raw)
+
+
+#----------- TABLA DE FRECUENCIAS: VALORES VÁLIDOS DE FUEL.TYPE.CODE ------------#
+
+# Filtrar datos no nulos en Fuel.Type.Code
+datos_fuel_filtrados <- datos %>% filter(!is.na(Fuel.Type.Code))
+
+# Obtener valores únicos (sin filtrar, incluyendo sospechosos)
+fuel_type_values_filtrados <- unique(na.omit(datos_fuel_filtrados$Fuel.Type.Code))
+
+# Considerar todos los valores como válidos (incluyendo sospechosos)
+valores_validos_fuel_type_filtrados <- fuel_type_values_filtrados
+
+# No quedan valores sospechosos excluidos
+valores_sospechosos_fuel_type_filtrados <- character(0)
+
+# Mostrar resultados
+cat("\nCantidad de valores válidos de Fuel.Type.Code (incluyendo sospechosos):", length(valores_validos_fuel_type_filtrados), "\n")
+cat("Valores válidos:\n")
+print(valores_validos_fuel_type_filtrados)
+
+cat("\nCantidad de valores sospechosos de Fuel.Type.Code:", length(valores_sospechosos_fuel_type_filtrados), "\n")
+cat("Valores sospechosos:\n")
+print(valores_sospechosos_fuel_type_filtrados)
+
+
+# Crear tabla de frecuencia solo con valores válidos (todos incluidos)
+tabla_fuel_type_validos <- table(datos_fuel_filtrados$Fuel.Type.Code[datos_fuel_filtrados$Fuel.Type.Code %in% valores_validos_fuel_type_filtrados])
+
+# Convertir a data.frame ordenado
+tabla_ordenada_fuel_type <- as.data.frame(tabla_fuel_type_validos)
+colnames(tabla_ordenada_fuel_type) <- c("Fuel.Type.Code", "Frecuencia")
+tabla_ordenada_fuel_type <- tabla_ordenada_fuel_type[order(-tabla_ordenada_fuel_type$Frecuencia), ]
+
+# Mostrar tabla final
+print(tabla_ordenada_fuel_type)
+
+#--------- RESUMEN ESTADÍSTICO POR FRECUENCIA – MODA DE FUEL.TYPE.CODE ----------------#
+
+# Calcular la frecuencia máxima (moda)
+max_frecuencia_fuel_type <- max(tabla_ordenada_fuel_type$Frecuencia, na.rm = TRUE)
+
+# Filtrar la(s) moda(s)
+tabla_moda_fuel_type <- tabla_ordenada_fuel_type[tabla_ordenada_fuel_type$Frecuencia == max_frecuencia_fuel_type, ]
+
+# Imprimir resultado modal
+cat("RESUMEN ESTADÍSTICO POR FRECUENCIA – MODA (FUEL.TYPE.CODE):\n")
+print(tabla_moda_fuel_type)
+
+#----------- TABLA INTERACTIVA MODA FORMATO PERSONALIZADO PARA FUEL.TYPE.CODE -------------#
+
+datatable(tabla_moda_fuel_type,
+          options = list(
+            pageLength = 5,
+            autoWidth = TRUE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().header()).css({",
+              "'background-color': 'darkblue',",
+              "'color': 'white',",
+              "'font-weight': 'bold',",
+              "'font-family': 'Segoe UI'",
+              "});",
+              "}"
+            ),
+            rowCallback = JS(
+              "function(row, data, index) {",
+              "$(row).css('font-family', 'Segoe UI');",
+              "$(row).css({'font-weight': 'bold', 'background-color': '#e0e0e0'});",
+              "$('td:eq(1)', row).css({'text-align': 'right', 'padding-right': '10px'});",
+              "}"
+            ),
+            dom = 't'
+          ),
+          rownames = FALSE,
+          colnames = c("Fuel.Type.Code", "Frecuencia"),
+          caption = htmltools::tags$caption(
+            style = 'caption-side: top; text-align: center; font-weight: bold; padding: 10px; font-family: Segoe UI;',
+            "Tabla - Resumen Estadístico por Frecuencia (Moda de Fuel.Type.Code)"
+          )
+)
+
+#------------- AGREGAR FILA DE TOTAL GENERAL EN TABLA FUEL.TYPE.CODE -------------------#
+
+total_general_fuel_type <- sum(tabla_ordenada_fuel_type$Frecuencia, na.rm = TRUE)
+fila_total_fuel_type <- data.frame(Fuel.Type.Code = "TOTAL", Frecuencia = total_general_fuel_type)
+tabla_fuel_type_con_total <- bind_rows(tabla_ordenada_fuel_type, fila_total_fuel_type)
+
+
+# Mostrar tabla con total
+print(tabla_fuel_type_con_total)
+
+
+#-------- TABLA INTERACTIVA FRECUENCIA ABSOLUTA FUEL TYPE CODE VS EST. CARGA ---------#
+
+library(DT)
+library(htmltools)
+
+datatable(tabla_fuel_type_con_total,
+          options = list(
+            pageLength = 10,
+            autoWidth = TRUE,
+            columnDefs = list(
+              list(width = '100px', targets = 1)
+            ),
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().header()).css({",
+              "'background-color': 'darkblue',",
+              "'color': 'white',",
+              "'font-weight': 'bold',",
+              "'font-family': 'Segoe UI'",
+              "});",
+              "}"
+            ),
+            rowCallback = JS(
+              "function(row, data, index) {",
+              "$(row).css('font-family', 'Segoe UI');",
+              
+              "if(data[0] === 'TOTAL') {",
+              "$(row).css({'font-weight': 'bold', 'background-color': '#e0e0e0'});",
+              "} else if(index % 2 === 0) {",
+              "$(row).css('background-color', 'white');",
+              "} else {",
+              "$(row).css('background-color', '#f2f2f2');",
+              "}",
+              
+              "$('td:eq(1)', row).css({'text-align': 'right', 'padding-right': '10px'});",
+              "}"
+            ),
+            dom = 't'
+          ),
+          rownames = FALSE,
+          colnames = c("Fuel.Type.Code", "Frecuencia Total"),
+          caption = tags$caption(
+            style = 'caption-side: top; text-align: center; font-weight: bold; padding: 10px; font-family: Segoe UI;',
+            "Tabla 7. Frecuencia de Estaciones de Carga por Fuel.Type.Code"
+          )
+)
+
+#------------- GRÁFICA DE BARRAS - FRECUENCIA ABSOLUTA FUEL TYPE CODE ----------------#
+
+
+library(ggplot2)
+library(dplyr)
+
+# Renombrar tabla original a un nombre más claro para Fuel.Type.Code
+tabla_frecuencia_fuel_type <- tabla_fuel_type_con_total
+
+# Filtrar fila TOTAL si existe
+tabla_frecuencia_fuel_type_filtrada <- tabla_frecuencia_fuel_type %>% 
+  filter(Fuel.Type.Code != "TOTAL") %>%
+  mutate(Frecuencia = as.numeric(Frecuencia))
+
+# Crear gráfico de barras por Fuel.Type.Code
+ggplot(tabla_frecuencia_fuel_type_filtrada, aes(x = reorder(Fuel.Type.Code, -Frecuencia), y = Frecuencia, fill = Frecuencia)) +
+  geom_bar(stat = "identity", width = 0.9) +
+  geom_text(
+    aes(label = Frecuencia),
+    vjust = -0.5,
+    size = 5,
+    family = "Segoe UI",
+    color = "black"
+  ) +
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +
+  labs(
+    title = "Gráfica N° 7.1 Frecuencia Absoluta de Estaciones por Tipo de Combustible (Fuel.Type.Code)",
+    x = "Tipo de Combustible",
+    y = "Frecuencia Total",
+    fill = "Frecuencia Total"
+  ) +
+  theme_minimal(base_family = "Segoe UI") +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    axis.title.x = element_text(size = 14, face = "bold"),
+    axis.title.y = element_text(size = 14, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 13),
+    axis.text.y = element_text(size = 13),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line.x = element_line(color = "black"),
+    axis.line.y = element_line(color = "black"),
+    legend.position = "inside",
+    legend.position.inside = c(0.88, 0.85),
+    legend.title = element_text(face = "bold")
+  )
+
+
+#--------------- GRÁFICA CIRCULAR - FRECUENCIA ABSOLUTA POR FUEL TYPE CODE --------------#
+
+library(ggplot2)
+library(dplyr)
+library(scales)
+library(ggrepel)  # <-- Añadir esta librería
+
+# Preparar datos (igual que antes)
+tabla_frecuencia_fuel_filtrada <- tabla_frecuencia_fuel_type %>%
+  filter(Fuel.Type.Code != "TOTAL") %>%
+  mutate(
+    Frecuencia = as.numeric(Frecuencia),
+    porcentaje = Frecuencia / sum(Frecuencia)
+  ) %>%
+  arrange(Frecuencia)
+
+tabla_frecuencia_fuel_filtrada$Fuel.Type.Code <- factor(tabla_frecuencia_fuel_filtrada$Fuel.Type.Code, 
+                                                        levels = tabla_frecuencia_fuel_filtrada$Fuel.Type.Code)
+
+tabla_frecuencia_fuel_filtrada <- tabla_frecuencia_fuel_filtrada %>%
+  arrange(desc(Frecuencia)) %>%
+  mutate(
+    ymax = cumsum(porcentaje),
+    ymin = lag(ymax, default = 0),
+    pos = (ymax + ymin) / 2
+  )
+
+colores_por_fuel <- setNames(
+  colorRampPalette(c("skyblue", "darkblue"))(length(levels(tabla_frecuencia_fuel_filtrada$Fuel.Type.Code))),
+  levels(tabla_frecuencia_fuel_filtrada$Fuel.Type.Code)
+)
+
+tabla_frecuencia_fuel_filtrada$color_etiqueta <- colores_por_fuel[as.character(tabla_frecuencia_fuel_filtrada$Fuel.Type.Code)]
+
+# Gráfico circular con geom_label_repel para evitar amontonamiento
+ggplot(tabla_frecuencia_fuel_filtrada, aes(
+  ymax = ymax, ymin = ymin,
+  xmax = 2, xmin = 0,
+  fill = Fuel.Type.Code
+)) +
+  geom_rect(color = "white") +
+  coord_polar(theta = "y") +
+  
+  # Líneas guía para etiquetas (puedes ajustar o eliminar si quieres)
+  geom_segment(aes(x = 2, xend = 2.2, y = pos, yend = pos), color = "gray30") +
+  geom_segment(aes(x = 2.2, xend = 2.3, y = pos, yend = pos), color = "gray30") +
+  
+  # Etiquetas con repel para evitar superposición
+  geom_label_repel(
+    aes(x = 2.5, y = pos, label = Frecuencia, color = Fuel.Type.Code),
+    fill = NA,
+    size = 5,
+    family = "Segoe UI",
+    label.size = 0.8,
+    show.legend = FALSE,
+    nudge_x = 0.3,
+    segment.color = "gray30",
+    segment.size = 0.6,
+    force = 1.5,
+    max.overlaps = Inf
+  ) +
+  
+  scale_fill_manual(values = colores_por_fuel) +
+  scale_color_manual(values = colores_por_fuel) +  # Color de texto acorde a segmento
+  
+  labs(
+    title = "Gráfica N° 7.2 Distribución de la Frecuencia Absoluta de Estaciones de Carga por Tipo de Combustible (Fuel.Type.Code)",
+    fill = "Fuel.Type.Code"
+  ) +
+  theme_void(base_family = "Segoe UI") +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    legend.position = c(1.1, 0.7),
+    legend.title = element_text(face = "bold", size = 12),
+    legend.text = element_text(size = 11)
+  )
+
+
+#------------- GRÁFICA DE BARRAS - FRECUENCIA RELATIVA FUEL TYPE CODE ----------------#
+
+library(ggplot2)
+library(dplyr)
+
+# Renombrar tabla original a un nombre más claro para Fuel.Type.Code
+tabla_frecuencia_fuel_type <- tabla_fuel_type_con_total
+
+# Filtrar fila TOTAL si existe, convertir frecuencia a numérico y calcular frecuencia relativa
+tabla_frecuencia_fuel_type_relativa <- tabla_frecuencia_fuel_type %>% 
+  filter(Fuel.Type.Code != "TOTAL") %>%
+  mutate(
+    Frecuencia = as.numeric(Frecuencia),
+    Frecuencia_Relativa = Frecuencia / sum(Frecuencia)
+  )
+
+# Crear gráfico de barras para frecuencia relativa
+ggplot(tabla_frecuencia_fuel_type_relativa, aes(x = reorder(Fuel.Type.Code, -Frecuencia_Relativa), y = Frecuencia_Relativa, fill = Frecuencia_Relativa)) +
+  geom_bar(stat = "identity", width = 0.9) +
+  geom_text(
+    aes(label = scales::percent(Frecuencia_Relativa, accuracy = 0.1)),
+    vjust = -0.5,
+    size = 5,
+    family = "Segoe UI",
+    color = "black"
+  ) +
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(
+    title = "Gráfica N° 7.3 Frecuencia Relativa (%) de Estaciones de Carga por Tipo de Combustible (Fuel.Type.Code)",
+    x = "Tipo de Combustible",
+    y = "Frecuencia Relativa",
+    fill = "Frecuencia Relativa"
+  ) +
+  theme_minimal(base_family = "Segoe UI") +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    axis.title.x = element_text(size = 14, face = "bold"),
+    axis.title.y = element_text(size = 14, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 13),
+    axis.text.y = element_text(size = 13),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line.x = element_line(color = "black"),
+    axis.line.y = element_line(color = "black"),
+    legend.position = c(0.88, 0.85),
+    legend.title = element_text(face = "bold")
+  )
+
+#--------------- GRÁFICA CIRCULAR - FRECUENCIA RELATIVA POR FUEL TYPE CODE --------------#
+
+library(ggplot2)
+library(dplyr)
+library(scales)
+library(ggrepel)  # Para etiquetas repelentes
+
+# Preparar datos (frecuencia relativa)
+tabla_frecuencia_fuel_filtrada <- tabla_frecuencia_fuel_type %>%
+  filter(Fuel.Type.Code != "TOTAL") %>%
+  mutate(
+    Frecuencia = as.numeric(Frecuencia),
+    porcentaje = Frecuencia / sum(Frecuencia)
+  ) %>%
+  arrange(Frecuencia)
+
+tabla_frecuencia_fuel_filtrada$Fuel.Type.Code <- factor(
+  tabla_frecuencia_fuel_filtrada$Fuel.Type.Code, 
+  levels = tabla_frecuencia_fuel_filtrada$Fuel.Type.Code
+)
+
+tabla_frecuencia_fuel_filtrada <- tabla_frecuencia_fuel_filtrada %>%
+  arrange(desc(Frecuencia)) %>%
+  mutate(
+    ymax = cumsum(porcentaje),
+    ymin = lag(ymax, default = 0),
+    pos = (ymax + ymin) / 2
+  )
+
+colores_por_fuel <- setNames(
+  colorRampPalette(c("skyblue", "darkblue"))(length(levels(tabla_frecuencia_fuel_filtrada$Fuel.Type.Code))),
+  levels(tabla_frecuencia_fuel_filtrada$Fuel.Type.Code)
+)
+
+tabla_frecuencia_fuel_filtrada$color_etiqueta <- colores_por_fuel[as.character(tabla_frecuencia_fuel_filtrada$Fuel.Type.Code)]
+
+# Gráfico circular con etiquetas repelentes que muestran porcentaje
+ggplot(tabla_frecuencia_fuel_filtrada, aes(
+  ymax = ymax, ymin = ymin,
+  xmax = 2, xmin = 0,
+  fill = Fuel.Type.Code
+)) +
+  geom_rect(color = "white") +
+  coord_polar(theta = "y") +
+  
+  # Líneas guía para etiquetas (ajustables)
+  geom_segment(aes(x = 2, xend = 2.2, y = pos, yend = pos), color = "gray30") +
+  geom_segment(aes(x = 2.2, xend = 2.3, y = pos, yend = pos), color = "gray30") +
+  
+  # Etiquetas repelentes con porcentaje
+  geom_label_repel(
+    aes(x = 2.5, y = pos, label = scales::percent(porcentaje, accuracy = 0.1), color = Fuel.Type.Code),
+    fill = NA,
+    size = 5,
+    family = "Segoe UI",
+    label.size = 0.8,
+    show.legend = FALSE,
+    nudge_x = 0.3,
+    segment.color = "gray30",
+    segment.size = 0.6,
+    force = 1.5,
+    max.overlaps = Inf
+  ) +
+  
+  scale_fill_manual(values = colores_por_fuel) +
+  scale_color_manual(values = colores_por_fuel) +  # Color de texto acorde al segmento
+  
+  labs(
+    title = "Gráfica N° 7.4 Porcentaje de la Frecuencia Relativa de Estaciones de Carga por Tipo de Combustible (Fuel.Type.Code)",
+    fill = "Fuel.Type.Code"
+  ) +
+  theme_void(base_family = "Segoe UI") +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    legend.position = c(1.1, 0.7),
+    legend.title = element_text(face = "bold", size = 12),
+    legend.text = element_text(size = 11)
+  )
+
+
+
+
+
+
+
+
+```

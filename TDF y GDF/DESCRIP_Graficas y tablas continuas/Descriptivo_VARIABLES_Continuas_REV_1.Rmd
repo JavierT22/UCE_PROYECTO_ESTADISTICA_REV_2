@@ -1,0 +1,2028 @@
+---
+title: "Variables_Continuas"
+author: "Grupo 4"
+date: "2025-07-28"
+output: html_document
+---
+
+## R Markdown
+
+
+```{r cars}
+
+#-------------------------------------------------------
+#CARGA DATASET
+#-------------------------------------------------------
+
+datos <- read.csv("C:/Users/User/OneDrive/Documentos/estadistica/Electric and Alternative Fuel Charging Stations.csv", header = TRUE, sep = ",", dec = ",")
+head(datos$Latitude)
+str(datos$Latitude)
+
+
+# BLOQUE DE LIBRERÍAS
+#-------------------------------------------------------
+library(DT)           # Tablas interactivas
+library(dplyr)        # Manipulación de datos
+library(ggplot2)      # Gráficos
+library(htmltools)    # Para captions en datatable
+library(htmlwidgets)  # Necesario para JS()
+library(scales)       # Para escalas (por ejemplo, percentajes)
+#Latitude CHR conviértela a numérico
+datos$Latitude <- as.numeric(as.character(datos$Latitude))
+
+
+# MOSTRAR NOMBRES DE COLUMNAS
+colnames(datos)
+
+# Obtener valores únicos de Latitude
+Latitude <- unique(na.omit(datos$Latitude))
+
+# Clasificar por cuantificables y no cuantificables
+cuantificables <- Latitude[grepl("[0-9]", Latitude)]  # contienen números
+no_cuantificables <- Latitude[!grepl("[0-9]", Latitude)]  # texto sin números
+
+
+#------------------------VARIABLE LATITUDE --------------------------------
+
+# ANALISIS DE VARIABLE LATITUDE
+
+# Verificar existencia de 'datos'
+if (!exists("datos")) stop("El dataframe 'datos' no está disponible.")
+
+# DEFINIR INTERVALOS Y ETIQUETAS DE ZONAS GEOGRÁFICAS
+
+intervalos <- c(-90, 30, 35, 40, 45, 55, 90)
+
+nombres_intervalos <- c(
+  "Sur de EE.UU.",
+  "Centro-Sur",
+  "Centro / Oeste",
+  "Norte de EE.UU. / Sur de Canadá",
+  "Canadá Meridional",
+  "Canadá Septentrional"
+)
+
+# 1. CALCULAR CLASES CON FORMULA DE STURGES
+
+# 1.1 Contar datos válidos
+n <- sum(!is.na(datos$Latitude))
+
+# 1.2 Calcular número de clases (Sturges)
+k <- ceiling(1 + 3.3 * log10(n))
+
+# 1.3 Determinar rango
+min_lat <- min(datos$Latitude, na.rm = TRUE)
+max_lat <- max(datos$Latitude, na.rm = TRUE)
+rango <- max_lat - min_lat
+
+# 1.4 Calcular amplitud
+amplitud <- ceiling(rango / k)
+
+# 1.5 Crear clases (intervalos)
+clases <- tibble(
+  Clase = 1:k,
+  Limite_Inferior = min_lat + (0:(k - 1)) * amplitud,
+  Limite_Superior = min_lat + (1:k) * amplitud
+)
+
+# Mostrar número de clases
+cat("Número de clases según Sturges:", k, "\n")
+
+# 1.6 Tabla resumen Sturges
+tabla_sturges <- tibble(
+  Variable = "Latitude",
+  Observaciones_validas = n,
+  Clases_Sturges = k
+)
+
+# 2. MOSTRAR TABLA INTERACTIVA STURGES
+
+DT::datatable(
+  clases,
+  options = list(
+    pageLength = k,
+    autoWidth  = TRUE,
+    scrollX    = TRUE,
+    columnDefs = list(
+      list(width = '30px', className = 'dt-center', targets = 0),
+      list(width = '50px', className = 'dt-center', targets = 1),
+      list(width = '50px', className = 'dt-center', targets = 2)
+    ),
+    initComplete = JS(
+      "function(settings, json) {",
+      "$(this.api().table().header()).css({",
+      "'background-color': 'darkblue',",
+      "'color': 'white',",
+      "'font-weight': 'bold',",
+      "'font-family': 'Segoe UI'",
+      "});",
+      "}"
+    ),
+    rowCallback = JS(
+      "function(row, data, index) {",
+      "$(row).css('font-family', 'Segoe UI');",
+      "$(row).css({'font-weight': 'bold', 'background-color': '#f2f2f2'});",
+      "$('td', row).css({'text-align': 'right', 'padding-right': '10px'});",
+      "}"
+    ),
+    dom = 't'
+  ),
+  caption = htmltools::tags$caption(
+    style = 'caption-side: top; text-align: center; font-size:18px; font-weight: bold; font-family: Segoe UI; padding: 10px;',
+    paste0("5.1 Clases: cálculo de Sturges para Latitude (", k, " clases)")
+  ),
+  class = 'stripe hover compact nowrap',
+  rownames = FALSE
+)
+
+# 3. CLASIFICAR CUANTIFICABLES Y NO CUANTIFICABLES
+
+# 3.1 Filtrar valores no nulos
+latitude_raw <- na.omit(datos$Latitude)
+
+# 3.2 Clasificar por tipo
+cuantificables <- latitude_raw[grepl("[0-9]", latitude_raw)]
+no_cuantificables <- latitude_raw[!grepl("[0-9]", latitude_raw)]
+
+# Mostrar resultados
+cat("Cuantificables:\n")
+print(cuantificables)
+
+cat("\n No Cuantificables:\n")
+print(no_cuantificables)
+
+# 3.3 Crear dataframe
+tabla_cuantificacion <- data.frame(
+  Latitude = as.numeric(c(cuantificables, no_cuantificables)),
+  Tipo = c(
+    rep("Cuantificable", length(cuantificables)),
+    rep("No Cuantificable", length(no_cuantificables))
+  ),
+  stringsAsFactors = FALSE
+)
+
+# 3.4 Asignar zonas geográficas (una sola vez)
+tabla_cuantificacion$Zona <- cut(
+  tabla_cuantificacion$Latitude,
+  breaks = intervalos,
+  labels = nombres_intervalos,
+  right = FALSE
+)
+
+# Confirmar estructura
+str(tabla_cuantificacion)
+
+# 4. CREAR MUESTRA DE HASTA 1000 REGISTROS
+
+tabla_muestra <- tabla_cuantificacion %>%
+  sample_n(size = min(1000, nrow(.)))
+
+# 4.1 Mostrar tabla interactiva
+DT::datatable(
+  tabla_muestra,
+  options = list(
+    pageLength = 10,
+    autoWidth  = TRUE,
+    scrollX    = TRUE,
+    columnDefs = list(
+      list(className = 'dt-center', targets = "_all")
+    ),
+    initComplete = JS(
+      "function(settings, json) {",
+      "$(this.api().table().header()).css({",
+      "'background-color': 'darkblue',",
+      "'color': 'white',",
+      "'font-weight': 'bold',",
+      "'font-family': 'Segoe UI'",
+      "});",
+      "}"
+    ),
+    rowCallback = JS(
+      "function(row, data, index) {",
+      "$(row).css('font-family', 'Segoe UI');",
+      "$(row).css({'font-weight': 'bold', 'background-color': '#f9f9f9'});",
+      "$('td', row).css({'text-align': 'center', 'padding': '5px'});",
+      "}"
+    ),
+    dom = 't'
+  ),
+  caption = htmltools::tags$caption(
+    style = 'caption-side: top; text-align: center; font-size:18px; font-weight: bold; font-family: Segoe UI; padding: 10px;',
+    "5.2 Muestra de hasta 1000 registros de valores cuantificables y no cuantificables"
+  ),
+  class = 'stripe hover compact nowrap',
+  rownames = FALSE
+)
+
+# 5. TABLA: TOP 20 LATITUDES MÁS FRECUENTES
+
+# 5.1 Calcular top 20 latitudes
+top_latitudes <- tabla_cuantificacion %>%
+  count(Latitude, sort = TRUE) %>%
+  top_n(20, wt = n)
+
+# 5.2 Filtrar tabla
+tabla_top <- tabla_cuantificacion %>%
+  filter(Latitude %in% top_latitudes$Latitude)
+
+# 5.3 Mostrar tabla interactiva
+DT::datatable(
+  tabla_top,
+  options = list(
+    pageLength = 10,
+    autoWidth  = TRUE,
+    scrollX    = TRUE,
+    columnDefs = list(
+      list(className = 'dt-center', targets = "_all")
+    ),
+    initComplete = JS(
+      "function(settings, json) {",
+      "$(this.api().table().header()).css({",
+      "'background-color': 'darkblue',",
+      "'color': 'white',",
+      "'font-weight': 'bold',",
+      "'font-family': 'Segoe UI'",
+      "});",
+      "}"
+    ),
+    rowCallback = JS(
+      "function(row, data, index) {",
+      "$(row).css('font-family', 'Segoe UI');",
+      "$(row).css({'font-weight': 'bold', 'background-color': '#f9f9f9'});",
+      "$('td', row).css({'text-align': 'center', 'padding': '5px'});",
+      "}"
+    ),
+    dom = 't'
+  ),
+  caption = htmltools::tags$caption(
+    style = 'caption-side: top; text-align: center; font-size:18px; font-weight: bold; font-family: Segoe UI; padding: 10px;',
+    '5.3 Registros correspondientes a las 20 Latitudes más frecuentes (agrupadas por zona geográfica)'
+  ),
+  class = 'stripe hover compact nowrap',
+  rownames = FALSE
+)
+
+# 6. AGRUPAMIENTO POR ZONAS (RESUMEN 6 GRUPOS)
+
+# 6.1 Filtrar cuantificables
+tabla_filtrada <- tabla_cuantificacion %>%
+  filter(Tipo == "Cuantificable")
+
+# 6.2 Agrupar por zona y contar
+resumen_zona <- tabla_filtrada %>%
+  group_by(Zona) %>%
+  summarise(Total_Cuantificables = n()) %>%
+  arrange(desc(Total_Cuantificables))
+
+# 6.3 Agregar fila total
+total_general <- data.frame(
+  Zona = "<b>TOTAL GENERAL</b>",
+  Total_Cuantificables = sum(resumen_zona$Total_Cuantificables)
+)
+
+# 6.4 Unir tabla con fila total
+resumen_zona_final <- bind_rows(resumen_zona, total_general)
+
+# 6.5 Mostrar tabla interactiva
+DT::datatable(
+  resumen_zona_final,
+  escape = FALSE,
+  options = list(
+    pageLength = 10,
+    autoWidth  = TRUE,
+    scrollX    = TRUE,
+    columnDefs = list(
+      list(className = 'dt-center', targets = "_all")
+    ),
+    initComplete = JS(
+      "function(settings, json) {",
+      "$(this.api().table().header()).css({",
+      "'background-color': 'darkblue',",
+      "'color': 'white',",
+      "'font-weight': 'bold',",
+      "'font-family': 'Segoe UI'",
+      "});",
+      "}"
+    ),
+    rowCallback = JS(
+      "function(row, data, index) {",
+      "$(row).css('font-family', 'Segoe UI');",
+      "$(row).css({'font-weight': 'bold', 'background-color': '#f9f9f9'});",
+      "$('td', row).css({'text-align': 'center', 'padding': '5px'});",
+      "}"
+    ),
+    dom = 't'
+  ),
+  caption = htmltools::tags$caption(
+    style = 'caption-side: top; text-align: center; font-size:18px; font-weight: bold; font-family: Segoe UI; padding: 10px;',
+    '5.4 Total de registros Cuantificables por Zona Geográfica'
+  ),
+  class = 'stripe hover compact nowrap',
+  rownames = FALSE
+)
+
+# 7. DISTRIBUCIÓN DE FRECUENCIA POR ZONAS
+
+# 7.1 Calcular frecuencias
+frecuencias <- tabla_cuantificacion %>%
+  filter(!is.na(Zona)) %>%
+  group_by(Zona) %>%
+  summarise(
+    Lim_Inferior = min(Latitude, na.rm = TRUE),
+    Lim_Superior = max(Latitude, na.rm = TRUE),
+    ni = n(),
+    xi = round((Lim_Inferior + Lim_Superior) / 2, 3)
+  ) %>%
+  ungroup()
+
+# 7.2 Totales y frecuencias relativas
+total <- sum(frecuencias$ni)
+frecuencias <- frecuencias %>%
+  mutate(
+    hi = round(ni / total, 4)
+  )
+
+# 7.3 Frecuencia acumulada creciente y decreciente
+frecuencias <- frecuencias %>%
+  arrange(Lim_Inferior) %>%
+  mutate(
+    Ni_creciente = cumsum(ni),
+    Fi_creciente = round(cumsum(hi), 4)
+  ) %>%
+  arrange(desc(Lim_Inferior)) %>%
+  mutate(
+    Ni_decreciente = cumsum(ni),
+    Fi_decreciente = round(cumsum(hi), 4)
+  ) %>%
+  arrange(Lim_Inferior)
+
+# 7.4 Reordenar columnas
+frecuencia_final <- frecuencias %>%
+  select(
+    Zona, Lim_Inferior, Lim_Superior, xi,
+    ni, hi, Ni_decreciente, Fi_decreciente,
+    Ni_creciente, Fi_creciente
+  )
+
+# 7.5 Mostrar tabla interactiva
+DT::datatable(
+  frecuencia_final,
+  options = list(
+    pageLength = 10,
+    autoWidth  = TRUE,
+    scrollX    = TRUE,
+    columnDefs = list(
+      list(className = 'dt-center', targets = "_all")
+    ),
+    initComplete = JS(
+      "function(settings, json) {",
+      "$(this.api().table().header()).css({",
+      "'background-color': 'darkblue',",
+      "'color': 'white',",
+      "'font-weight': 'bold',",
+      "'font-family': 'Segoe UI'",
+      "});",
+      "}"
+    ),
+    rowCallback = JS(
+      "function(row, data, index) {",
+      "$(row).css('font-family', 'Segoe UI');",
+      "$(row).css({'font-weight': 'bold', 'background-color': '#f9f9f9'});",
+      "$('td', row).css({'text-align': 'center', 'padding': '5px'});",
+      "}"
+    ),
+    dom = 't'
+  ),
+  caption = htmltools::tags$caption(
+    style = 'caption-side: top; text-align: center; font-size:18px; font-weight: bold; font-family: Segoe UI; padding: 10px;',
+    '5.5 Distribución de Frecuencia por Zonas Geográficas'
+  ),
+  class = 'stripe hover compact nowrap',
+  rownames = FALSE
+)
+
+
+# GRAFICA: DISTRIBUCION FRECUENCIA ABSOLUTA (STURGES)
+
+# 0. DEFINIR INTERVALOS Y ETIQUETAS DE ZONAS GEOGRÁFICAS (CENTRALIZADO)
+
+intervalos <- c(-90, 30, 35, 40, 45, 55, 90)
+
+nombres_zonas <- c(
+  "Sur de EE.UU.",
+  "Centro-Sur",
+  "Centro / Oeste",
+  "Norte de EE.UU. / Sur de Canadá",
+  "Canadá Meridional",
+  "Canadá Septentrional"
+)
+
+# 1. CLASIFICAR LATITUDES POR ZONA
+
+tabla_cuantificacion$Zona <- cut(
+  tabla_cuantificacion$Latitude,
+  breaks = intervalos,
+  labels = nombres_zonas,
+  right = FALSE
+)
+
+# 2. CALCULAR FRECUENCIA ABSOLUTA POR ZONA
+
+tabla_freq <- tabla_cuantificacion %>%
+  filter(!is.na(Zona)) %>%
+  group_by(Zona) %>%
+  summarise(ni = n()) %>%
+  mutate(Zona = factor(Zona, levels = nombres_zonas))
+
+# ✅ Mostrar tabla de frecuencias si se requiere
+print(tabla_freq)
+
+# 3. HISTOGRAMA CON INTERVALOS SEGÚN STURGES
+
+# 3.1 Filtrar valores cuantificables válidos
+latitude_sturges <- tabla_cuantificacion %>%
+  filter(Tipo == "Cuantificable") %>%
+  mutate(Latitude = as.numeric(Latitude)) %>%
+  filter(!is.na(Latitude)) %>%
+  pull(Latitude)
+
+# 3.2 Aplicar fórmula de Sturges
+n_sturges <- length(latitude_sturges)
+k_sturges <- ceiling(1 + 3.3 * log10(n_sturges))
+
+# 3.3 Calcular rango y amplitud
+min_val <- min(latitude_sturges, na.rm = TRUE)
+max_val <- max(latitude_sturges, na.rm = TRUE)
+rango_lat <- max_val - min_val
+amplitud_sturges <- ceiling(rango_lat / k_sturges)
+
+# 3.4 Crear puntos de corte
+breaks_sturges <- seq(min_val, max_val + amplitud_sturges, by = amplitud_sturges)
+
+# 3.5 Construir tabla de frecuencias
+hist_data <- cut(latitude_sturges, breaks = breaks_sturges, right = FALSE)
+tabla_frecuencia <- as.data.frame(table(hist_data))
+
+# 🏷️ Renombrar columnas
+colnames(tabla_frecuencia) <- c("Intervalo", "Frecuencia")
+
+# ✅ Mostrar tabla de frecuencias si se requiere
+print(tabla_frecuencia)
+
+# 4. HISTOGRAMA POR STURGES DETALLE FINO DE DATOS
+
+library(ggplot2)
+
+ggplot(tabla_frecuencia, aes(x = Intervalo, y = Frecuencia, fill = Frecuencia)) +
+  geom_bar(stat = "identity", color = "black", width = 1) +  # width = 1 → sin separación
+  geom_text(aes(label = Frecuencia), vjust = -0.5, size = 3.5) +  # Etiquetas sobre barras
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +
+  scale_y_continuous(breaks = seq(0, max(tabla_frecuencia$Frecuencia, na.rm = TRUE) + 5000, by = 5000),
+                     labels = scales::comma_format()) +
+  labs(
+    title = "5.1.1 Regla de Sturges",
+    x = "Intervalos de Latitude",
+    y = "Frecuencia Absoluta"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),  # Centrado y negrita
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid = element_blank(),  # Eliminar retícula
+    panel.background = element_blank(),  # Fondo blanco
+    axis.line = element_line(color = "black")  # Ejes X y Y visibles
+  )
+
+# HISTOGRAMA POR ZONAS GEOGRAFICAS 
+
+# Histograma de frecuencias por zona geográfica
+ggplot(frecuencia_final, aes(x = Zona, y = ni, fill = ni)) +
+  geom_bar(stat = "identity", color = "black", width = 1) +  # Barras sin separación
+  geom_text(aes(label = ni), vjust = -0.5, size = 3.5) +      # Etiquetas sobre las barras
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +
+  scale_y_continuous(
+    breaks = seq(0, max(frecuencia_final$ni, na.rm = TRUE), by = 1000),
+    labels = scales::comma_format()
+  ) +
+  labs(
+    title = "5.1.3 Frecuencia de Registros por Zona Geográfica",
+    x = "Zona Geográfica",
+    y = "Frecuencia Absoluta"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid = element_blank(),
+    panel.background = element_blank(),
+    axis.line = element_line(color = "black")
+  )
+
+
+# BOXPLOT LATITUDE - Identificación de Outliers
+
+library(dplyr)
+library(ggplot2)
+
+# ⚠️ Validar existencia de tabla_frecuencia
+if (!exists("tabla_frecuencia") || !"Frecuencia" %in% colnames(tabla_frecuencia)) {
+  stop("❌ El dataframe 'tabla_frecuencia' no existe o no tiene la columna 'Frecuencia'.")
+}
+
+# Renombrar para coherencia
+datos_top <- tabla_frecuencia %>%
+  rename(Latitude = Frecuencia) %>%
+  filter(!is.na(Latitude))
+
+# Calcular estadísticos y límites
+estadisticas <- datos_top %>%
+  summarise(
+    xmin = min(Latitude, na.rm = TRUE),
+    q1 = quantile(Latitude, 0.25, na.rm = TRUE),
+    q2 = median(Latitude, na.rm = TRUE),
+    q3 = quantile(Latitude, 0.75, na.rm = TRUE),
+    xmax = max(Latitude, na.rm = TRUE)
+  ) %>%
+  mutate(
+    iqr = q3 - q1,
+    lower_fence = q1 - 1.5 * iqr,
+    upper_fence = q3 + 1.5 * iqr
+  )
+
+# Extraer valores
+xmin <- estadisticas$xmin
+q1 <- estadisticas$q1
+q2 <- estadisticas$q2
+q3 <- estadisticas$q3
+xmax <- estadisticas$xmax
+lower_fence <- estadisticas$lower_fence
+upper_fence <- estadisticas$upper_fence
+
+# Identificar outliers
+datos_outliers <- datos_top %>%
+  filter(Latitude < lower_fence | Latitude > upper_fence)
+
+# DataFrame para cajas Q1–Q2 y Q2–Q3
+cajas <- data.frame(
+  xmin = c(q1, q2),
+  xmax = c(q2, q3),
+  fill = c(0.3, 0.8)
+)
+
+# Altura cajas
+ymin_caja <- -0.02
+ymax_caja <- 0.02
+
+# Gráfico boxplot actualizado
+ggplot() +
+  # Cajas de los cuartiles
+  geom_rect(
+    data = cajas,
+    aes(xmin = xmin, xmax = xmax, ymin = ymin_caja, ymax = ymax_caja, fill = fill),
+    color = "black"
+  ) +
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +
+  
+  # Bigotes (líneas horizontales)
+  geom_segment(aes(x = lower_fence, xend = q1, y = 0, yend = 0), linewidth = 0.6) +
+  geom_segment(aes(x = q3, xend = upper_fence, y = 0, yend = 0), linewidth = 0.6) +
+  
+  # Línea base eje X
+  geom_hline(yintercept = 0, color = "black", linewidth = 0.5) +
+  
+  # Líneas punteadas para límites y cuartiles
+  geom_vline(
+    xintercept = c(lower_fence, q1, q2, q3, upper_fence),
+    linetype = "dotted",
+    color = "darkblue",
+    linewidth = 0.8
+  ) +
+  
+  # Etiquetas
+  annotate("text", x = lower_fence, y = -0.05, label = paste0("Lim. Inf\n", round(lower_fence, 3)), color = "blue", size = 4) +
+  annotate("text", x = q1, y = -0.05, label = paste0("Q1\n", round(q1, 3)), color = "blue", size = 4) +
+  annotate("text", x = q2, y = -0.05, label = paste0("Q2\n", round(q2, 3)), color = "blue", size = 4) +
+  annotate("text", x = q3, y = -0.05, label = paste0("Q3\n", round(q3, 3)), color = "blue", size = 4) +
+  annotate("text", x = upper_fence, y = -0.05, label = paste0("Lim. Sup\n", round(upper_fence, 3)), color = "blue", size = 4) +
+  
+  # Outliers en naranja con borde negro
+  geom_point(
+    data = datos_outliers,
+    aes(x = Latitude, y = 0),
+    shape = 21,
+    fill = "orange",
+    color = "black",
+    size = 2
+  ) +
+  
+  # Estética general
+  scale_x_continuous(name = "Frecuencia (Latitud)", breaks = NULL) +
+  ggtitle("5.1.4 Identificación Outliers (Frecuencia)") +
+  theme(
+    panel.background = element_rect(fill = "white", colour = NA),
+    plot.background = element_rect(fill = "white", colour = NA),
+    panel.grid = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    legend.position = "none",
+    plot.title = element_text(hjust = 0.5, size = 18, face = "bold"),
+    axis.text.x = element_text(color = "black")
+  )
+
+
+# GRAFICA DE OJIVAS
+
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+# Validar existencia de columnas
+if (!"Intervalo" %in% names(tabla_frecuencia) || !"Frecuencia" %in% names(tabla_frecuencia)) {
+  stop("❌ La tabla debe tener las columnas 'Intervalo' y 'Frecuencia'.")
+}
+
+# Procesar tabla con manejo correcto de intervalos negativos y decimales
+tabla_freq <- tabla_frecuencia %>%
+  mutate(
+    fi = Frecuencia,
+    Fi_c = cumsum(fi) / sum(fi),                       # Ojiva creciente
+    Fi_d = rev(cumsum(rev(fi))) / sum(fi),             # Ojiva decreciente
+    xi = sapply(strsplit(as.character(Intervalo), ","), function(x) {
+      izq <- as.numeric(gsub("[^0-9\\.-]", "", x[1]))  # elimina todo excepto dígitos, punto y signo -
+      der <- as.numeric(gsub("[^0-9\\.-]", "", x[2]))
+      round((izq + der) / 2, 2)
+    }),
+    Nombre_grupo = as.character(Intervalo)
+  )
+
+# Transformar a formato largo para graficar
+tabla_ojiva <- tabla_freq %>%
+  select(Nombre_grupo, xi, Fi_c, Fi_d) %>%
+  pivot_longer(cols = c(Fi_c, Fi_d),
+               names_to = "Tipo",
+               values_to = "Frecuencia") %>%
+  mutate(
+    Tipo = factor(Tipo,
+                  levels = c("Fi_c", "Fi_d"),
+                  labels = c("Ojiva Creciente (Fi)", "Ojiva Decreciente (Fi)"))
+  )
+
+# Graficar ojivas (sin mediana)
+ggplot(tabla_ojiva, aes(x = xi, y = Frecuencia, color = Tipo, linetype = Tipo)) +
+  geom_line(aes(group = Tipo), size = 1.2) +
+  geom_point(size = 3) +
+  geom_text(aes(label = xi),
+            vjust = -1.2,
+            size = 4,
+            fontface = "bold") +
+  scale_x_continuous(
+    breaks = tabla_freq$xi,
+    labels = tabla_freq$xi
+  ) +
+  scale_y_continuous(
+    limits = c(0, 1),
+    breaks = seq(0, 1, 0.1),
+    labels = scales::percent_format(accuracy = 1)
+  ) +
+  scale_color_manual(values = c(
+    "Ojiva Creciente (Fi)" = "skyblue",
+    "Ojiva Decreciente (Fi)" = "darkblue"
+  )) +
+  labs(
+    title = "5.1.5 Creciente y Decreciente (Latitud)",
+    x = "Marca de clase (xi)",
+    y = "Frecuencia acumulada (relativa)"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    panel.grid = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    legend.position = "bottom",
+    legend.direction = "horizontal",
+    legend.box.margin = margin(t = 10),
+    legend.title = element_blank(),
+    axis.line = element_line(color = "black", linewidth = 0.6),
+    panel.grid.minor = element_blank()
+  )
+
+
+# RESUMEN TOTAL DE resumen_estadistico_latitude
+
+# Cargar librerías necesarias
+library(dplyr)
+library(DT)
+library(moments)
+library(htmltools)
+
+
+resumen_estadistico_latitude <- tabla_cuantificacion %>%
+  filter(!is.na(Latitude), !is.na(Zona)) %>%
+  group_by(Zona) %>%
+  summarise(
+    Total_Observaciones = n(),
+    Media               = mean(Latitude),
+    Mediana             = median(Latitude),
+    Desviacion_Estandar = sd(Latitude),
+    Minimo              = min(Latitude),
+    Maximo              = max(Latitude),
+    Q1                  = quantile(Latitude, 0.25),
+    Q3                  = quantile(Latitude, 0.75),
+    IQR                 = IQR(Latitude),
+    Curtosis            = kurtosis(Latitude),
+    Asimetria           = skewness(Latitude),
+    Outliers = sum(
+      Latitude < (quantile(Latitude, 0.25) - 1.5 * IQR(Latitude)) |
+        Latitude > (quantile(Latitude, 0.75) + 1.5 * IQR(Latitude))
+    ),
+    Moda = {
+      tab <- table(Latitude)
+      moda_valor <- as.numeric(names(tab)[tab == max(tab)])
+      paste(sort(round(moda_valor, 2)), collapse = ", ")
+    },
+    .groups = "drop"
+  )
+
+
+# Crear resumen total
+resumen_total_latitude <- resumen_estadistico_latitude %>%
+  summarise(
+    Zonas_Total         = n(),
+    Observaciones_Total = sum(Total_Observaciones),
+    Prom_Media          = mean(Media),
+    Prom_Mediana        = mean(Mediana),
+    Prom_SD             = mean(Desviacion_Estandar),
+    Prom_Min            = mean(Minimo),
+    Prom_Max            = mean(Maximo),
+    Prom_Q1             = mean(Q1),
+    Prom_Q3             = mean(Q3),
+    Prom_IQR            = mean(IQR),
+    Prom_Curtosis       = mean(Curtosis),
+    Prom_Asimetria      = mean(Asimetria),
+    Total_Outliers      = sum(Outliers),
+    Modas_Distintas     = n_distinct(Moda)
+  )
+
+# Mostrar resumen total
+print(resumen_total_latitude)
+
+# Mostrar tabla interactiva del resumen por zona
+DT::datatable(
+  resumen_estadistico_latitude %>%
+    mutate(across(where(is.numeric), ~ round(.x, 2))),
+  options = list(
+    pageLength = 10,
+    autoWidth = TRUE,
+    scrollX = TRUE,
+    columnDefs = list(list(className = 'dt-center', targets = "_all")),
+    initComplete = JS(
+      "function(settings, json) {",
+      "$(this.api().table().header()).css({",
+      "'background-color': 'darkblue',",
+      "'color': 'white',",
+      "'font-weight': 'bold',",
+      "'font-family': 'Segoe UI'",
+      "});",
+      "}"
+    ),
+    rowCallback = JS(
+      "function(row, data, index) {",
+      "$(row).css('font-family', 'Segoe UI');",
+      "$(row).css({'font-weight': 'bold', 'background-color': '#f9f9f9'});",
+      "$('td', row).css({'text-align': 'center', 'padding': '5px'});",
+      "}"
+    ),
+    dom = 't'
+  ),
+  caption = htmltools::tags$caption(
+    style = 'caption-side: top; text-align: center; font-size:18px; font-weight: bold; font-family: Segoe UI; padding: 10px;',
+    '📊 5.6 Resumen Estadístico de Latitude por Zona Geográfica'
+  ),
+  class = 'stripe hover compact nowrap',
+  rownames = FALSE
+)
+
+
+```
+```{r}
+
+#------------------------VARIABLE Longitude --------------------------------
+
+
+# ANALISIS DE VARIABLE Longitude
+
+datos$Longitude <- as.numeric(as.character(datos$Longitude))
+
+# DEFINIR INTERVALOS Y ETIQUETAS DE ZONAS GEOGRÁFICAS
+
+intervalos <- c(-90, 30, 35, 40, 45, 55, 90)
+
+nombres_intervalos <- c(
+  "Sur de EE.UU.",
+  "Centro-Sur",
+  "Centro / Oeste",
+  "Norte de EE.UU. / Sur de Canadá",
+  "Canadá Meridional",
+  "Canadá Septentrional"
+)
+
+# 1. CALCULAR CLASES CON FORMULA DE STURGES
+
+# 1.1 Contar datos válidos
+n <- sum(!is.na(datos$Longitude))
+
+# 1.2 Calcular número de clases (Sturges)
+k <- ceiling(1 + 3.3 * log10(n))
+
+# 1.3 Determinar rango
+min_lat <- min(datos$Longitude, na.rm = TRUE)
+max_lat <- max(datos$Longitude, na.rm = TRUE)
+rango <- max_lat - min_lat
+
+# 1.4 Calcular amplitud
+amplitud <- ceiling(rango / k)
+
+# 1.5 Crear clases (intervalos)
+clases <- tibble(
+  Clase = 1:k,
+  Limite_Inferior = min_lat + (0:(k - 1)) * amplitud,
+  Limite_Superior = min_lat + (1:k) * amplitud
+)
+
+# Mostrar número de clases
+cat("Número de clases según Sturges:", k, "\n")
+
+# 1.6 Tabla resumen Sturges
+tabla_sturges_longitude <- tibble(
+  Variable = "Longitude",
+  Observaciones_validas = n,
+  Clases_Sturges = k
+)
+
+# 2. MOSTRAR TABLA INTERACTIVA STURGES
+
+DT::datatable(
+  clases,
+  options = list(
+    pageLength = k,
+    autoWidth  = TRUE,
+    scrollX    = TRUE,
+    columnDefs = list(
+      list(width = '30px', className = 'dt-center', targets = 0),
+      list(width = '50px', className = 'dt-center', targets = 1),
+      list(width = '50px', className = 'dt-center', targets = 2)
+    ),
+    initComplete = JS(
+      "function(settings, json) {",
+      "$(this.api().table().header()).css({",
+      "'background-color': 'darkblue',",
+      "'color': 'white',",
+      "'font-weight': 'bold',",
+      "'font-family': 'Segoe UI'",
+      "});",
+      "}"
+    ),
+    rowCallback = JS(
+      "function(row, data, index) {",
+      "$(row).css('font-family', 'Segoe UI');",
+      "$(row).css({'font-weight': 'bold', 'background-color': '#f2f2f2'});",
+      "$('td', row).css({'text-align': 'right', 'padding-right': '10px'});",
+      "}"
+    ),
+    dom = 't'
+  ),
+  caption = htmltools::tags$caption(
+    style = 'caption-side: top; text-align: center; font-size:18px; font-weight: bold; font-family: Segoe UI; padding: 10px;',
+    paste0("5.1 Clases: cálculo de Sturges para Longitude (", k, " clases)")
+  ),
+  class = 'stripe hover compact nowrap',
+  rownames = FALSE
+)
+
+# 3. CLASIFICAR CUANTIFICABLES Y NO CUANTIFICABLES
+
+# 3.1 Filtrar valores no nulos
+Longitude_raw <- na.omit(datos$Longitude)
+
+# 3.2 Clasificar por tipo
+cuantificables <- Longitude_raw[grepl("[0-9]", Longitude_raw)]
+no_cuantificables <- Longitude_raw[!grepl("[0-9]", Longitude_raw)]
+
+# Mostrar resultados
+cat("Cuantificables:\n")
+print(cuantificables)
+
+cat("\n No Cuantificables:\n")
+print(no_cuantificables)
+
+# 3.3 Crear dataframe de cuantificación
+tabla_cuantificacion_longitude <- data.frame(
+  Longitude = as.numeric(c(cuantificables, no_cuantificables)),
+  Tipo = c(
+    rep("Cuantificable", length(cuantificables)),
+    rep("No Cuantificable", length(no_cuantificables))
+  ),
+  stringsAsFactors = FALSE
+)
+
+# 3.4 Asignar zonas geográficas
+
+# Definir intervalos de zonas longitudinales
+intervalos <- c(-180, -122, -105, -90, -75, -60, 0)  # Puedes ajustar según tu rango
+nombres_intervalos <- c(
+  "Oeste extremo",
+  "Oeste de EE.UU.",
+  "Centro",
+  "Este de EE.UU.",
+  "Costa Este",
+  "Atlántico"
+)
+
+# Clasificación inicial por intervalos
+tabla_cuantificacion_longitude$Zona <- cut(
+  tabla_cuantificacion_longitude$Longitude,
+  breaks = intervalos,
+  labels = nombres_intervalos,
+  right = FALSE
+)
+
+# Reasignar zonas a celdas NA que tengan Longitude válida
+tabla_cuantificacion_longitude$Zona[is.na(tabla_cuantificacion_longitude$Zona) & !is.na(tabla_cuantificacion_longitude$Longitude)] <- cut(
+  tabla_cuantificacion_longitude$Longitude[is.na(tabla_cuantificacion_longitude$Zona) & !is.na(tabla_cuantificacion_longitude$Longitude)],
+  breaks = intervalos,
+  labels = nombres_intervalos,
+  right = FALSE
+)
+
+# Rellenar cualquier zona que sigue siendo NA con "EE.UU."
+tabla_cuantificacion_longitude$Zona[is.na(tabla_cuantificacion_longitude$Zona)] <- "EE.UU."
+
+# Confirmar estructura
+str(tabla_cuantificacion_longitude)
+
+# 4. CREAR MUESTRA DE HASTA 1000 REGISTROS
+
+library(dplyr)
+library(DT)
+
+tabla_muestra <- tabla_cuantificacion_longitude %>%
+  sample_n(size = min(1000, nrow(.)))
+
+DT::datatable(
+  tabla_muestra,
+  options = list(
+    pageLength = 10,
+    autoWidth  = TRUE,
+    scrollX    = TRUE,
+    columnDefs = list(
+      list(className = 'dt-center', targets = "_all")
+    ),
+    initComplete = JS(
+      "function(settings, json) {",
+      "$(this.api().table().header()).css({",
+      "'background-color': 'darkblue',",
+      "'color': 'white',",
+      "'font-weight': 'bold',",
+      "'font-family': 'Segoe UI'",
+      "});",
+      "}"
+    ),
+    rowCallback = JS(
+      "function(row, data, index) {",
+      "$(row).css('font-family', 'Segoe UI');",
+      "$(row).css({'font-weight': 'bold', 'background-color': '#f9f9f9'});",
+      "$('td', row).css({'text-align': 'center', 'padding': '5px'});",
+      "}"
+    ),
+    dom = 't'
+  ),
+  caption = htmltools::tags$caption(
+    style = 'caption-side: top; text-align: center; font-size:18px; font-weight: bold; font-family: Segoe UI; padding: 10px;',
+    "5.2 Muestra de hasta 1000 registros de valores cuantificables y no cuantificables"
+  ),
+  class = 'stripe hover compact nowrap',
+  rownames = FALSE
+)
+
+# 5. TABLA: TOP 20 LONGITUDES MÁS FRECUENTES
+
+top_Longitudes <- tabla_cuantificacion_longitude %>%
+  count(Longitude, sort = TRUE) %>%
+  top_n(20, wt = n)
+
+tabla_top <- tabla_cuantificacion_longitude %>%
+  filter(Longitude %in% top_Longitudes$Longitude)
+
+DT::datatable(
+  tabla_top,
+  options = list(
+    pageLength = 10,
+    autoWidth  = TRUE,
+    scrollX    = TRUE,
+    columnDefs = list(
+      list(className = 'dt-center', targets = "_all")
+    ),
+    initComplete = JS(
+      "function(settings, json) {",
+      "$(this.api().table().header()).css({",
+      "'background-color': 'darkblue',",
+      "'color': 'white',",
+      "'font-weight': 'bold',",
+      "'font-family': 'Segoe UI'",
+      "});",
+      "}"
+    ),
+    rowCallback = JS(
+      "function(row, data, index) {",
+      "$(row).css('font-family', 'Segoe UI');",
+      "$(row).css({'font-weight': 'bold', 'background-color': '#f9f9f9'});",
+      "$('td', row).css({'text-align': 'center', 'padding': '5px'});",
+      "}"
+    ),
+    dom = 't'
+  ),
+  caption = htmltools::tags$caption(
+    style = 'caption-side: top; text-align: center; font-size:18px; font-weight: bold; font-family: Segoe UI; padding: 10px;',
+    '5.3 Registros correspondientes a las 20 Longitudes más frecuentes (agrupadas por zona geográfica)'
+  ),
+  class = 'stripe hover compact nowrap',
+  rownames = FALSE
+)
+
+# 6. AGRUPAMIENTO POR ZONAS (RESUMEN 6 GRUPOS)
+
+# 6.1 Filtrar cuantificables
+tabla_filtrada <- tabla_cuantificacion_longitude %>%
+  filter(Tipo == "Cuantificable")
+
+# 6.2 Agrupar por zona y contar
+resumen_zona <- tabla_filtrada %>%
+  group_by(Zona) %>%
+  summarise(Total_Cuantificables = n()) %>%
+  arrange(desc(Total_Cuantificables))
+
+# 6.3 Agregar fila total
+total_general <- data.frame(
+  Zona = "<b>TOTAL GENERAL</b>",
+  Total_Cuantificables = sum(resumen_zona$Total_Cuantificables)
+)
+
+# 6.4 Unir tabla con fila total
+resumen_zona_final <- bind_rows(resumen_zona, total_general)
+
+# 6.5 Mostrar tabla interactiva
+DT::datatable(
+  resumen_zona_final,
+  escape = FALSE,
+  options = list(
+    pageLength = 10,
+    autoWidth  = TRUE,
+    scrollX    = TRUE,
+    columnDefs = list(
+      list(className = 'dt-center', targets = "_all")
+    ),
+    initComplete = JS(
+      "function(settings, json) {",
+      "$(this.api().table().header()).css({",
+      "'background-color': 'darkblue',",
+      "'color': 'white',",
+      "'font-weight': 'bold',",
+      "'font-family': 'Segoe UI'",
+      "});",
+      "}"
+    ),
+    rowCallback = JS(
+      "function(row, data, index) {",
+      "$(row).css('font-family', 'Segoe UI');",
+      "$(row).css({'font-weight': 'bold', 'background-color': '#f9f9f9'});",
+      "$('td', row).css({'text-align': 'center', 'padding': '5px'});",
+      "}"
+    ),
+    dom = 't'
+  ),
+  caption = htmltools::tags$caption(
+    style = 'caption-side: top; text-align: center; font-size:18px; font-weight: bold; font-family: Segoe UI; padding: 10px;',
+    '5.4 Total de registros Cuantificables por Zona Geográfica'
+  ),
+  class = 'stripe hover compact nowrap',
+  rownames = FALSE
+)
+
+# 7. DISTRIBUCIÓN DE FRECUENCIA POR ZONAS
+
+# 7.1 Calcular frecuencias
+frecuencias <- tabla_cuantificacion_longitude %>%
+  filter(!is.na(Zona)) %>%
+  group_by(Zona) %>%
+  summarise(
+    Lim_Inferior = min(Longitude, na.rm = TRUE),
+    Lim_Superior = max(Longitude, na.rm = TRUE),
+    ni = n(),
+    xi = round((Lim_Inferior + Lim_Superior) / 2, 3)
+  ) %>%
+  ungroup()
+
+# 7.2 Totales y frecuencias relativas
+total <- sum(frecuencias$ni)
+frecuencias <- frecuencias %>%
+  mutate(
+    hi = round(ni / total, 4)
+  )
+
+# 7.3 Frecuencia acumulada creciente y decreciente
+frecuencias <- frecuencias %>%
+  arrange(Lim_Inferior) %>%
+  mutate(
+    Ni_creciente = cumsum(ni),
+    Fi_creciente = round(cumsum(hi), 4)
+  ) %>%
+  arrange(desc(Lim_Inferior)) %>%
+  mutate(
+    Ni_decreciente = cumsum(ni),
+    Fi_decreciente = round(cumsum(hi), 4)
+  ) %>%
+  arrange(Lim_Inferior)
+
+# 7.4 Reordenar columnas
+frecuencia_final <- frecuencias %>%
+  select(
+    Zona, Lim_Inferior, Lim_Superior, xi,
+    ni, hi, Ni_decreciente, Fi_decreciente,
+    Ni_creciente, Fi_creciente
+  )
+
+# 7.5 Mostrar tabla interactiva
+DT::datatable(
+  frecuencia_final,
+  options = list(
+    pageLength = 10,
+    autoWidth  = TRUE,
+    scrollX    = TRUE,
+    columnDefs = list(
+      list(className = 'dt-center', targets = "_all")
+    ),
+    initComplete = JS(
+      "function(settings, json) {",
+      "$(this.api().table().header()).css({",
+      "'background-color': 'darkblue',",
+      "'color': 'white',",
+      "'font-weight': 'bold',",
+      "'font-family': 'Segoe UI'",
+      "});",
+      "}"
+    ),
+    rowCallback = JS(
+      "function(row, data, index) {",
+      "$(row).css('font-family', 'Segoe UI');",
+      "$(row).css({'font-weight': 'bold', 'background-color': '#f9f9f9'});",
+      "$('td', row).css({'text-align': 'center', 'padding': '5px'});",
+      "}"
+    ),
+    dom = 't'
+  ),
+  caption = htmltools::tags$caption(
+    style = 'caption-side: top; text-align: center; font-size:18px; font-weight: bold; font-family: Segoe UI; padding: 10px;',
+    '5.5 Distribución de Frecuencia por Zonas Geográficas'
+  ),
+  class = 'stripe hover compact nowrap',
+  rownames = FALSE
+)
+
+
+# GRAFICA: DISTRIBUCION FRECUENCIA ABSOLUTA (STURGES)
+
+# 0. DEFINIR INTERVALOS Y ETIQUETAS DE ZONAS GEOGRÁFICAS (CENTRALIZADO)
+
+intervalos <- c(-90, 30, 35, 40, 45, 55, 90)
+
+nombres_zonas <- c(
+  "Sur de EE.UU.",
+  "Centro-Sur",
+  "Centro / Oeste",
+  "Norte de EE.UU. / Sur de Canadá",
+  "Canadá Meridional",
+  "Canadá Septentrional"
+)
+
+# 1. CLASIFICAR LongitudeS POR ZONA
+
+tabla_cuantificacion_longitude$Zona <- cut(
+  tabla_cuantificacion_longitude$Longitude,
+  breaks = intervalos,
+  labels = nombres_zonas,
+  right = FALSE
+)
+
+# 2. CALCULAR FRECUENCIA ABSOLUTA POR ZONA
+
+tabla_freq <- tabla_cuantificacion_longitude %>%
+  filter(!is.na(Zona)) %>%
+  group_by(Zona) %>%
+  summarise(ni = n()) %>%
+  mutate(Zona = factor(Zona, levels = nombres_zonas))
+
+# ✅ Mostrar tabla de frecuencias si se requiere
+print(tabla_freq)
+
+# 3. HISTOGRAMA CON INTERVALOS SEGÚN STURGES
+
+# 3.1 Filtrar valores cuantificables válidos
+Longitude_sturges <- tabla_cuantificacion_longitude %>%
+  filter(Tipo == "Cuantificable") %>%
+  mutate(Longitude = as.numeric(Longitude)) %>%
+  filter(!is.na(Longitude)) %>%
+  pull(Longitude)
+
+# 3.2 Aplicar fórmula de Sturges
+n_sturges <- length(Longitude_sturges)
+k_sturges <- ceiling(1 + 3.3 * log10(n_sturges))
+
+# 3.3 Calcular rango y amplitud
+min_val <- min(Longitude_sturges, na.rm = TRUE)
+max_val <- max(Longitude_sturges, na.rm = TRUE)
+rango_lat <- max_val - min_val
+amplitud_sturges <- ceiling(rango_lat / k_sturges)
+
+# 3.4 Crear puntos de corte
+breaks_sturges <- seq(min_val, max_val + amplitud_sturges, by = amplitud_sturges)
+
+# 3.5 Construir tabla de frecuencias
+hist_data <- cut(Longitude_sturges, breaks = breaks_sturges, right = FALSE)
+tabla_frecuencia <- as.data.frame(table(hist_data))
+
+# 🏷️ Renombrar columnas
+colnames(tabla_frecuencia) <- c("Intervalo", "Frecuencia")
+
+# ✅ Mostrar tabla de frecuencias si se requiere
+print(tabla_frecuencia)
+
+# 4. HISTOGRAMA POR STURGES DETALLE FINO DE DATOS
+
+library(ggplot2)
+
+ggplot(tabla_frecuencia, aes(x = Intervalo, y = Frecuencia, fill = Frecuencia)) +
+  geom_bar(stat = "identity", color = "black", width = 1) +  # width = 1 → sin separación
+  geom_text(aes(label = Frecuencia), vjust = -0.5, size = 3.5) +  # Etiquetas sobre barras
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +
+  scale_y_continuous(breaks = seq(0, max(tabla_frecuencia$Frecuencia, na.rm = TRUE) + 5000, by = 5000),
+                     labels = scales::comma_format()) +
+  labs(
+    title = "5.1.1 Regla de Sturges",
+    x = "Intervalos de Longitude",
+    y = "Frecuencia Absoluta"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),  # Centrado y negrita
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid = element_blank(),  # Eliminar retícula
+    panel.background = element_blank(),  # Fondo blanco
+    axis.line = element_line(color = "black")  # Ejes X y Y visibles
+  )
+
+# HISTOGRAMA POR ZONAS GEOGRAFICAS 
+
+# Histograma de frecuencias por zona geográfica
+ggplot(frecuencia_final, aes(x = Zona, y = ni, fill = ni)) +
+  geom_bar(stat = "identity", color = "black", width = 1) +  # Barras sin separación
+  geom_text(aes(label = ni), vjust = -0.5, size = 3.5) +      # Etiquetas sobre las barras
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +
+  scale_y_continuous(
+    breaks = seq(0, max(frecuencia_final$ni, na.rm = TRUE), by = 1000),
+    labels = scales::comma_format()
+  ) +
+  labs(
+    title = "5.1.3 Frecuencia de Registros por Zona Geográfica",
+    x = "Zona Geográfica",
+    y = "Frecuencia Absoluta"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid = element_blank(),
+    panel.background = element_blank(),
+    axis.line = element_line(color = "black")
+  )
+
+
+# BOXPLOT Longitude - Identificación de Outliers
+
+library(dplyr)
+library(ggplot2)
+
+# ⚠️ Validar existencia de tabla_cuantificacion_longitude
+if (!exists("tabla_cuantificacion_longitude") || !"Longitude" %in% colnames(tabla_cuantificacion_longitude)) {
+  stop("❌ El dataframe 'tabla_cuantificacion_longitude' no existe o no tiene la columna 'Longitude'.")
+}
+
+# Filtrar valores cuantificables y no NA
+datos_top <- tabla_cuantificacion_longitude %>%
+  filter(Tipo == "Cuantificable", !is.na(Longitude))
+
+# Calcular estadísticos y límites
+estadisticas <- datos_top %>%
+  summarise(
+    xmin = min(Longitude, na.rm = TRUE),
+    q1 = quantile(Longitude, 0.25, na.rm = TRUE),
+    q2 = median(Longitude, na.rm = TRUE),
+    q3 = quantile(Longitude, 0.75, na.rm = TRUE),
+    xmax = max(Longitude, na.rm = TRUE)
+  ) %>%
+  mutate(
+    iqr = q3 - q1,
+    lower_fence = q1 - 1.5 * iqr,
+    upper_fence = q3 + 1.5 * iqr
+  )
+
+# Extraer valores
+xmin <- estadisticas$xmin
+q1 <- estadisticas$q1
+q2 <- estadisticas$q2
+q3 <- estadisticas$q3
+xmax <- estadisticas$xmax
+lower_fence <- estadisticas$lower_fence
+upper_fence <- estadisticas$upper_fence
+
+# Identificar outliers
+datos_outliers <- datos_top %>%
+  filter(Longitude < lower_fence | Longitude > upper_fence)
+
+# DataFrame para cajas Q1–Q2 y Q2–Q3
+cajas <- data.frame(
+  xmin = c(q1, q2),
+  xmax = c(q2, q3),
+  fill = c(0.3, 0.8)
+)
+
+# Altura cajas
+ymin_caja <- -0.02
+ymax_caja <- 0.02
+
+# Gráfico boxplot actualizado
+ggplot() +
+  # Cajas de los cuartiles
+  geom_rect(
+    data = cajas,
+    aes(xmin = xmin, xmax = xmax, ymin = ymin_caja, ymax = ymax_caja, fill = fill),
+    color = "black"
+  ) +
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +
+  
+  # Bigotes (líneas horizontales)
+  geom_segment(aes(x = lower_fence, xend = q1, y = 0, yend = 0), linewidth = 0.6) +
+  geom_segment(aes(x = q3, xend = upper_fence, y = 0, yend = 0), linewidth = 0.6) +
+  
+  # Línea base eje X
+  geom_hline(yintercept = 0, color = "black", linewidth = 0.5) +
+  
+  # Líneas punteadas para límites y cuartiles
+  geom_vline(
+    xintercept = c(lower_fence, q1, q2, q3, upper_fence),
+    linetype = "dotted",
+    color = "darkblue",
+    linewidth = 0.8
+  ) +
+  
+  # Etiquetas
+  annotate("text", x = lower_fence, y = -0.05, label = paste0("Lim. Inf\n", round(lower_fence, 3)), color = "blue", size = 4) +
+  annotate("text", x = q1, y = -0.05, label = paste0("Q1\n", round(q1, 3)), color = "blue", size = 4) +
+  annotate("text", x = q2, y = -0.05, label = paste0("Q2\n", round(q2, 3)), color = "blue", size = 4) +
+  annotate("text", x = q3, y = -0.05, label = paste0("Q3\n", round(q3, 3)), color = "blue", size = 4) +
+  annotate("text", x = upper_fence, y = -0.05, label = paste0("Lim. Sup\n", round(upper_fence, 3)), color = "blue", size = 4) +
+  
+  # Outliers en naranja con borde negro
+  geom_point(
+    data = datos_outliers,
+    aes(x = Longitude, y = 0),
+    shape = 21,
+    fill = "orange",
+    color = "black",
+    size = 2
+  ) +
+  
+  # Estética general
+  scale_x_continuous(name = "Longitude (°)", breaks = NULL) +
+  ggtitle("5.1.4 Identificación Outliers (Longitude Cuantificable)") +
+  theme(
+    panel.background = element_rect(fill = "white", colour = NA),
+    plot.background = element_rect(fill = "white", colour = NA),
+    panel.grid = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    legend.position = "none",
+    plot.title = element_text(hjust = 0.5, size = 18, face = "bold"),
+    axis.text.x = element_text(color = "black")
+  )
+
+# GRAFICA DE OJIVAS - Longitude Cuantificable
+
+# 📦 Librerías necesarias
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+# ✅ 1. Filtrar datos cuantificables válidos
+longitudes_validas <- tabla_cuantificacion_longitude %>%
+  filter(!is.na(Longitude), Tipo == "Cuantificable") %>%
+  pull(Longitude)
+
+# 🧮 2. Calcular número de clases (Regla de Sturges)
+k <- ceiling(1 + 3.322 * log10(length(longitudes_validas)))
+
+# 🧾 3. Crear intervalos y tabla de frecuencias
+intervalos <- cut(longitudes_validas, breaks = k, include.lowest = TRUE, dig.lab = 10)
+
+tabla_cuantificacion_longitude <- as.data.frame(table(Intervalo = intervalos)) %>%
+  rename(Frecuencia = Freq) %>%
+  mutate(Tipo = "Cuantificable")
+
+# ⚠️ Validación: columnas necesarias
+if (!"Intervalo" %in% names(tabla_cuantificacion_longitude) || !"Frecuencia" %in% names(tabla_cuantificacion_longitude)) {
+  stop("❌ La tabla debe tener las columnas 'Intervalo' y 'Frecuencia'.")
+}
+
+# 📊 4. Calcular ojivas
+tabla_freq <- tabla_cuantificacion_longitude %>%
+  filter(Tipo == "Cuantificable", !is.na(Frecuencia), !is.na(Intervalo)) %>%
+  mutate(
+    fi   = Frecuencia,
+    Fi_c = cumsum(fi) / sum(fi),                       # Ojiva creciente
+    Fi_d = rev(cumsum(rev(fi))) / sum(fi),             # Ojiva decreciente
+    xi = sapply(strsplit(as.character(Intervalo), ","), function(x) {
+      izq <- as.numeric(gsub("[^0-9\\.-]", "", x[1]))
+      der <- as.numeric(gsub("[^0-9\\.-]", "", x[2]))
+      round((izq + der) / 2, 2)
+    }),
+    Nombre_grupo = as.character(Intervalo)
+  )
+
+# 🧮 5. Transformar a formato largo para graficar
+tabla_ojiva <- tabla_freq %>%
+  select(Nombre_grupo, xi, Fi_c, Fi_d) %>%
+  pivot_longer(cols = c(Fi_c, Fi_d),
+               names_to = "Tipo",
+               values_to = "Frecuencia") %>%
+  mutate(
+    Tipo = factor(Tipo,
+                  levels = c("Fi_c", "Fi_d"),
+                  labels = c("Ojiva Creciente (Fi)", "Ojiva Decreciente (Fi)"))
+  )
+
+# 📈 6. Gráfico de Ojivas
+ggplot(tabla_ojiva, aes(x = xi, y = Frecuencia, color = Tipo, linetype = Tipo)) +
+  geom_line(aes(group = Tipo), size = 1.2) +
+  geom_point(size = 3) +
+  geom_text(aes(label = xi),
+            vjust = -1.2,
+            size = 4,
+            fontface = "bold") +
+  scale_x_continuous(
+    breaks = tabla_freq$xi,
+    labels = tabla_freq$xi
+  ) +
+  scale_y_continuous(
+    limits = c(0, 1),
+    breaks = seq(0, 1, 0.1),
+    labels = scales::percent_format(accuracy = 1)
+  ) +
+  scale_color_manual(values = c(
+    "Ojiva Creciente (Fi)" = "skyblue",
+    "Ojiva Decreciente (Fi)" = "darkblue"
+  )) +
+  labs(
+    title = "5.1.5 Ojiva Creciente y Decreciente (Longitude Cuantificable)",
+    x = "Marca de clase (xi)",
+    y = "Frecuencia acumulada (relativa)"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    panel.grid = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    legend.position = "bottom",
+    legend.direction = "horizontal",
+    legend.box.margin = margin(t = 10),
+    legend.title = element_blank(),
+    axis.line = element_line(color = "black", linewidth = 0.6),
+    panel.grid.minor = element_blank()
+  )
+
+
+# RESUMEN TOTAL ESTADISTICA
+
+# 📦 Librerías necesarias
+library(dplyr)
+library(moments)
+library(DT)
+library(htmltools)
+
+# 🔍 1. Filtrar zonas válidas desde resumen_zona_final (excluyendo TOTAL GENERAL)
+zonas_validas <- resumen_zona_final %>%
+  filter(Zona != "<b>TOTAL GENERAL</b>") %>%
+  pull(Zona)
+
+# 📊 2. Calcular resumen estadístico por zona
+resumen_estadistico_Longitude <- tabla_top %>%
+  filter(!is.na(Longitude), Tipo == "Cuantificable", Zona %in% zonas_validas) %>%
+  group_by(Zona) %>%
+  filter(sum(!is.na(Longitude)) > 0) %>%  # Asegura que haya datos válidos por zona
+  summarise(
+    Total_Observaciones = n(),
+    Media               = mean(Longitude, na.rm = TRUE),
+    Mediana             = median(Longitude, na.rm = TRUE),
+    Desviacion_Estandar = sd(Longitude, na.rm = TRUE),
+    Minimo              = ifelse(all(is.na(Longitude)), NA, min(Longitude, na.rm = TRUE)),
+    Maximo              = ifelse(all(is.na(Longitude)), NA, max(Longitude, na.rm = TRUE)),
+    Q1                  = quantile(Longitude, 0.25, na.rm = TRUE),
+    Q3                  = quantile(Longitude, 0.75, na.rm = TRUE),
+    IQR                 = IQR(Longitude, na.rm = TRUE),
+    Curtosis            = kurtosis(Longitude, na.rm = TRUE),
+    Asimetria           = skewness(Longitude, na.rm = TRUE),
+    Moda = {
+      tab <- table(Longitude)
+      if (length(tab) > 0) {
+        modas <- as.numeric(names(tab)[tab == max(tab)])
+        paste(sort(round(modas, 2)), collapse = ", ")
+      } else {
+        NA_character_
+      }
+    },
+    Outliers = sum(
+      Longitude < (quantile(Longitude, 0.25, na.rm = TRUE) - 1.5 * IQR(Longitude, na.rm = TRUE)) |
+        Longitude > (quantile(Longitude, 0.75, na.rm = TRUE) + 1.5 * IQR(Longitude, na.rm = TRUE)),
+      na.rm = TRUE
+    ),
+    .groups = 'drop'
+  )
+
+# 📊 3. Calcular resumen total
+resumen_total_Longitude <- resumen_estadistico_Longitude %>%
+  summarise(
+    Zonas_Total         = n(),
+    Observaciones_Total = sum(Total_Observaciones, na.rm = TRUE),
+    Prom_Media          = mean(Media, na.rm = TRUE),
+    Prom_Mediana        = mean(Mediana, na.rm = TRUE),
+    Prom_SD             = mean(Desviacion_Estandar, na.rm = TRUE),
+    Prom_Min            = mean(Minimo, na.rm = TRUE),
+    Prom_Max            = mean(Maximo, na.rm = TRUE),
+    Prom_Q1             = mean(Q1, na.rm = TRUE),
+    Prom_Q3             = mean(Q3, na.rm = TRUE),
+    Prom_IQR            = mean(IQR, na.rm = TRUE),
+    Prom_Curtosis       = mean(Curtosis, na.rm = TRUE),
+    Prom_Asimetria      = mean(Asimetria, na.rm = TRUE),
+    Total_Outliers      = sum(Outliers, na.rm = TRUE),
+    Modas_Distintas     = n_distinct(Moda)
+  )
+
+# ✅ 4. Imprimir los resúmenes
+print(resumen_estadistico_Longitude)
+print(resumen_total_Longitude)
+
+# 🎨 5. Tabla interactiva estilizada
+DT::datatable(
+  resumen_estadistico_Longitude %>%
+    mutate(across(where(is.numeric), ~ round(.x, 2))),
+  options = list(
+    pageLength = 10,
+    autoWidth  = TRUE,
+    scrollX    = TRUE,
+    columnDefs = list(
+      list(className = 'dt-center', targets = "_all")
+    ),
+    initComplete = JS(
+      "function(settings, json) {",
+      "$(this.api().table().header()).css({",
+      "'background-color': 'darkblue',",
+      "'color': 'white',",
+      "'font-weight': 'bold',",
+      "'font-family': 'Segoe UI'",
+      "});",
+      "}"
+    ),
+    rowCallback = JS(
+      "function(row, data, index) {",
+      "$(row).css('font-family', 'Segoe UI');",
+      "$(row).css({'font-weight': 'bold', 'background-color': '#f9f9f9'});",
+      "$('td', row).css({'text-align': 'center', 'padding': '5px'});",
+      "}"
+    ),
+    dom = 't'
+  ),
+  caption = htmltools::tags$caption(
+    style = 'caption-side: top; text-align: center; font-size:18px; font-weight: bold; font-family: Segoe UI; padding: 10px;',
+    '📊 5.6 Resumen Estadístico de Longitude por Zona Geográfica'
+  ),
+  class = 'stripe hover compact nowrap',
+  rownames = FALSE
+)
+
+```
+```{r}
+
+#------------------------VARIABLE DATE LAST CONFIRMED ----------------------
+
+# --- CONVERTIR A FORMATO FECHA ---
+datos$Date.Last.Confirmed <- suppressWarnings(as.Date(datos$Date.Last.Confirmed, format = "%m/%d/%Y"))
+
+# --- ELIMINAR NA ---
+open_dates <- na.omit(datos$Date.Last.Confirmed)
+
+# --- CÁLCULO DE CLASES (REGLA DE STURGES) ---
+n <- length(open_dates)
+k <- ceiling(1 + 3.3 * log10(n))
+min_fecha <- min(open_dates)
+max_fecha <- max(open_dates)
+
+# --- CALCULAR AMPLITUD EN DÍAS ---
+rango_dias <- as.numeric(difftime(max_fecha, min_fecha, units = "days"))
+amplitud_dias <- ceiling(rango_dias / k)
+
+# --- CREAR LÍMITES DE CLASES EN FECHAS ---
+limites <- seq(min_fecha, by = paste(amplitud_dias, "days"), length.out = k + 1)
+
+# --- CREAR DATAFRAME DE CLASES ---
+clases <- tibble::tibble(
+  Clase = 1:k,
+  Limite_Inferior = limites[-length(limites)],
+  Limite_Superior = limites[-1]
+)
+
+# --- MOSTRAR TABLA DE CLASES EN DT ---
+DT::datatable(
+  clases,
+  options = list(
+    pageLength = k,
+    autoWidth = TRUE,
+    scrollX = TRUE,
+    columnDefs = list(
+      list(className = 'dt-center', targets = "_all")
+    ),
+    initComplete = JS(
+      "function(settings, json) {",
+      "$(this.api().table().header()).css({",
+      "  'background-color': 'darkblue',",
+      "  'color': 'white',",
+      "  'font-weight': 'bold',",
+      "  'font-family': 'Segoe UI'",
+      "});",
+      "}"
+    ),
+    rowCallback = JS(
+      "function(row, data, index) {",
+      "$(row).css('font-family', 'Segoe UI');",
+      "$(row).css({'font-weight': 'bold', 'background-color': '#f9f9f9'});",
+      "$('td', row).css({'text-align': 'center', 'padding': '5px'});",
+      "}"
+    ),
+    dom = 't'
+  ),
+  caption = htmltools::tags$caption(
+    style = 'caption-side: top; text-align: center; font-size:18px; font-weight: bold; font-family: Segoe UI; padding: 10px;',
+    paste0("📅 5.1 Clases de Fechas de Apertura (Open Date) usando la Regla de Sturges (", k, " clases)")
+  ),
+  class = 'stripe hover compact nowrap',
+  rownames = FALSE
+)
+
+# --- ASIGNAR CLASE A CADA FECHA ---
+datos_clasificados <- datos %>%
+  filter(!is.na(`Date.Last.Confirmed`)) %>%
+  mutate(Clase = cut(`Date.Last.Confirmed`, breaks = limites, include.lowest = TRUE, right = FALSE))
+
+# --- FRECUENCIA POR CLASE ---
+frecuencia_clases <- datos_clasificados %>%
+  group_by(Clase) %>%
+  summarise(Frecuencia = n()) %>%
+  mutate(Frecuencia_Acumulada = cumsum(Frecuencia))
+
+# --- MOSTRAR FRECUENCIAS ---
+DT::datatable(
+  frecuencia_clases,
+  options = list(
+    pageLength = 10,
+    autoWidth = TRUE,
+    scrollX = TRUE,
+    columnDefs = list(list(className = 'dt-center', targets = "_all")),
+    initComplete = JS(
+      "function(settings, json) {
+        $(this.api().table().header()).css({
+          'background-color': 'darkblue',
+          'color': 'white',
+          'font-weight': 'bold',
+          'font-family': 'Segoe UI'
+        });
+      }"
+    ),
+    rowCallback = JS(
+      "function(row, data, index) {
+        $(row).css('font-family', 'Segoe UI');
+        $(row).css({'font-weight': 'bold', 'background-color': '#f9f9f9'});
+        $('td', row).css({'text-align': 'center', 'padding': '5px'});
+      }"
+    ),
+    dom = 't'
+  ),
+  caption = htmltools::tags$caption(
+    style = 'caption-side: top; text-align: center; font-size:18px; font-weight: bold; font-family: Segoe UI; padding: 10px;',
+    "5.2 Frecuencia de Registros por Clases de Fecha"
+  ),
+  class = 'stripe hover compact nowrap',
+  rownames = FALSE
+)
+
+
+# --- HISTOGRAMA 1: POR REGLA DE STURGES (CUANTIFICABLE) ---
+
+# 1. Filtrar y transformar Date.Last.Confirmed desde datos base
+Date.Last.Confirmed_sturges <- datos %>%
+  mutate(Date.Last.Confirmed = suppressWarnings(as.Date(Date.Last.Confirmed, format = "%m/%d/%Y"))) %>%
+  filter(!is.na(Date.Last.Confirmed)) %>%
+  pull(Date.Last.Confirmed)
+
+# 2. Aplicar regla de Sturges
+n_sturges <- length(Date.Last.Confirmed_sturges)
+k_sturges <- ceiling(1 + 3.3 * log10(n_sturges))
+
+# 3. Calcular rango y amplitud de fechas
+min_fecha <- min(Date.Last.Confirmed_sturges)
+max_fecha <- max(Date.Last.Confirmed_sturges)
+rango_dias <- as.numeric(difftime(max_fecha, min_fecha, units = "days"))
+amplitud_dias <- ceiling(rango_dias / k_sturges)
+
+# 4. Crear límites e intervalos
+breaks_sturges <- seq(min_fecha, by = paste(amplitud_dias, "days"), length.out = k_sturges + 1)
+intervalos <- cut(Date.Last.Confirmed_sturges, breaks = breaks_sturges, right = FALSE)
+
+# 5. Tabla de frecuencias
+frecuencia_clases_sturges <- data.frame(Clase = intervalos) %>%
+  group_by(Clase) %>%
+  summarise(Frecuencia = n())
+
+# 6. Histograma 1
+library(ggplot2)
+
+ggplot(frecuencia_clases_sturges, aes(x = Clase, y = Frecuencia, fill = Frecuencia)) +
+  geom_bar(stat = "identity", color = "black", width = 1) +
+  geom_text(aes(label = Frecuencia), vjust = -0.5, size = 3.5) +
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +
+  scale_y_continuous(breaks = seq(0, max(frecuencia_clases_sturges$Frecuencia, na.rm = TRUE) + 5000, by = 5000),
+                     labels = scales::comma_format()) +
+  labs(
+    title = "5.1.1 Regla de Sturges",
+    x = "Intervalos de Date.Last.Confirmed",
+    y = "Frecuencia Absoluta"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid = element_blank(),
+    panel.background = element_blank(),
+    axis.line = element_line(color = "black")
+  )
+
+
+
+# --- ASIGNACIÓN DE ZONA A CADA OBSERVACIÓN ---
+
+# Crear columna Zona a partir del Estado si no existe
+if (!"Zona" %in% colnames(datos)) {
+  datos <- datos %>%
+    mutate(Zona = case_when(
+      State %in% c("WA", "OR", "CA", "AK", "HI") ~ "Oeste",
+      State %in% c("MT", "ID", "WY", "NV", "UT", "CO", "AZ", "NM") ~ "Montañas",
+      State %in% c("ND", "SD", "NE", "KS", "MN", "IA", "MO") ~ "Centro-Norte",
+      State %in% c("WI", "IL", "IN", "MI", "OH") ~ "Medio Oeste",
+      State %in% c("TX", "OK", "AR", "LA") ~ "Sur Central",
+      State %in% c("KY", "TN", "MS", "AL") ~ "Sureste",
+      State %in% c("WV", "VA", "NC", "SC", "GA", "FL") ~ "Atlántico Sur",
+      State %in% c("NY", "NJ", "PA", "DE", "MD", "DC") ~ "Atlántico Medio",
+      State %in% c("CT", "RI", "MA", "VT", "NH", "ME") ~ "Noreste",
+      TRUE ~ "Otra"
+    ))
+}
+
+# --- HISTOGRAMA 2: POR ZONAS GEOGRÁFICAS ---
+
+# Crear tabla de frecuencia por zona geográfica si no existe
+frecuencia_final <- datos %>%
+  filter(!is.na(Zona)) %>%
+  group_by(Zona) %>%
+  summarise(ni = n(), .groups = "drop")
+
+ggplot(frecuencia_final, aes(x = Zona, y = ni, fill = ni)) +
+  geom_bar(stat = "identity", color = "black", width = 1) +
+  geom_text(aes(label = ni), vjust = -0.5, size = 3.5) +
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +
+  scale_y_continuous(
+    breaks = seq(0, max(frecuencia_final$ni, na.rm = TRUE), by = 1000),
+    labels = scales::comma_format()
+  ) +
+  labs(
+    title = "5.1.3 Frecuencia de Registros por Zona Geográfica",
+    x = "Zona Geográfica",
+    y = "Frecuencia Absoluta"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid = element_blank(),
+    panel.background = element_blank(),
+    axis.line = element_line(color = "black")
+  )
+
+# --- HISTOGRAMA 3: CONVERSIÓN DE Date.Last.Confirmed (BASE DATOS PRINCIPAL) ---
+
+# Agrupar y contar por intervalos previamente creados
+frecuencia_clases <- datos %>%
+  filter(!is.na(Date.Last.Confirmed)) %>%
+  mutate(Clase = cut(Date.Last.Confirmed, breaks = breaks_sturges, right = FALSE)) %>%
+  group_by(Clase) %>%
+  summarise(Frecuencia = n(), .groups = "drop")
+
+ggplot(frecuencia_clases, aes(x = Clase, y = Frecuencia, fill = Frecuencia)) +
+  geom_bar(stat = "identity", color = "black", width = 1) +
+  geom_text(aes(label = Frecuencia), vjust = -0.5, size = 3.5) +
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +
+  scale_y_continuous(breaks = seq(0, max(frecuencia_clases$Frecuencia, na.rm = TRUE) + 5000, by = 5000),
+                     labels = scales::comma_format()) +
+  labs(
+    title = "5.1.2 Histograma por Sturges (Base Principal)",
+    x = "Intervalos de Date.Last.Confirmed",
+    y = "Frecuencia Absoluta"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid = element_blank(),
+    panel.background = element_blank(),
+    axis.line = element_line(color = "black")
+  )
+
+
+
+# --- BOXPLOT Date.Last.Confirmed - Identificación de Outliers ---
+
+# Filtrar valores válidos
+datos_validos <- datos %>% filter(!is.na(Date.Last.Confirmed))
+
+# Calcular estadísticos y límites con fechas como numéricos para IQR
+datos_validos_num <- datos_validos %>%
+  mutate(Date.Last.Confirmed.num = as.numeric(Date.Last.Confirmed))
+
+estadisticas <- datos_validos_num %>%
+  summarise(
+    xmin = min(Date.Last.Confirmed),
+    q1 = as.Date(quantile(Date.Last.Confirmed.num, 0.25), origin = "1970-01-01"),
+    q2 = as.Date(median(Date.Last.Confirmed.num), origin = "1970-01-01"),
+    q3 = as.Date(quantile(Date.Last.Confirmed.num, 0.75), origin = "1970-01-01"),
+    xmax = max(Date.Last.Confirmed)
+  ) %>%
+  mutate(
+    iqr = as.numeric(q3 - q1),
+    lower_fence = q1 - as.difftime(1.5 * iqr, units = "days"),
+    upper_fence = q3 + as.difftime(1.5 * iqr, units = "days")
+  )
+
+# Extraer valores
+xmin <- estadisticas$xmin
+q1 <- estadisticas$q1
+q2 <- estadisticas$q2
+q3 <- estadisticas$q3
+xmax <- estadisticas$xmax
+lower_fence <- estadisticas$lower_fence
+upper_fence <- estadisticas$upper_fence
+
+# Identificar outliers
+datos_outliers <- datos_validos %>%
+  filter(Date.Last.Confirmed < lower_fence | Date.Last.Confirmed > upper_fence)
+
+# DataFrame para cajas Q1–Q2 y Q2–Q3
+cajas <- data.frame(
+  xmin = c(q1, q2),
+  xmax = c(q2, q3),
+  fill = c(0.3, 0.8)
+)
+
+# Altura cajas
+ymin_caja <- -0.02
+ymax_caja <- 0.02
+
+# Gráfico boxplot actualizado
+ggplot() +
+  # Cajas de los cuartiles
+  geom_rect(
+    data = cajas,
+    aes(xmin = xmin, xmax = xmax, ymin = ymin_caja, ymax = ymax_caja, fill = fill),
+    color = "black"
+  ) +
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +
+  
+  # Bigotes (líneas horizontales)
+  geom_segment(aes(x = lower_fence, xend = q1, y = 0, yend = 0), linewidth = 0.6) +
+  geom_segment(aes(x = q3, xend = upper_fence, y = 0, yend = 0), linewidth = 0.6) +
+  
+  # Línea base eje X
+  geom_hline(yintercept = 0, color = "black", linewidth = 0.5) +
+  
+  # Líneas punteadas para límites y cuartiles
+  geom_vline(
+    xintercept = c(lower_fence, q1, q2, q3, upper_fence),
+    linetype = "dotted",
+    color = "darkblue",
+    linewidth = 0.8
+  ) +
+  
+  # Etiquetas
+  annotate("text", x = lower_fence, y = -0.05, label = paste0("Lim. Inf\n", lower_fence), color = "blue", size = 4) +
+  annotate("text", x = q1, y = -0.05, label = paste0("Q1\n", q1), color = "blue", size = 4) +
+  annotate("text", x = q2, y = -0.05, label = paste0("Q2\n", q2), color = "blue", size = 4) +
+  annotate("text", x = q3, y = -0.05, label = paste0("Q3\n", q3), color = "blue", size = 4) +
+  annotate("text", x = upper_fence, y = -0.05, label = paste0("Lim. Sup\n", upper_fence), color = "blue", size = 4) +
+  
+  # Outliers en naranja con borde negro
+  geom_point(
+    data = datos_outliers,
+    aes(x = Date.Last.Confirmed, y = 0),
+    shape = 21,
+    fill = "orange",
+    color = "black",
+    size = 2
+  ) +
+  
+  # Estética general
+  scale_x_date(name = "Date.Last.Confirmed", date_breaks = "2 years", date_labels = "%Y") +
+  ggtitle("5.1.4 Identificación Outliers (Date.Last.Confirmed)") +
+  theme(
+    panel.background = element_rect(fill = "white", colour = NA),
+    plot.background = element_rect(fill = "white", colour = NA),
+    panel.grid = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    legend.position = "none",
+    plot.title = element_text(hjust = 0.5, size = 18, face = "bold"),
+    axis.text.x = element_text(color = "black")
+  )
+
+
+
+# --- OJIVA CRECIENTE Y DECRECIENTE: Date.Last.Confirmed ---
+
+tabla_ojiva <- frecuencia_clases_sturges %>%
+  mutate(
+    fi = Frecuencia,
+    Fi_c = cumsum(fi) / sum(fi),
+    Fi_d = rev(cumsum(rev(fi))) / sum(fi),
+    xi = as.Date(sub("\\[|\\)|\\]", "", gsub(",.*", "", as.character(Clase))), format = "%Y-%m-%d") + floor(amplitud_dias / 2)
+  ) %>%
+  select(xi, Fi_c, Fi_d) %>%
+  pivot_longer(cols = c(Fi_c, Fi_d), names_to = "Tipo", values_to = "Frecuencia") %>%
+  mutate(
+    Tipo = factor(Tipo, levels = c("Fi_c", "Fi_d"), labels = c("Ojiva Creciente (Fi)", "Ojiva Decreciente (Fi)"))
+  )
+
+ggplot(tabla_ojiva, aes(x = xi, y = Frecuencia, color = Tipo, linetype = Tipo)) +
+  geom_line(aes(group = Tipo), size = 1.2) +
+  geom_point(size = 3) +
+  geom_text(aes(label = format(xi, "%Y-%m-%d")), vjust = -1.2, size = 2.5, fontface = "bold") +
+  scale_x_date(
+    name = "Marca de clase (xi)",
+    date_breaks = "1 year",
+    date_labels = "%Y"
+  ) +
+  scale_y_continuous(
+    limits = c(0, 1),
+    breaks = seq(0, 1, 0.1),
+    labels = scales::percent_format(accuracy = 1)
+  ) +
+  scale_color_manual(values = c(
+    "Ojiva Creciente (Fi)" = "skyblue",
+    "Ojiva Decreciente (Fi)" = "darkblue"
+  )) +
+  labs(
+    title = "5.1.5 Ojiva Creciente y Decreciente (Date.Last.Confirmed Cuantificable)",
+    y = "Frecuencia acumulada (relativa)"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    panel.grid = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 9),
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    legend.position = "bottom",
+    legend.direction = "horizontal",
+    legend.box.margin = margin(t = 10),
+    legend.title = element_blank(),
+    axis.line = element_line(color = "black", linewidth = 0.6),
+    panel.grid.minor = element_blank()
+  )
+
+
+
+```

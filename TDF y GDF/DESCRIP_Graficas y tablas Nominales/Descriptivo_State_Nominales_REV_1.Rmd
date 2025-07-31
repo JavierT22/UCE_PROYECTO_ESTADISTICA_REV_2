@@ -1,0 +1,586 @@
+---
+title: "Variable_State"
+author: "Grupo 4"
+date: "2025-07-28"
+output: html_document
+---
+
+## State
+
+```{r cars}
+#-------------------------------------------------------
+# CARGA DEL DATASET VARIABLES NOMINALES
+#-------------------------------------------------------
+
+datos <- read.csv("C:/Users/User/OneDrive/Documentos/estadistica/Electric and Alternative Fuel Charging Stations.csv",
+                  header = TRUE, sep = ",", dec = ",")
+
+# Ver estructura del dataset
+str(datos)
+
+# Mostrar nombres de las columnas
+colnames(datos)
+
+2
+#-------------------------------------------------------------------------------
+#---------------------- VARIABLE NOMINAL STATE ------------------------------#
+# BLOQUE DE LIBRERÍAS
+#-------------------------------------------------------
+library(DT)           # Tablas interactivas
+library(dplyr)        # Manipulación de datos
+library(ggplot2)      # Gráficos
+library(htmltools)    # Para captions en datatable
+library(htmlwidgets)  # Necesario para JS()
+library(scales)       # Para escalas (por ejemplo, percentajes)
+#--------- EXTRACCIÓN Y LIMPIEZA DE LA VARIABLE STATE ---------#
+
+# Obtener valores únicos no nulos de State (de datos originales, sin filtro)
+state_values_raw <- unique(na.omit(datos$State))
+
+
+#-------------- CLASIFICACIÓN DE VALORES DE STATE -------------#
+
+# Clasificar valores válidos: solo letras y espacios
+valores_validos_state_raw <- state_values_raw[grepl("^[A-Za-z ]+$", state_values_raw)]
+
+# Clasificar valores sospechosos: contienen números, símbolos u otros caracteres
+valores_sospechosos_state_raw <- state_values_raw[!grepl("^[A-Za-z ]+$", state_values_raw)]
+
+
+#------------------- RESULTADOS EXPLORATORIOS ---------------------#
+
+# Mostrar conteo de cada grupo
+cat("Cantidad de valores válidos (solo letras): ", length(valores_validos_state_raw), "\n")
+cat("Cantidad de valores sospechosos (con símbolos, números, etc.): ", length(valores_sospechosos_state_raw), "\n")
+
+# Mostrar los valores encontrados
+cat("\nValores válidos:\n")
+print(valores_validos_state_raw)
+
+cat("\nValores sospechosos:\n")
+print(valores_sospechosos_state_raw)
+
+
+#------------------------ FILTRO STATES ----------------------------#
+# Filtrar Estados de EE.UU.
+estados_eeuu <- datos %>%
+  filter(Country == "US") %>%
+  pull(State) %>%
+  unique() %>%
+  na.omit()
+
+# Filtrar Estados de Canadá
+estados_canada <- datos %>%
+  filter(Country == "CA") %>%
+  pull(State) %>%
+  unique() %>%
+  na.omit()
+
+# Cantidad de estados únicos y valores encontrados
+cat("Cantidad de estados únicos en EEUU:", length(estados_eeuu), "\n")
+cat("Estados únicos en EEUU:\n")
+print(estados_eeuu)
+
+cat("\nCantidad de provincias/estados únicos en Canadá:", length(estados_canada), "\n")
+cat("Provincias/estados únicos en Canadá:\n")
+print(estados_canada)
+
+
+
+#--- TABLA DE FRECUENCIAS: VALORES VÁLIDOS DE STATE (US Y CA) ----------------#
+
+# Filtrar solo datos de US y CA
+datos_filtrados <- datos %>% filter(Country %in% c("US", "CA") & !is.na(State))
+
+# Obtener valores únicos válidos de State (solo letras y espacios)
+state_values_filtrados <- unique(na.omit(datos_filtrados$State))
+valores_validos_state_filtrados <- state_values_filtrados[grepl("^[A-Za-z ]+$", state_values_filtrados)]
+valores_sospechosos_state_filtrados <- state_values_filtrados[!grepl("^[A-Za-z ]+$", state_values_filtrados)]
+
+# Mostrar resultados
+cat("\nCantidad de valores válidos de State:", length(valores_validos_state_filtrados), "\n")
+cat("Valores válidos:\n")
+print(valores_validos_state_filtrados)
+
+cat("\nCantidad de valores sospechosos de State:", length(valores_sospechosos_state_filtrados), "\n")
+cat("Valores sospechosos:\n")
+print(valores_sospechosos_state_filtrados)
+
+# Crear tabla de frecuencia solo con valores válidos
+tabla_states_validos <- table(datos_filtrados$State[datos_filtrados$State %in% valores_validos_state_filtrados])
+
+# Convertir a data.frame ordenado
+tabla_ordenada_state <- as.data.frame(tabla_states_validos)
+colnames(tabla_ordenada_state) <- c("State", "Frecuencia")
+tabla_ordenada_state <- tabla_ordenada_state[order(-tabla_ordenada_state$Frecuencia), ]
+
+# Mostrar tabla final
+print(tabla_ordenada_state)
+
+
+#--------- RESUMEN ESTADÍSTICO POR FRECUENCIA – MODA DE STATE ----------------#
+
+# Calcular la frecuencia máxima (moda)
+max_frecuencia_state <- max(tabla_ordenada_state$Frecuencia, na.rm = TRUE)
+
+# Filtrar la(s) moda(s)
+tabla_moda_state <- tabla_ordenada_state[tabla_ordenada_state$Frecuencia == max_frecuencia_state, ]
+
+# Imprimir resultado modal
+cat("RESUMEN ESTADÍSTICO POR FRECUENCIA – MODA (STATE):\n")
+print(tabla_moda_state)
+
+#----------- TABLA INTERACTIVA MODA FORMATO PERSONALIZADO PARA STATE -------------#
+
+datatable(tabla_moda_state,
+          options = list(
+            pageLength = 5,
+            autoWidth = TRUE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().header()).css({",
+              "'background-color': 'darkblue',",
+              "'color': 'white',",
+              "'font-weight': 'bold',",
+              "'font-family': 'Segoe UI'",
+              "});",
+              "}"
+            ),
+            rowCallback = JS(
+              "function(row, data, index) {",
+              "$(row).css('font-family', 'Segoe UI');",
+              "$(row).css({'font-weight': 'bold', 'background-color': '#e0e0e0'});",
+              "$('td:eq(1)', row).css({'text-align': 'right', 'padding-right': '10px'});",
+              "}"
+            ),
+            dom = 't'
+          ),
+          rownames = FALSE,
+          colnames = c("Estado", "Frecuencia"),
+          caption = htmltools::tags$caption(
+            style = 'caption-side: top; text-align: center; font-weight: bold; padding: 10px; font-family: Segoe UI;',
+            "Tabla - Resumen Estadístico por Frecuencia (Moda de Estados)"
+          )
+)
+
+#---------- CREAR TABLA DE FRECUENCIA Y ORDENAR PARA STATE -----------------#
+
+tabla_ordenada_state <- datos_filtrados %>%
+  count(State, name = "Frecuencia") %>%   # Contar frecuencia
+  arrange(desc(Frecuencia))               # Ordenar de mayor a menor
+
+
+#------------ AGRUPAR POR RANGOS DECILES --------------------------------#
+
+tabla_ordenada_state <- tabla_ordenada_state %>%
+  mutate(Grupo = case_when(
+    Frecuencia >= 1     & Frecuencia <= 200    ~ "001 - 200",
+    Frecuencia >= 201   & Frecuencia <= 300    ~ "201 - 300",
+    Frecuencia >= 301   & Frecuencia <= 500    ~ "301 - 500",
+    Frecuencia >= 501   & Frecuencia <= 700    ~ "501 - 700",
+    Frecuencia >= 701   & Frecuencia <= 800    ~ "701 - 800",
+    Frecuencia >= 801   & Frecuencia <= 1000   ~ "801 - 1000",
+    Frecuencia >= 1001  & Frecuencia <= 2000   ~ "1001 - 2000",
+    Frecuencia >= 2001  & Frecuencia <= 3000   ~ "2001 - 3000",
+    Frecuencia >= 3001  & Frecuencia <= 4000   ~ "3001 - 4000",
+    Frecuencia >= 4001  & Frecuencia <= 16200  ~ "4001 - 16200",
+    TRUE ~ "Fuera de Rango"
+  ))
+
+
+#---------- AGRUPAR POR RANGO Y CALCULAR FRECUENCIA TOTAL ------------------#
+
+tabla_por_grupo <- tabla_ordenada_state %>%
+  group_by(Grupo) %>%
+  summarise(Total_Frecuencia = sum(Frecuencia), .groups = "drop") %>%
+  arrange(factor(Grupo, levels = c(
+    "001 - 200", "201 - 300", "301 - 500", "501 - 700", "701 - 800",
+    "801 - 1000", "1001 - 2000", "2001 - 3000", "3001 - 4000", "4001 - 16200"
+  )))
+
+
+#------------- AGREGAR FILA DE TOTAL GENERAL EN TABLA -------------------#
+
+total_general <- sum(tabla_por_grupo$Total_Frecuencia, na.rm = TRUE)
+fila_total <- data.frame(Grupo = "TOTAL", Total_Frecuencia = total_general)
+tabla_por_grupo_con_total <- bind_rows(tabla_por_grupo, fila_total)
+
+
+#-------------------- MOSTRAR TABLA RESULTANTE -----------------------------#
+
+print(tabla_por_grupo_con_total)
+
+
+#----------- TABLA INTERACTIVA FRECUENCIA ABSOLUTA ESTADO VS EST. CARGA ------#
+
+library(DT)
+library(htmltools)
+
+datatable(tabla_por_grupo_con_total,
+          options = list(
+            pageLength = 10,
+            autoWidth = TRUE,
+            columnDefs = list(
+              list(width = '100px', targets = 1)
+            ),
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().header()).css({",
+              "'background-color': 'darkblue',",
+              "'color': 'white',",
+              "'font-weight': 'bold',",
+              "'font-family': 'Segoe UI'",
+              "});",
+              "}"
+            ),
+            rowCallback = JS(
+              "function(row, data, index) {",
+              "$(row).css('font-family', 'Segoe UI');",
+              
+              "if(data[0] === 'TOTAL') {",
+              "$(row).css({'font-weight': 'bold', 'background-color': '#e0e0e0'});",
+              "} else if(index % 2 === 0) {",
+              "$(row).css('background-color', 'white');",
+              "} else {",
+              "$(row).css('background-color', '#f2f2f2');",
+              "}",
+              
+              "$('td:eq(1)', row).css({'text-align': 'right', 'padding-right': '10px'});",
+              "}"
+            ),
+            dom = 't'
+          ),
+          rownames = FALSE,
+          colnames = c("Rango de Frecuencia", "Frecuencia Total"),
+          caption = tags$caption(
+            style = 'caption-side: top; text-align: center; font-weight: bold; padding: 10px; font-family: Segoe UI;',
+            "Tabla 2. Frecuencia por Intervalo de las Estaciones de Estados"
+          )
+)
+
+#---------- TABLA AGRUPADO POR RANGO Y LOS ESTADOS QUE INCLUYEN -----------------#
+
+# Agrupar estados por grupo, concatenar los nombres de los estados con su frecuencia
+tabla_estados_por_grupo <- tabla_ordenada_state %>%
+  filter(Grupo != "Fuera de Rango") %>%  # Opcional, excluir si quieres
+  group_by(Grupo) %>%
+  summarise(
+    Estados = paste0(State, " (", Frecuencia, ")", collapse = ", "),
+    Total_Frecuencia = sum(Frecuencia),
+    .groups = "drop"
+  ) %>%
+  arrange(factor(Grupo, levels = c(
+    "001 - 200", "201 - 300", "301 - 500", "501 - 700", "701 - 800",
+    "801 - 1000", "1001 - 2000", "2001 - 3000", "3001 - 4000", "4001 - 16200"
+  )))
+
+# Mostrar tabla resultante
+print(tabla_estados_por_grupo)
+
+
+#---------- TABLA INTERACTIVA FRECUENCIA ABSOLUTA ESTADO VS EST. CARGA -----------#
+
+library(DT)
+library(htmltools)
+
+datatable(tabla_estados_por_grupo,
+          options = list(
+            pageLength = 10,
+            autoWidth = TRUE,
+            columnDefs = list(
+              list(width = '150px', targets = 0),
+              list(width = '350px', targets = 1),
+              list(width = '130px', targets = 2)
+            ),
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().header()).css({",
+              "'background-color': 'darkblue',",
+              "'color': 'white',",
+              "'font-weight': 'bold',",
+              "'font-family': 'Segoe UI'",
+              "});",
+              "}"
+            ),
+            rowCallback = JS(
+              "function(row, data, index) {",
+              "$(row).css('font-family', 'Segoe UI');",
+              "if(index % 2 === 0) {",
+              "$(row).css('background-color', 'white');",
+              "} else {",
+              "$(row).css('background-color', '#f9f9f9');",
+              "}",
+              "$('td:eq(2)', row).css({'text-align': 'right', 'padding-right': '10px'});",
+              "}"
+            ),
+            dom = 't'
+          ),
+          rownames = FALSE,
+          colnames = c("Rango de Frecuencia", "Estados (Frecuencia)", "Frecuencia Total"),
+          caption = tags$caption(
+            style = 'caption-side: top; text-align: center; font-weight: bold; padding: 10px; font-family: Segoe UI;',
+            "Tabla 3: Estados agrupados por rango de frecuencia con totales"
+          )
+)
+
+#------------- GRÁFICA DE BARRAS - FRECUENCIA ABSOLUTA POR ESTADO ----------------#
+
+library(ggplot2)
+library(dplyr)
+
+# Renombrar tabla original a un nombre más claro
+tabla_frecuencia_estado <- tabla_por_grupo
+
+# Filtrar grupo TOTAL si existe
+tabla_frecuencia_estado_filtrada <- tabla_frecuencia_estado %>% 
+  filter(Grupo != "TOTAL") %>%
+  mutate(Total_Frecuencia = as.numeric(Total_Frecuencia))
+
+# Crear gráfico de barras por rangos de frecuencia
+ggplot(tabla_frecuencia_estado_filtrada, aes(x = reorder(Grupo, -Total_Frecuencia), y = Total_Frecuencia, fill = Total_Frecuencia)) +
+  geom_bar(stat = "identity", width = 0.9) +
+  geom_text(
+    aes(label = Total_Frecuencia),
+    vjust = -0.5,
+    size = 5,
+    family = "Segoe UI",
+    color = "black"
+  ) +
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +
+  labs(
+    title = "Gráfica N° 2.1 Frecuencia Absoluta de Estaciones de Carga por Rango de Estados",
+    x = "Rango de Frecuencia",
+    y = "Frecuencia Total",
+    fill = "Frecuencia Total"
+  ) +
+  theme_minimal(base_family = "Segoe UI") +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    axis.title.x = element_text(size = 14, face = "bold"),
+    axis.title.y = element_text(size = 14, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 13),
+    axis.text.y = element_text(size = 13),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line.x = element_line(color = "black"),
+    axis.line.y = element_line(color = "black"),
+    legend.position = "inside",
+    legend.position.inside = c(0.88, 0.85),
+    legend.title = element_text(face = "bold")
+  )
+
+
+
+#--------------- GRÁFICA CIRCULAR - FRECUENCIA ABSOLUTA POR ESTADO --------------#
+
+library(ggplot2)
+library(dplyr)
+library(scales)
+
+# Preparar datos: filtrar, convertir, calcular porcentaje y posiciones para el gráfico
+tabla_frecuencia_estado_filtrada <- tabla_por_grupo %>%
+  filter(Grupo != "TOTAL") %>%
+  mutate(
+    Total_Frecuencia = as.numeric(Total_Frecuencia),
+    porcentaje = Total_Frecuencia / sum(Total_Frecuencia)
+  ) %>%
+  arrange(Total_Frecuencia)  # Orden ascendente para colores
+
+# Reordenar factor Grupo para que los colores sigan el orden ascendente
+tabla_frecuencia_estado_filtrada$Grupo <- factor(tabla_frecuencia_estado_filtrada$Grupo, 
+                                                 levels = tabla_frecuencia_estado_filtrada$Grupo)
+
+# Calcular posiciones circulares (para el gráfico, orden descendente de frecuencia)
+tabla_frecuencia_estado_filtrada <- tabla_frecuencia_estado_filtrada %>%
+  arrange(desc(Total_Frecuencia)) %>%
+  mutate(
+    ymax = cumsum(porcentaje),
+    ymin = lag(ymax, default = 0),
+    pos = (ymax + ymin) / 2
+  )
+
+# Crear paleta de colores de skyblue a darkblue para cada grupo (orden ascendente)
+colores_por_grupo <- setNames(
+  colorRampPalette(c("skyblue", "darkblue"))(length(levels(tabla_frecuencia_estado_filtrada$Grupo))),
+  levels(tabla_frecuencia_estado_filtrada$Grupo)
+)
+
+# Agregar color para etiquetas según grupo
+tabla_frecuencia_estado_filtrada$color_etiqueta <- colores_por_grupo[as.character(tabla_frecuencia_estado_filtrada$Grupo)]
+
+# Gráfico circular
+ggplot(tabla_frecuencia_estado_filtrada, aes(
+  ymax = ymax, ymin = ymin,
+  xmax = 2, xmin = 0,
+  fill = Grupo
+)) +
+  geom_rect(color = "white") +
+  coord_polar(theta = "y") +
+  
+  # Líneas guía para etiquetas
+  geom_segment(aes(x = 2, xend = 2.2, y = pos, yend = pos), color = "gray30") +
+  geom_segment(aes(x = 2.2, xend = 2.3, y = pos, yend = pos), color = "gray30") +
+  
+  # Etiquetas con color acorde al grupo
+  geom_label(
+    aes(x = 2.5, y = pos, label = Total_Frecuencia),
+    fill = NA,
+    color = tabla_frecuencia_estado_filtrada$color_etiqueta,
+    size = 5,
+    family = "Segoe UI",
+    label.size = 0.8
+  ) +
+  
+  # Escala manual de colores fijos y ordenados
+  scale_fill_manual(values = colores_por_grupo) +
+  
+  # Etiquetas y tema
+  labs(
+    title = "Gráfica N° 2.2 Distribucion de la Frecuencia Absoluta de Estaciones de Carga por Rango de Estados",
+    fill = "Grupo"
+  ) +
+  theme_void(base_family = "Segoe UI") +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    legend.position = c(1.1, 0.7),
+    legend.title = element_text(face = "bold", size = 12),
+    legend.text = element_text(size = 11)
+  )
+
+
+#-------------- GRÁFICA DE BARRAS - FRECUENCIA RELATIVA POR ESTADO -----------------#
+
+library(ggplot2)
+library(dplyr)
+library(scales)  # para percent()
+
+tabla_filtrada <- tabla_por_grupo %>%
+  filter(Grupo != "TOTAL") %>%                     # Excluir fila TOTAL
+  mutate(
+    Total_Frecuencia = as.numeric(Total_Frecuencia)  # Asegurar tipo numérico
+  ) %>%
+  # Calcular frecuencia relativa solo una vez
+  mutate(Frecuencia_Relativa = Total_Frecuencia / sum(Total_Frecuencia))
+
+
+
+ggplot(tabla_filtrada, aes(
+  x = reorder(Grupo, -Frecuencia_Relativa),
+  y = Frecuencia_Relativa,
+  fill = Frecuencia_Relativa
+)) +
+  geom_bar(stat = "identity", width = 0.9) +
+  geom_text(
+    aes(label = scales::percent(Frecuencia_Relativa, accuracy = 0.1)),
+    vjust = -0.5,
+    size = 5,
+    family = "Segoe UI",
+    color = "black"
+  ) +
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(
+    title = "Gráfica N° 2.3 Frecuencia Relativa (%) de Estaciones de Carga por Rango de Estados",
+    x = "Rango de Frecuencia",
+    y = "Frecuencia Relativa",
+    fill = "Frecuencia Relativa"
+  ) +
+  theme_minimal(base_family = "Segoe UI") +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    axis.title.x = element_text(size = 14, face = "bold"),
+    axis.title.y = element_text(size = 14, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 13),
+    axis.text.y = element_text(size = 13),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line.x = element_line(color = "black"),
+    axis.line.y = element_line(color = "black"),
+    legend.position = c(0.88, 0.85),
+    legend.title = element_text(face = "bold")
+  )
+
+
+
+#-------------- GRÁFICA CIRCULAR - FRECUENCIA RELATIVA POR ESTADO ----------------#
+
+library(ggplot2)
+library(dplyr)
+library(scales)
+
+# PREPARACIÓN DE DATOS - Filtrado y Cálculo de Frecuencia Relativa
+
+tabla_filtrada <- tabla_por_grupo %>%
+  filter(Grupo != "TOTAL") %>%
+  mutate(
+    Total_Frecuencia = as.numeric(Total_Frecuencia),
+    porcentaje = Total_Frecuencia / sum(Total_Frecuencia)
+  )
+
+# Ordenar tabla por Total_Frecuencia ascendente para colores
+tabla_filtrada <- tabla_filtrada %>%
+  arrange(Total_Frecuencia)
+
+# Reordenar factor Grupo para que los colores sigan el orden ascendente
+tabla_filtrada$Grupo <- factor(tabla_filtrada$Grupo, levels = tabla_filtrada$Grupo)
+
+# Calcular posiciones circulares (orden descendente para gráfico)
+tabla_filtrada <- tabla_filtrada %>%
+  arrange(desc(Total_Frecuencia)) %>%
+  mutate(
+    ymax = cumsum(porcentaje),
+    ymin = lag(ymax, default = 0),
+    pos = (ymax + ymin) / 2
+  )
+
+# Crear paleta de colores de skyblue a darkblue para cada grupo (orden ascendente)
+colores_por_grupo <- setNames(
+  colorRampPalette(c("skyblue", "darkblue"))(length(levels(tabla_filtrada$Grupo))),
+  levels(tabla_filtrada$Grupo)
+)
+
+# Agregar color para etiquetas
+tabla_filtrada$color_etiqueta <- colores_por_grupo[as.character(tabla_filtrada$Grupo)]
+
+
+
+ggplot(tabla_filtrada, aes(
+  ymax = ymax, ymin = ymin,
+  xmax = 2, xmin = 0,
+  fill = Grupo
+)) +
+  geom_rect(color = "white") +
+  coord_polar(theta = "y") +
+  
+  # Líneas guía
+  geom_segment(aes(x = 2, xend = 2.2, y = pos, yend = pos), color = "gray30") +
+  geom_segment(aes(x = 2.2, xend = 2.3, y = pos, yend = pos), color = "gray30") +
+  
+  # Etiquetas con porcentaje y color acorde al grupo
+  geom_label(
+    aes(x = 2.5, y = pos, label = scales::percent(porcentaje, accuracy = 0.1)),
+    fill = NA,
+    color = tabla_filtrada$color_etiqueta,
+    size = 5,
+    family = "Segoe UI",
+    label.size = 0.8
+  ) +
+  
+  # Escala manual para fill, con colores fijos y ordenados
+  scale_fill_manual(values = colores_por_grupo) +
+  
+  # Estilo general y leyenda
+  labs(
+    title = "Gráfica N° 2.4 Porcentaje de Frecuencia Relativa de Estaciones de Carga por Rango de Estados",
+    fill = "Grupo"
+  ) +
+  theme_void(base_family = "Segoe UI") +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    legend.position = c(1.1, 0.7),
+    legend.title = element_text(face = "bold", size = 12),
+    legend.text = element_text(size = 11)
+  )
+
+
+```

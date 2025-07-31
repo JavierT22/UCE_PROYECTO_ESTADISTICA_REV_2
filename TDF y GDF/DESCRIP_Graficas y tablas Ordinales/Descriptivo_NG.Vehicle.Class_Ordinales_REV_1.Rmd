@@ -1,0 +1,545 @@
+---
+title: "Variable_NG.Vehicle.Class"
+author: "Grupo 4"
+date: "2025-07-28"
+output: html_document
+---
+
+## NG.Vehicle.Class
+
+
+```{r cars}
+#-------------------------------------------------------------------------------
+# CARGA DEL DATASET VARIABLES ORDINALES
+#-------------------------------------------------------
+
+datos <- read.csv("C:/Users/User/OneDrive/Documentos/estadistica/Electric and Alternative Fuel Charging Stations.csv",
+                  header = TRUE, sep = ",", dec = ",")
+
+# Ver estructura del dataset
+str(datos)
+
+# Mostrar nombres de las columnas
+colnames(datos)
+
+# BLOQUE DE LIBRERÍAS
+#-------------------------------------------------------
+library(DT)           # Tablas interactivas
+library(dplyr)        # Manipulación de datos
+library(ggplot2)      # Gráficos
+library(htmltools)    # Para captions en datatable
+library(htmlwidgets)  # Necesario para JS()
+library(scales)       # Para escalas (por ejemplo, percentajes)
+
+#------------------- VARIABLE ORDINAL: NG.Vehicle.Class -------------------------------#
+
+#--------------- EXTRACCIÓN Y LIMPIEZA DE LA VARIABLE NG.Vehicle.Class --------------#
+
+# Copia de respaldo por seguridad
+datos$NG.Vehicle.Class_original <- datos$NG.Vehicle.Class
+
+# Reemplazar todo carácter que NO sea letra (con acentos), espacio, guion o ñ/ü → por espacio
+datos$NG.Vehicle.Class <- gsub("[^A-Za-zÁÉÍÓÚáéíóúÑñüÜ \\-]", " ", datos$NG.Vehicle.Class)
+
+# Reemplazar múltiples espacios por uno solo
+datos$NG.Vehicle.Class <- gsub("\\s+", " ", datos$NG.Vehicle.Class)
+
+# Eliminar espacios al inicio y fin
+datos$NG.Vehicle.Class <- trimws(datos$NG.Vehicle.Class)
+
+#-------------- CLASIFICACIÓN Y VALIDACIÓN DE VALORES DE NG.Vehicle.Class ----------------#
+
+# Extraer valores únicos no nulos después de limpieza
+facility_values <- unique(na.omit(datos$NG.Vehicle.Class))
+
+# Clasificar valores válidos: solo letras (con tildes), espacios y guiones
+pattern_valido <- "^[A-Za-zÁÉÍÓÚáéíóúÑñüÜ \\-]+$"
+valores_validos_facility <- facility_values[grepl(pattern_valido, facility_values)]
+
+# Valores sospechosos: no cumplen patrón válido
+valores_sospechosos_facility <- facility_values[!grepl(pattern_valido, facility_values)]
+
+#-------------- RESULTADOS EXPLORATORIOS - VARIABLE NG.Vehicle.Class ----------------------#
+
+cat("Cantidad de valores válidos (solo letras, espacios o guiones): ", length(valores_validos_facility), "\n")
+cat("Cantidad de valores sospechosos (con símbolos, números, etc.): ", length(valores_sospechosos_facility), "\n")
+
+cat("\nValores válidos:\n")
+print(valores_validos_facility)
+
+cat("\nValores sospechosos:\n")
+print(valores_sospechosos_facility)
+
+#---------------------- FILTRO NG.Vehicle.Class POR PAÍS --------------------------------#
+
+facility_eeuu <- datos %>%
+  filter(Country == "US") %>%
+  pull(NG.Vehicle.Class) %>%
+  unique() %>%
+  na.omit()
+
+facility_canada <- datos %>%
+  filter(Country == "CA") %>%
+  pull(NG.Vehicle.Class) %>%
+  unique() %>%
+  na.omit()
+
+cat("Cantidad de tipos de instalación únicos en EE.UU.:", length(facility_eeuu), "\n")
+cat("Tipos de instalación únicos en EE.UU.:\n")
+print(facility_eeuu)
+
+cat("\nCantidad de tipos de instalación únicos en Canadá:", length(facility_canada), "\n")
+cat("Tipos de instalación únicos en Canadá:\n")
+print(facility_canada)
+
+#------------- TABLA DE FRECUENCIAS: VALORES VÁLIDOS DE NG.Vehicle.Class -----------------# 
+
+# Filtrar datos por países y valores no nulos de NG.Vehicle.Class
+datos_filtrados_facility <- datos %>% 
+  filter(Country %in% c("US", "CA") & !is.na(NG.Vehicle.Class))
+
+# Crear tabla de frecuencia con valores válidos
+tabla_facility_validos <- datos_filtrados_facility %>%
+  filter(NG.Vehicle.Class %in% valores_validos_facility) %>%
+  count(NG.Vehicle.Class, name = "Frecuencia") %>%
+  arrange(desc(Frecuencia))
+
+cat("\nCantidad de valores válidos de NG.Vehicle.Class:", nrow(tabla_facility_validos), "\n")
+cat("Valores válidos:\n")
+print(tabla_facility_validos$NG.Vehicle.Class)
+
+cat("\nCantidad de valores sospechosos de NG.Vehicle.Class:", length(valores_sospechosos_facility), "\n")
+cat("Valores sospechosos:\n")
+print(valores_sospechosos_facility)
+
+#--------------- RESUMEN ESTADÍSTICO POR FRECUENCIA – MODA DE NG.Vehicle.Class --------------#
+
+max_frecuencia_facility <- max(tabla_facility_validos$Frecuencia, na.rm = TRUE)
+tabla_moda_facility <- tabla_facility_validos %>% filter(Frecuencia == max_frecuencia_facility)
+
+cat("RESUMEN ESTADÍSTICO POR FRECUENCIA – MODA (NG.Vehicle.Class):\n")
+print(tabla_moda_facility)
+
+#---------------------- RESUMEN ESTADÍSTICO – MEDIANA DE NG.Vehicle.Class ------------------------#
+
+# Ordenar por frecuencia descendente y calcular frecuencia acumulada
+tabla_facility_validos_mediana <- tabla_facility_validos %>%
+  arrange(desc(Frecuencia)) %>%
+  mutate(Frecuencia_Acumulada = cumsum(Frecuencia))
+
+# Calcular posición de la mediana
+n_total <- sum(tabla_facility_validos_mediana$Frecuencia, na.rm = TRUE)
+pos_mediana <- ceiling(n_total / 2)
+
+# Filtrar la categoría que contiene la posición de la mediana
+tabla_mediana_facility <- tabla_facility_validos_mediana %>%
+  filter(Frecuencia_Acumulada >= pos_mediana) %>%
+  slice(1)
+
+cat("\nRESUMEN ESTADÍSTICO – MEDIANA (NG.Vehicle.Class):\n")
+print(tabla_mediana_facility)
+
+#---------------------- TABLA INTERACTIVA – MODA -------------------------------------#
+
+library(DT)
+library(htmltools)
+
+datatable(tabla_moda_facility,
+          options = list(
+            pageLength = 5,
+            autoWidth = TRUE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().header()).css({",
+              "'background-color': 'darkblue',",
+              "'color': 'white',",
+              "'font-weight': 'bold',",
+              "'font-family': 'Segoe UI'",
+              "});",
+              "}"
+            ),
+            rowCallback = JS(
+              "function(row, data, index) {",
+              "$(row).css('font-family', 'Segoe UI');",
+              "$(row).css({'font-weight': 'bold', 'background-color': '#f0f0f0'});",
+              "$('td:eq(1)', row).css({'text-align': 'right', 'padding-right': '10px'});",
+              "}"
+            ),
+            dom = 't'
+          ),
+          rownames = FALSE,
+          colnames = c("Tipo de Instalación", "Frecuencia"),
+          caption = htmltools::tags$caption(
+            style = 'caption-side: top; text-align: center; font-weight: bold; padding: 10px; font-family: Segoe UI;',
+            "Tabla - Resumen Estadístico por Frecuencia (Moda de NG.Vehicle.Class)"
+          )
+)
+
+#---------------------- TABLA INTERACTIVA – MEDIANA ----------------------------------#
+
+datatable(tabla_mediana_facility %>% select(NG.Vehicle.Class, Frecuencia),
+          options = list(
+            pageLength = 5,
+            autoWidth = TRUE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().header()).css({",
+              "'background-color': 'darkgreen',",
+              "'color': 'white',",
+              "'font-weight': 'bold',",
+              "'font-family': 'Segoe UI'",
+              "});",
+              "}"
+            ),
+            rowCallback = JS(
+              "function(row, data, index) {",
+              "$(row).css('font-family', 'Segoe UI');",
+              "$(row).css({'font-weight': 'bold', 'background-color': '#f0fff0'});",
+              "$('td:eq(1)', row).css({'text-align': 'right', 'padding-right': '10px'});",
+              "}"
+            ),
+            dom = 't'
+          ),
+          rownames = FALSE,
+          colnames = c("Tipo de Instalación", "Frecuencia"),
+          caption = tags$caption(
+            style = 'caption-side: top; text-align: center; font-weight: bold; padding: 10px; font-family: Segoe UI;',
+            "Tabla - Resumen Estadístico por Frecuencia (Mediana de NG.Vehicle.Class)"
+          )
+)
+
+
+#-------------------- Crear tabla de frecuencia por NG.Vehicle.Class -------------#
+
+library(dplyr)
+
+tabla_ngclass_validos <- datos %>%
+  filter(!is.na(NG.Vehicle.Class)) %>%
+  count(NG.Vehicle.Class, name = "Frecuencia") %>%
+  arrange(desc(Frecuencia))
+
+
+#------------------- AGRUPAR POR GRUPO TEMÁTICO HD, MD, LD ------------------------#
+
+tabla_por_grupo_ngclass <- datos %>%
+  filter(NG.Vehicle.Class %in% c("HD", "MD", "LD")) %>%
+  group_by(NG.Vehicle.Class) %>%
+  summarise(Total_Frecuencia = n()) %>%
+  rename(Grupo = NG.Vehicle.Class) %>%
+  arrange(desc(Total_Frecuencia))
+
+#---------------- AGREGAR FILA DE TOTAL GENERAL – NG.Vehicle.Class ----------------#
+
+total_general_ngclass <- sum(tabla_por_grupo_ngclass$Total_Frecuencia, na.rm = TRUE)
+fila_total_ngclass <- data.frame(Grupo = "TOTAL", Total_Frecuencia = total_general_ngclass)
+tabla_por_grupo_ngclass_con_total <- bind_rows(tabla_por_grupo_ngclass, fila_total_ngclass)
+
+
+#------------------ MOSTRAR TABLA RESULTANTE – NG.Vehicle.Class -------------------#
+
+cat("\n--- Tabla de Frecuencia Total por Grupo (NG.Vehicle.Class) ---\n")
+print(tabla_por_grupo_ngclass_con_total)
+
+
+#--------- TABLA INTERACTIVA FRECUENCIA ABSOLUTA NG.Vehicle.Class VS EST. CARGA -------------#
+
+library(DT)
+library(htmltools)
+
+datatable(tabla_por_grupo_ngclass_con_total,
+          options = list(
+            pageLength = 10,
+            autoWidth = TRUE,
+            columnDefs = list(
+              list(width = '200px', targets = 0)  # Ajusta ancho para la columna Grupo
+            ),
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().header()).css({",
+              "'background-color': 'darkblue',",
+              "'color': 'white',",
+              "'font-weight': 'bold',",
+              "'font-family': 'Segoe UI'",
+              "});",
+              "}"
+            ),
+            rowCallback = JS(
+              "function(row, data, index) {",
+              "$(row).css('font-family', 'Segoe UI');",
+              
+              "if(data[0] === 'TOTAL') {",
+              "$(row).css({'font-weight': 'bold', 'background-color': '#e0e0e0'});",
+              "} else if(index % 2 === 0) {",
+              "$(row).css('background-color', 'white');",
+              "} else {",
+              "$(row).css('background-color', '#f2f2f2');",
+              "}",
+              
+              "$('td:eq(1)', row).css({'text-align': 'right', 'padding-right': '10px'});",
+              "}"
+            ),
+            dom = 't'
+          ),
+          rownames = FALSE,
+          colnames = c("Grupo", "Frecuencia Total"),
+          caption = tags$caption(
+            style = 'caption-side: top; text-align: center; font-weight: bold; padding: 10px; font-family: Segoe UI;',
+            "Tabla - Frecuencia Absoluta por Grupo de NG.Vehicle.Class"
+          )
+)
+
+
+#------------- GRÁFICA DE BARRAS - FRECUENCIA ABSOLUTA POR NG.Vehicle.Class ---------------------#
+
+library(ggplot2)
+library(dplyr)
+
+# Excluir fila TOTAL y asegurar tipo numérico
+tabla_ngclass_por_grupo_grafico <- tabla_por_grupo_ngclass_con_total %>%
+  filter(Grupo != "TOTAL") %>%
+  mutate(Total_Frecuencia = as.numeric(Total_Frecuencia))
+
+# Crear gráfico de barras para NG.Vehicle.Class por grupos
+ggplot(tabla_ngclass_por_grupo_grafico, aes(x = reorder(Grupo, -Total_Frecuencia), y = Total_Frecuencia, fill = Total_Frecuencia)) +
+  geom_bar(stat = "identity", width = 0.9) +
+  geom_text(
+    aes(label = Total_Frecuencia),
+    vjust = -0.5,
+    size = 5,
+    family = "Segoe UI",
+    color = "black"
+  ) +
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +  # Gama de colores conservada
+  labs(
+    title = "Gráfica N°12.1 Frecuencia Absoluta por Grupo de Clase de Vehículo NG (NG.Vehicle.Class)",
+    x = "Grupo",
+    y = "Frecuencia Total",
+    fill = "Frecuencia Total"
+  ) +
+  theme_minimal(base_family = "Segoe UI") +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    axis.title.x = element_text(size = 14, face = "bold"),
+    axis.title.y = element_text(size = 14, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 13),
+    axis.text.y = element_text(size = 13),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line.x = element_line(color = "black"),
+    axis.line.y = element_line(color = "black"),
+    legend.position = c(0.88, 0.85),
+    legend.title = element_text(face = "bold")
+  )
+
+#-------------- GRÁFICA CIRCULAR - FRECUENCIA ABSOLUTA POR NG.Vehicle.Class --------------#
+
+library(ggplot2)
+library(dplyr)
+library(scales)
+
+# Preparar datos para gráfica circular de NG.Vehicle.Class
+tabla_ngclass_por_grupo_circular <- tabla_por_grupo_ngclass_con_total %>%
+  filter(Grupo != "TOTAL") %>%
+  mutate(
+    Total_Frecuencia = as.numeric(Total_Frecuencia),
+    porcentaje = Total_Frecuencia / sum(Total_Frecuencia)
+  ) %>%
+  arrange(Total_Frecuencia)  # Para mantener orden de colores
+
+# Reordenar factor Grupo según Total_Frecuencia ascendente
+tabla_ngclass_por_grupo_circular$Grupo <- factor(
+  tabla_ngclass_por_grupo_circular$Grupo,
+  levels = tabla_ngclass_por_grupo_circular$Grupo
+)
+
+# Calcular posiciones para gráfico circular
+tabla_ngclass_por_grupo_circular <- tabla_ngclass_por_grupo_circular %>%
+  arrange(desc(Total_Frecuencia)) %>%
+  mutate(
+    ymax = cumsum(porcentaje),
+    ymin = lag(ymax, default = 0),
+    pos = (ymax + ymin) / 2
+  )
+
+# Paleta de colores skyblue → darkblue según orden ascendente
+colores_por_grupo_circular <- setNames(
+  colorRampPalette(c("skyblue", "darkblue"))(length(levels(tabla_ngclass_por_grupo_circular$Grupo))),
+  levels(tabla_ngclass_por_grupo_circular$Grupo)
+)
+
+# Agregar color para etiquetas
+tabla_ngclass_por_grupo_circular$color_etiqueta <- colores_por_grupo_circular[
+  as.character(tabla_ngclass_por_grupo_circular$Grupo)
+]
+
+# Crear gráfico circular
+ggplot(tabla_ngclass_por_grupo_circular, aes(
+  ymax = ymax, ymin = ymin,
+  xmax = 2, xmin = 0,
+  fill = Grupo
+)) +
+  geom_rect(color = "white") +
+  coord_polar(theta = "y") +
+  
+  # Líneas guía para etiquetas
+  geom_segment(aes(x = 2, xend = 2.2, y = pos, yend = pos), color = "gray30") +
+  geom_segment(aes(x = 2.2, xend = 2.3, y = pos, yend = pos), color = "gray30") +
+  
+  # Etiquetas con color por grupo
+  geom_label(
+    aes(x = 2.5, y = pos, label = Total_Frecuencia),
+    fill = NA,
+    color = tabla_ngclass_por_grupo_circular$color_etiqueta,
+    size = 5,
+    family = "Segoe UI",
+    label.size = 0.8
+  ) +
+  
+  # Escala de colores personalizada
+  scale_fill_manual(values = colores_por_grupo_circular) +
+  
+  # Título y leyenda
+  labs(
+    title = "Gráfica N°12.2 Distribución de Frecuencias Absolutas por Grupo de Clase de Vehículo NG",
+    fill = "Grupo"
+  ) +
+  theme_void(base_family = "Segoe UI") +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    legend.position = c(1.1, 0.7),
+    legend.title = element_text(face = "bold", size = 12),
+    legend.text = element_text(size = 11)
+  )
+
+
+#------------- GRÁFICA DE BARRAS - FRECUENCIA RELATIVA POR NG.Vehicle.Class ---------------------#
+
+
+library(ggplot2)
+library(dplyr)
+
+# Calcular frecuencia relativa, excluir fila TOTAL y asegurar tipo numérico
+tabla_ngclass_por_grupo_relativo <- tabla_por_grupo_ngclass_con_total %>%
+  filter(Grupo != "TOTAL") %>%
+  mutate(
+    Total_Frecuencia = as.numeric(Total_Frecuencia),
+    Frecuencia_Relativa = Total_Frecuencia / sum(Total_Frecuencia)
+  )
+
+# Crear gráfico de barras para frecuencia relativa por NG.Vehicle.Class
+ggplot(tabla_ngclass_por_grupo_relativo, aes(x = reorder(Grupo, -Frecuencia_Relativa), y = Frecuencia_Relativa, fill = Frecuencia_Relativa)) +
+  geom_bar(stat = "identity", width = 0.9) +
+  geom_text(
+    aes(label = scales::percent(Frecuencia_Relativa, accuracy = 0.1)),
+    vjust = -0.5,
+    size = 5,
+    family = "Segoe UI",
+    color = "black"
+  ) +
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +  # Gama de colores conservada
+  labs(
+    title = "Gráfica N°12.3 Frecuencia Relativa por Grupo de Clase de Vehículo NG (NG.Vehicle.Class)",
+    x = "Grupo",
+    y = "Frecuencia Relativa",
+    fill = "Frecuencia Relativa"
+  ) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  theme_minimal(base_family = "Segoe UI") +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    axis.title.x = element_text(size = 14, face = "bold"),
+    axis.title.y = element_text(size = 14, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 13),
+    axis.text.y = element_text(size = 13),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line.x = element_line(color = "black"),
+    axis.line.y = element_line(color = "black"),
+    legend.position = c(0.88, 0.85),
+    legend.title = element_text(face = "bold")
+  )
+
+
+#-------------- GRÁFICA CIRCULAR - FRECUENCIA RELATIVA POR NG.Vehicle.Class --------------#
+
+
+library(ggplot2)
+library(dplyr)
+library(scales)
+
+# Preparar datos para gráfica circular de NG.Vehicle.Class con frecuencia relativa
+tabla_ngclass_por_grupo_circular <- tabla_por_grupo_ngclass_con_total %>%
+  filter(Grupo != "TOTAL") %>%
+  mutate(
+    Total_Frecuencia = as.numeric(Total_Frecuencia),
+    porcentaje = Total_Frecuencia / sum(Total_Frecuencia)  # frecuencia relativa
+  ) %>%
+  arrange(porcentaje)  # ordenar para paleta de colores
+
+# Reordenar factor Grupo según frecuencia relativa ascendente
+tabla_ngclass_por_grupo_circular$Grupo <- factor(
+  tabla_ngclass_por_grupo_circular$Grupo,
+  levels = tabla_ngclass_por_grupo_circular$Grupo
+)
+
+# Calcular posiciones para gráfico circular
+tabla_ngclass_por_grupo_circular <- tabla_ngclass_por_grupo_circular %>%
+  arrange(desc(porcentaje)) %>%
+  mutate(
+    ymax = cumsum(porcentaje),
+    ymin = lag(ymax, default = 0),
+    pos = (ymax + ymin) / 2
+  )
+
+# Paleta de colores skyblue → darkblue según orden ascendente
+colores_por_grupo_circular <- setNames(
+  colorRampPalette(c("skyblue", "darkblue"))(length(levels(tabla_ngclass_por_grupo_circular$Grupo))),
+  levels(tabla_ngclass_por_grupo_circular$Grupo)
+)
+
+# Color para etiquetas
+tabla_ngclass_por_grupo_circular$color_etiqueta <- colores_por_grupo_circular[
+  as.character(tabla_ngclass_por_grupo_circular$Grupo)
+]
+
+# Crear gráfico circular con etiquetas en porcentaje
+ggplot(tabla_ngclass_por_grupo_circular, aes(
+  ymax = ymax, ymin = ymin,
+  xmax = 2, xmin = 0,
+  fill = Grupo
+)) +
+  geom_rect(color = "white") +
+  coord_polar(theta = "y") +
+  
+  # Líneas guía para etiquetas
+  geom_segment(aes(x = 2, xend = 2.2, y = pos, yend = pos), color = "gray30") +
+  geom_segment(aes(x = 2.2, xend = 2.3, y = pos, yend = pos), color = "gray30") +
+  
+  # Etiquetas con porcentaje y color por grupo
+  geom_label(
+    aes(x = 2.5, y = pos, label = scales::percent(porcentaje, accuracy = 0.1)),
+    fill = NA,
+    color = tabla_ngclass_por_grupo_circular$color_etiqueta,
+    size = 5,
+    family = "Segoe UI",
+    label.size = 0.8
+  ) +
+  
+  # Escala de colores personalizada
+  scale_fill_manual(values = colores_por_grupo_circular) +
+  
+  # Título y leyenda
+  labs(
+    title = "Gráfica N°12.4 Distribución de la Frecuencia Relativa (%) por Clase de Vehículo NG (NG.Vehicle.Class)",
+    fill = "Grupo"
+  ) +
+  theme_void(base_family = "Segoe UI") +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    legend.position = c(1.1, 0.7),
+    legend.title = element_text(face = "bold", size = 12),
+    legend.text = element_text(size = 11)
+  )
+
+
+```
